@@ -132,11 +132,13 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .sd{width:4px;height:4px;border-radius:50%;background:var(--grn)}
 .sr{margin-left:auto;display:flex;gap:12px}
 
-/* NIM config bar */
-.nim-cfg{padding:6px 12px;background:var(--bg);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;font-size:9px}
+/* AI config bar */
+.nim-cfg{padding:6px 12px;background:var(--bg);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;font-size:9px;flex-wrap:wrap}
 .nim-cfg label{color:var(--t2);font-size:8px;letter-spacing:.5px}
 .nim-cfg input{background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:4px 8px;border-radius:3px;flex:1;max-width:280px}
 .nim-cfg input:focus{outline:none;border-color:var(--blue)}
+.nim-cfg select{background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:4px 8px;border-radius:3px;cursor:pointer}
+.nim-cfg select:focus{outline:none;border-color:var(--blue)}
 .nim-cfg .nim-status{margin-left:8px;font-size:8px}
 </style>
 </head>
@@ -205,9 +207,15 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 <div class="page agents-page" id="pg-agents">
   <div style="display:flex;flex-direction:column;gap:1px;background:var(--bdr)">
     <div class="nim-cfg">
-      <label>NVIDIA NIM KEY:</label>
-      <input type="password" id="nimKey" placeholder="nvapi-..." value="">
+      <label>AI PROVIDER:</label>
+      <select id="aiProvider">
+        <option value="groq">Groq (Free, CORS-friendly)</option>
+        <option value="nim">NVIDIA NIM</option>
+      </select>
+      <label>API KEY:</label>
+      <input type="password" id="nimKey" placeholder="gsk_... or nvapi-..." value="">
       <span class="nim-status" id="nimSt" style="color:var(--t3)">NOT SET</span>
+      <a href="https://console.groq.com/keys" target="_blank" id="keyLink" style="font-size:7px;color:var(--blue);text-decoration:none;letter-spacing:.5px">GET FREE KEY</a>
     </div>
     <div class="agent-card" style="flex:1" id="agent0"></div>
     <div class="agent-card" style="flex:1" id="agent1"></div>
@@ -220,7 +228,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 
 <!-- STATUS -->
 <div class="st">
-  <div class="si"><div class="sd"></div>NVIDIA NIM</div>
+  <div class="si"><div class="sd"></div>AI ENGINE</div>
   <div class="si"><div class="sd"></div>COINGECKO</div>
   <div class="si"><div class="sd"></div>RSS FEEDS</div>
   <div class="si"><div class="sd"></div>FEAR&GREED API</div>
@@ -230,7 +238,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 </div>
 
 <!-- Globe.gl -->
-<script src="https://unpkg.com/globe.gl@2.35.2/dist/globe.gl.min.js"></script>
+<script src="https://unpkg.com/globe.gl@2.34.1/dist/globe.gl.min.js"></script>
 <script>
 // ═══ CLOCK ═══
 const T0=Date.now();
@@ -422,37 +430,75 @@ async function fetchForex(){
   }catch(e){return[];}
 }
 
-// Fetch indices/commodities from Yahoo Finance via allorigins proxy
+// Fetch indices/commodities via multiple proxy strategies
 async function fetchYahoo(){
   const results=[];
   const symbols=YAHOO_ASSETS.map(a=>a.sym).join(',');
-  try{
-    const url=`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&fields=regularMarketPrice,regularMarketChangePercent,shortName`;
-    const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(10000)});
+  const yahooUrl=`https://query1.finance.yahoo.com/v8/finance/chart/`;
+
+  // Strategy 1: corsproxy.io (works from browsers, blocks server-side)
+  async function tryCorsproxy(){
+    const out=[];
+    const batchUrl=`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&fields=regularMarketPrice,regularMarketChangePercent`;
+    const r=await fetch('https://corsproxy.io/?url='+encodeURIComponent(batchUrl),{signal:AbortSignal.timeout(8000)});
     const d=await r.json();
     if(d.quoteResponse&&d.quoteResponse.result){
       d.quoteResponse.result.forEach(q=>{
         const asset=YAHOO_ASSETS.find(a=>a.sym===q.symbol);
         if(asset&&q.regularMarketPrice){
-          results.push({s:asset.s,p:q.regularMarketPrice,c:q.regularMarketChangePercent||0,type:asset.type});
+          out.push({s:asset.s,p:q.regularMarketPrice,c:q.regularMarketChangePercent||0,type:asset.type});
         }
       });
     }
-  }catch(e){
-    // Fallback: try individual fetches via chart API
+    return out;
+  }
+
+  // Strategy 2: Individual chart fetches via allorigins
+  async function tryAllorigins(){
+    const out=[];
     for(const asset of YAHOO_ASSETS){
       try{
-        const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(asset.sym)}?range=2d&interval=1d`;
-        const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(6000)});
+        const url=yahooUrl+encodeURIComponent(asset.sym)+'?range=2d&interval=1d';
+        const r=await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(6000)});
         const d=await r.json();
         const meta=d?.chart?.result?.[0]?.meta;
         if(meta&&meta.regularMarketPrice){
           const prev=meta.chartPreviousClose||meta.previousClose||meta.regularMarketPrice;
           const chg=prev?((meta.regularMarketPrice-prev)/prev*100):0;
-          results.push({s:asset.s,p:meta.regularMarketPrice,c:chg,type:asset.type});
+          out.push({s:asset.s,p:meta.regularMarketPrice,c:chg,type:asset.type});
         }
-      }catch(e2){}
+      }catch(e){}
     }
+    return out;
+  }
+
+  // Strategy 3: Individual chart fetches via corsproxy
+  async function tryCorsproxyIndividual(){
+    const out=[];
+    for(const asset of YAHOO_ASSETS){
+      try{
+        const url=yahooUrl+encodeURIComponent(asset.sym)+'?range=2d&interval=1d';
+        const r=await fetch('https://corsproxy.io/?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(6000)});
+        const d=await r.json();
+        const meta=d?.chart?.result?.[0]?.meta;
+        if(meta&&meta.regularMarketPrice){
+          const prev=meta.chartPreviousClose||meta.previousClose||meta.regularMarketPrice;
+          const chg=prev?((meta.regularMarketPrice-prev)/prev*100):0;
+          out.push({s:asset.s,p:meta.regularMarketPrice,c:chg,type:asset.type});
+        }
+      }catch(e){}
+    }
+    return out;
+  }
+
+  // Try strategies in order
+  const strategies=[tryCorsproxy,tryAllorigins,tryCorsproxyIndividual];
+  for(const strategy of strategies){
+    try{
+      const data=await strategy();
+      if(data.length>=3)return data; // good enough
+      if(data.length>results.length)results.push(...data);
+    }catch(e){}
   }
   return results;
 }
@@ -584,7 +630,7 @@ fetchNews();setInterval(fetchNews,120000);
 
 // ═══ AGENTS (with real NVIDIA NIM calls) ═══
 const AGENTS=[
-  {name:'News Agent',desc:'Fetches live headlines from RSS feeds and analyzes sentiment via NVIDIA NIM. Covers crypto, forex, indices, and geopolitical events.',online:true,
+  {name:'News Agent',desc:'Fetches live headlines from RSS feeds and analyzes sentiment via AI (Groq/NIM). Covers crypto, forex, indices, and geopolitical events.',online:true,
     cmds:[{l:'BTC BRIEFING',asset:'BTC'},{l:'ETH BRIEFING',asset:'ETH'},{l:'MARKET OVERVIEW',asset:'markets'}]},
   {name:'Chart Agent',desc:'Technical analysis on any asset. Calculates 20+ indicators (EMA, RSI, MACD, Bollinger, VWAP, ATR) and uses AI to interpret patterns and bias.',online:true,
     cmds:[{l:'BTC ANALYSIS',asset:'BTC/USDT'},{l:'ETH ANALYSIS',asset:'ETH/USDT'}]},
@@ -609,36 +655,98 @@ function renderAgents(){
 }
 renderAgents();
 
-// NIM key handling
+// AI Provider config
+const AI_PROVIDERS={
+  groq:{
+    name:'Groq',
+    url:'https://api.groq.com/openai/v1/chat/completions',
+    model:'llama-3.3-70b-versatile',
+    keyUrl:'https://console.groq.com/keys',
+    keyPrefix:'gsk_',
+    cors:true
+  },
+  nim:{
+    name:'NVIDIA NIM',
+    url:'https://integrate.api.nvidia.com/v1/chat/completions',
+    model:'meta/llama-3.3-70b-instruct',
+    keyUrl:'https://build.nvidia.com/settings/api-keys',
+    keyPrefix:'nvapi-',
+    cors:false // needs CORS proxy
+  }
+};
+
 const nimKeyInput=document.getElementById('nimKey');
-nimKeyInput.value=localStorage.getItem('jarvis_nim_key')||'';
-nimKeyInput.addEventListener('change',()=>{
-  localStorage.setItem('jarvis_nim_key',nimKeyInput.value);
-  document.getElementById('nimSt').textContent=nimKeyInput.value?'CONNECTED':'NOT SET';
-  document.getElementById('nimSt').style.color=nimKeyInput.value?'var(--grn)':'var(--t3)';
+const aiProviderSelect=document.getElementById('aiProvider');
+const keyLink=document.getElementById('keyLink');
+
+// Restore saved settings
+nimKeyInput.value=localStorage.getItem('jarvis_ai_key')||'';
+aiProviderSelect.value=localStorage.getItem('jarvis_ai_provider')||'groq';
+updateProviderUI();
+
+aiProviderSelect.addEventListener('change',()=>{
+  localStorage.setItem('jarvis_ai_provider',aiProviderSelect.value);
+  updateProviderUI();
 });
-if(nimKeyInput.value){document.getElementById('nimSt').textContent='CONNECTED';document.getElementById('nimSt').style.color='var(--grn)';}
+nimKeyInput.addEventListener('change',()=>{
+  localStorage.setItem('jarvis_ai_key',nimKeyInput.value);
+  updateKeyStatus();
+});
+
+function updateProviderUI(){
+  const p=AI_PROVIDERS[aiProviderSelect.value];
+  nimKeyInput.placeholder=p.keyPrefix+'...';
+  keyLink.href=p.keyUrl;
+  keyLink.textContent='GET FREE '+p.name.toUpperCase()+' KEY';
+  updateKeyStatus();
+}
+function updateKeyStatus(){
+  const hasKey=!!nimKeyInput.value;
+  document.getElementById('nimSt').textContent=hasKey?'CONNECTED':'NOT SET';
+  document.getElementById('nimSt').style.color=hasKey?'var(--grn)':'var(--t3)';
+}
+updateKeyStatus();
 
 async function callNIM(prompt,system){
-  const key=nimKeyInput.value||localStorage.getItem('jarvis_nim_key')||'';
-  if(!key){return 'ERROR: Enter your NVIDIA NIM API key in the Agents tab first.\nGet one free at: https://build.nvidia.com/settings/api-keys';}
-  try{
-    const r=await fetch('https://integrate.api.nvidia.com/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-      body:JSON.stringify({
-        model:'moonshotai/kimi-k2.5',
-        messages:[
-          ...(system?[{role:'system',content:system}]:[]),
-          {role:'user',content:prompt}
-        ],
-        temperature:0.3,max_tokens:1500
-      })
-    });
-    const d=await r.json();
-    if(d.error)return 'NIM Error: '+(d.error.message||JSON.stringify(d.error));
-    return d.choices?.[0]?.message?.content||'No response';
-  }catch(e){return 'Connection error: '+e.message;}
+  const key=nimKeyInput.value||localStorage.getItem('jarvis_ai_key')||'';
+  const provider=AI_PROVIDERS[aiProviderSelect.value]||AI_PROVIDERS.groq;
+  if(!key){return `ERROR: Enter your ${provider.name} API key in the Agents tab.\nGet one free at: ${provider.keyUrl}`;}
+
+  const body=JSON.stringify({
+    model:provider.model,
+    messages:[
+      ...(system?[{role:'system',content:system}]:[]),
+      {role:'user',content:prompt}
+    ],
+    temperature:0.3,max_tokens:1500
+  });
+
+  // Try direct call first (works for CORS-friendly APIs like Groq)
+  const attempts=[
+    {url:provider.url,label:'direct'},
+  ];
+  // For non-CORS APIs (NIM), add proxy fallbacks
+  if(!provider.cors){
+    attempts.length=0;
+    attempts.push({url:'https://corsproxy.io/?url='+encodeURIComponent(provider.url),label:'corsproxy'});
+    attempts.push({url:provider.url,label:'direct'});
+  }
+
+  for(const attempt of attempts){
+    try{
+      const r=await fetch(attempt.url,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+        body,
+        signal:AbortSignal.timeout(30000)
+      });
+      const d=await r.json();
+      if(d.error)return provider.name+' Error: '+(d.error.message||JSON.stringify(d.error));
+      return d.choices?.[0]?.message?.content||'No response';
+    }catch(e){
+      if(attempt===attempts[attempts.length-1])return 'Connection error: '+e.message+'\n\nTip: Groq (free) has built-in browser support. Switch provider in the dropdown above.';
+    }
+  }
 }
 
 async function runAgent(agentIdx,cmdIdx){
