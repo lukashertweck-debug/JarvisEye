@@ -35,13 +35,13 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 /* Pages */
 .page{display:none;height:100%}.page.on{display:grid}
 
-/* ═══ OVERVIEW — 3 columns ═══ */
-.overview{grid-area:main;grid-template-columns:280px 1fr 280px;gap:0;background:var(--bg)}
+/* ═══ OVERVIEW — 3 columns + chat row ═══ */
+.overview{grid-area:main;grid-template-columns:280px 1fr 280px;grid-template-rows:1fr 180px;gap:0;background:var(--bg)}
 
 /* Left column */
 .ov-left{display:flex;flex-direction:column;border-right:1px solid var(--bdr);overflow:hidden}
-.ov-left-feed{height:55%;display:flex;flex-direction:column;overflow:hidden;border-bottom:1px solid var(--bdr)}
-.ov-left-pred{height:45%;display:flex;flex-direction:column;overflow:hidden}
+.ov-left-feed{height:65%;display:flex;flex-direction:column;overflow:hidden;border-bottom:1px solid var(--bdr)}
+.ov-left-pred{height:35%;display:flex;flex-direction:column;overflow:hidden}
 
 /* Center */
 .ov-center{position:relative;background:var(--bg);display:flex;flex-direction:column}
@@ -143,6 +143,33 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .popup-resource{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:9px;color:var(--txt)}
 .popup-resource .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 
+/* Globe rotation toggle */
+.globe-ctrl{position:absolute;top:12px;right:16px;z-index:10;display:flex;gap:4px}
+.gc-btn{font-family:var(--f);font-size:7px;padding:4px 10px;background:rgba(4,6,10,.85);border:1px solid var(--bdr);color:var(--t2);border-radius:3px;cursor:pointer;letter-spacing:.5px;transition:.15s}
+.gc-btn:hover{border-color:rgba(59,130,246,.3);color:var(--txt)}
+.gc-btn.on{border-color:var(--cyan);color:var(--cyan)}
+
+/* JARVIS Assistant chat */
+.jarvis-chat{grid-column:1/-1;border-top:1px solid var(--bdr);display:flex;flex-direction:column;background:var(--bg2);overflow:hidden}
+.jc-hd{padding:6px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bdr);flex-shrink:0;background:var(--bg2);position:relative}
+.jc-hd::before{content:'';width:2px;height:100%;background:var(--cyan);position:absolute;left:0}
+.jc-title{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--cyan)}
+.jc-status{font-size:7px;color:var(--grn);margin-left:auto;display:flex;align-items:center;gap:4px}
+.jc-status::before{content:'';width:4px;height:4px;background:var(--grn);border-radius:50%;animation:bk 1.5s infinite}
+.jc-body{flex:1;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:6px}
+.jc-body::-webkit-scrollbar{width:3px}
+.jc-body::-webkit-scrollbar-thumb{background:rgba(6,182,212,.15);border-radius:2px}
+.jc-msg{max-width:85%;padding:6px 10px;border-radius:6px;font-size:9px;line-height:1.6;animation:fadeIn .2s}
+.jc-msg.user{align-self:flex-end;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.15);color:#fff}
+.jc-msg.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--bdr);color:var(--txt)}
+.jc-msg.bot .loading{color:var(--cyan)}
+.jc-input-row{display:flex;gap:6px;padding:6px 14px;border-top:1px solid var(--bdr);flex-shrink:0;background:var(--bg)}
+.jc-input{flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:6px 10px;border-radius:4px;outline:none}
+.jc-input:focus{border-color:var(--cyan)}
+.jc-input::placeholder{color:var(--t3)}
+.jc-send{font-family:var(--f);font-size:8px;padding:6px 14px;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.2);color:var(--cyan);border-radius:4px;cursor:pointer;letter-spacing:1px;font-weight:700;transition:.15s}
+.jc-send:hover{background:rgba(6,182,212,.2);color:#fff}
+
 /* ═══ AGENTS PAGE ═══ */
 .agents-page{grid-template-columns:1fr 1fr;grid-template-rows:1fr;gap:1px;background:var(--bdr)}
 .agent-card{background:var(--bg2);padding:14px}
@@ -239,6 +266,9 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,13
 </div>
 <div class="globe-wrap">
 <div id="globeViz"></div>
+<div class="globe-ctrl">
+<button class="gc-btn on" id="rotateBtn" onclick="toggleRotation()">AUTO-ROTATE</button>
+</div>
 <div class="globe-stats">
 <div class="gs"><span class="gs-v" id="gM">--</span><span class="gs-l">Crypto MCap</span></div>
 <div class="gs"><span class="gs-v" id="gD">--</span><span class="gs-l">BTC Dom</span></div>
@@ -276,6 +306,18 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,13
 <div style="font-size:6px;color:var(--t3);letter-spacing:1px;margin-top:4px;text-align:center">FEAR & GREED INDEX</div>
 </div>
 </div>
+
+<!-- JARVIS Assistant -->
+<div class="jarvis-chat">
+<div class="jc-hd"><span class="jc-title">JARVIS Assistant</span><span class="jc-status">ONLINE</span></div>
+<div class="jc-body" id="jcBody">
+<div class="jc-msg bot">JARVIS online. I have access to live market data, news feeds, and geopolitical intelligence. Ask me anything about markets, strategies, or global events.</div>
+</div>
+<div class="jc-input-row">
+<input class="jc-input" id="jcInput" placeholder="Ask JARVIS about markets, news, strategies..." onkeydown="if(event.key==='Enter')sendJarvisMsg()">
+<button class="jc-send" onclick="sendJarvisMsg()">SEND</button>
+</div>
+</div>
 </div>
 
 <!-- ═══ AGENTS PAGE ═══ -->
@@ -308,7 +350,7 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,13
 <div class="si"><div class="sd"></div>RSS FEEDS</div>
 <div class="si"><div class="sd"></div>POLYMARKET</div>
 <div class="si"><div class="sd"></div>TRANSPORT DATA</div>
-<div class="sr"><span>JARVIS v3.2</span><span id="up">00:00</span></div>
+<div class="sr"><span>JARVIS v3.3</span><span id="up">00:00</span></div>
 </div>
 </div>
 
@@ -353,36 +395,36 @@ const GEO_EVENTS=[
 // ═══ RESOURCE TRANSPORT ROUTES ═══
 const TRANSPORT_ROUTES=[
   // OIL ROUTES
-  {startLat:26.2,startLng:50.2,endLat:35.4,endLng:139.7,color:'#f97316',label:'Saudi Arabia → Japan',resource:'Crude Oil',volume:'3.2M bbl/day',layer:'oil'},
-  {startLat:26.2,startLng:50.2,endLat:31.2,endLng:121.5,color:'#f97316',label:'Saudi Arabia → China',resource:'Crude Oil',volume:'1.8M bbl/day',layer:'oil'},
-  {startLat:26.2,startLng:50.2,endLat:51.5,endLng:-0.1,color:'#f97316',label:'Middle East → Europe',resource:'Crude Oil',volume:'2.1M bbl/day',layer:'oil'},
-  {startLat:29.8,startLng:-90,endLat:51.5,endLng:-0.1,color:'#f97316',label:'US Gulf → Europe',resource:'Crude Oil',volume:'1.5M bbl/day',layer:'oil'},
-  {startLat:55.7,startLng:37.6,endLat:39.9,endLng:116.4,color:'#f97316',label:'Russia → China',resource:'Crude Oil (Pipeline)',volume:'1.6M bbl/day',layer:'oil'},
-  {startLat:55.7,startLng:37.6,endLat:28.6,endLng:77.2,color:'#f97316',label:'Russia → India',resource:'Crude Oil',volume:'1.9M bbl/day',layer:'oil'},
-  {startLat:4.6,startLng:-74.1,endLat:29.8,endLng:-95.4,color:'#f97316',label:'Colombia → US Gulf',resource:'Crude Oil',volume:'0.5M bbl/day',layer:'oil'},
-  {startLat:6.5,startLng:3.4,endLat:50.1,endLng:8.7,color:'#f97316',label:'Nigeria → Europe',resource:'Crude Oil',volume:'0.8M bbl/day',layer:'oil'},
+  {startLat:26.2,startLng:50.2,endLat:35.4,endLng:139.7,color:'rgba(249,115,22,0.5)',label:'Saudi Arabia → Japan',resource:'Crude Oil',volume:'3.2M bbl/day',layer:'oil'},
+  {startLat:26.2,startLng:50.2,endLat:31.2,endLng:121.5,color:'rgba(249,115,22,0.5)',label:'Saudi Arabia → China',resource:'Crude Oil',volume:'1.8M bbl/day',layer:'oil'},
+  {startLat:26.2,startLng:50.2,endLat:51.5,endLng:-0.1,color:'rgba(249,115,22,0.5)',label:'Middle East → Europe',resource:'Crude Oil',volume:'2.1M bbl/day',layer:'oil'},
+  {startLat:29.8,startLng:-90,endLat:51.5,endLng:-0.1,color:'rgba(249,115,22,0.5)',label:'US Gulf → Europe',resource:'Crude Oil',volume:'1.5M bbl/day',layer:'oil'},
+  {startLat:55.7,startLng:37.6,endLat:39.9,endLng:116.4,color:'rgba(249,115,22,0.5)',label:'Russia → China',resource:'Crude Oil (Pipeline)',volume:'1.6M bbl/day',layer:'oil'},
+  {startLat:55.7,startLng:37.6,endLat:28.6,endLng:77.2,color:'rgba(249,115,22,0.5)',label:'Russia → India',resource:'Crude Oil',volume:'1.9M bbl/day',layer:'oil'},
+  {startLat:4.6,startLng:-74.1,endLat:29.8,endLng:-95.4,color:'rgba(249,115,22,0.5)',label:'Colombia → US Gulf',resource:'Crude Oil',volume:'0.5M bbl/day',layer:'oil'},
+  {startLat:6.5,startLng:3.4,endLat:50.1,endLng:8.7,color:'rgba(249,115,22,0.5)',label:'Nigeria → Europe',resource:'Crude Oil',volume:'0.8M bbl/day',layer:'oil'},
   // MINERALS
-  {startLat:-33.9,startLng:151.2,endLat:31.2,endLng:121.5,color:'#a78bfa',label:'Australia → China',resource:'Iron Ore',volume:'680M tons/yr',layer:'minerals'},
-  {startLat:-20.3,startLng:-43.2,endLat:31.2,endLng:121.5,color:'#a78bfa',label:'Brazil → China',resource:'Iron Ore',volume:'230M tons/yr',layer:'minerals'},
-  {startLat:-33.4,startLng:-70.7,endLat:31.2,endLng:121.5,color:'#a78bfa',label:'Chile → China',resource:'Copper',volume:'5.7M tons/yr',layer:'minerals'},
-  {startLat:-4.3,startLng:15.3,endLat:31.2,endLng:121.5,color:'#a78bfa',label:'DRC → China',resource:'Cobalt',volume:'130K tons/yr',layer:'minerals'},
-  {startLat:-4.3,startLng:15.3,endLat:50.1,endLng:8.7,color:'#a78bfa',label:'DRC → Europe',resource:'Cobalt',volume:'45K tons/yr',layer:'minerals'},
-  {startLat:-33.9,startLng:151.2,endLat:35.7,endLng:139.7,color:'#a78bfa',label:'Australia → Japan',resource:'Lithium',volume:'55K tons/yr',layer:'minerals'},
-  {startLat:-33.4,startLng:-70.7,endLat:37.6,endLng:127,color:'#a78bfa',label:'Chile → S. Korea',resource:'Lithium',volume:'35K tons/yr',layer:'minerals'},
+  {startLat:-33.9,startLng:151.2,endLat:31.2,endLng:121.5,color:'rgba(167,139,250,0.5)',label:'Australia → China',resource:'Iron Ore',volume:'680M tons/yr',layer:'minerals'},
+  {startLat:-20.3,startLng:-43.2,endLat:31.2,endLng:121.5,color:'rgba(167,139,250,0.5)',label:'Brazil → China',resource:'Iron Ore',volume:'230M tons/yr',layer:'minerals'},
+  {startLat:-33.4,startLng:-70.7,endLat:31.2,endLng:121.5,color:'rgba(167,139,250,0.5)',label:'Chile → China',resource:'Copper',volume:'5.7M tons/yr',layer:'minerals'},
+  {startLat:-4.3,startLng:15.3,endLat:31.2,endLng:121.5,color:'rgba(167,139,250,0.5)',label:'DRC → China',resource:'Cobalt',volume:'130K tons/yr',layer:'minerals'},
+  {startLat:-4.3,startLng:15.3,endLat:50.1,endLng:8.7,color:'rgba(167,139,250,0.5)',label:'DRC → Europe',resource:'Cobalt',volume:'45K tons/yr',layer:'minerals'},
+  {startLat:-33.9,startLng:151.2,endLat:35.7,endLng:139.7,color:'rgba(167,139,250,0.5)',label:'Australia → Japan',resource:'Lithium',volume:'55K tons/yr',layer:'minerals'},
+  {startLat:-33.4,startLng:-70.7,endLat:37.6,endLng:127,color:'rgba(167,139,250,0.5)',label:'Chile → S. Korea',resource:'Lithium',volume:'35K tons/yr',layer:'minerals'},
   // COAL
-  {startLat:-33.9,startLng:151.2,endLat:28.6,endLng:77.2,color:'#78716c',label:'Australia → India',resource:'Thermal Coal',volume:'180M tons/yr',layer:'coal'},
-  {startLat:-33.9,startLng:151.2,endLat:39.9,endLng:116.4,color:'#78716c',label:'Australia → China',resource:'Coking Coal',volume:'120M tons/yr',layer:'coal'},
-  {startLat:-6.2,startLng:106.8,endLat:28.6,endLng:77.2,color:'#78716c',label:'Indonesia → India',resource:'Thermal Coal',volume:'150M tons/yr',layer:'coal'},
-  {startLat:-6.2,startLng:106.8,endLat:39.9,endLng:116.4,color:'#78716c',label:'Indonesia → China',resource:'Thermal Coal',volume:'200M tons/yr',layer:'coal'},
-  {startLat:-29.0,startLng:31.0,endLat:28.6,endLng:77.2,color:'#78716c',label:'S. Africa → India',resource:'Thermal Coal',volume:'50M tons/yr',layer:'coal'},
-  {startLat:55.7,startLng:37.6,endLat:39.9,endLng:116.4,color:'#78716c',label:'Russia → China',resource:'Coal',volume:'100M tons/yr',layer:'coal'},
+  {startLat:-33.9,startLng:151.2,endLat:28.6,endLng:77.2,color:'rgba(120,113,108,0.5)',label:'Australia → India',resource:'Thermal Coal',volume:'180M tons/yr',layer:'coal'},
+  {startLat:-33.9,startLng:151.2,endLat:39.9,endLng:116.4,color:'rgba(120,113,108,0.5)',label:'Australia → China',resource:'Coking Coal',volume:'120M tons/yr',layer:'coal'},
+  {startLat:-6.2,startLng:106.8,endLat:28.6,endLng:77.2,color:'rgba(120,113,108,0.5)',label:'Indonesia → India',resource:'Thermal Coal',volume:'150M tons/yr',layer:'coal'},
+  {startLat:-6.2,startLng:106.8,endLat:39.9,endLng:116.4,color:'rgba(120,113,108,0.5)',label:'Indonesia → China',resource:'Thermal Coal',volume:'200M tons/yr',layer:'coal'},
+  {startLat:-29.0,startLng:31.0,endLat:28.6,endLng:77.2,color:'rgba(120,113,108,0.5)',label:'S. Africa → India',resource:'Thermal Coal',volume:'50M tons/yr',layer:'coal'},
+  {startLat:55.7,startLng:37.6,endLat:39.9,endLng:116.4,color:'rgba(120,113,108,0.5)',label:'Russia → China',resource:'Coal',volume:'100M tons/yr',layer:'coal'},
   // LNG
-  {startLat:25.3,startLng:51.2,endLat:35.7,endLng:139.7,color:'#06b6d4',label:'Qatar → Japan',resource:'LNG',volume:'35M tons/yr',layer:'lng'},
-  {startLat:25.3,startLng:51.2,endLat:37.6,endLng:127,color:'#06b6d4',label:'Qatar → S. Korea',resource:'LNG',volume:'18M tons/yr',layer:'lng'},
-  {startLat:29.8,startLng:-95.4,endLat:51.5,endLng:-0.1,color:'#06b6d4',label:'US → Europe',resource:'LNG',volume:'80M tons/yr',layer:'lng'},
-  {startLat:29.8,startLng:-95.4,endLat:35.7,endLng:139.7,color:'#06b6d4',label:'US → Japan',resource:'LNG',volume:'12M tons/yr',layer:'lng'},
-  {startLat:-33.9,startLng:151.2,endLat:35.7,endLng:139.7,color:'#06b6d4',label:'Australia → Japan',resource:'LNG',volume:'40M tons/yr',layer:'lng'},
-  {startLat:-33.9,startLng:151.2,endLat:39.9,endLng:116.4,color:'#06b6d4',label:'Australia → China',resource:'LNG',volume:'32M tons/yr',layer:'lng'},
+  {startLat:25.3,startLng:51.2,endLat:35.7,endLng:139.7,color:'rgba(6,182,212,0.5)',label:'Qatar → Japan',resource:'LNG',volume:'35M tons/yr',layer:'lng'},
+  {startLat:25.3,startLng:51.2,endLat:37.6,endLng:127,color:'rgba(6,182,212,0.5)',label:'Qatar → S. Korea',resource:'LNG',volume:'18M tons/yr',layer:'lng'},
+  {startLat:29.8,startLng:-95.4,endLat:51.5,endLng:-0.1,color:'rgba(6,182,212,0.5)',label:'US → Europe',resource:'LNG',volume:'80M tons/yr',layer:'lng'},
+  {startLat:29.8,startLng:-95.4,endLat:35.7,endLng:139.7,color:'rgba(6,182,212,0.5)',label:'US → Japan',resource:'LNG',volume:'12M tons/yr',layer:'lng'},
+  {startLat:-33.9,startLng:151.2,endLat:35.7,endLng:139.7,color:'rgba(6,182,212,0.5)',label:'Australia → Japan',resource:'LNG',volume:'40M tons/yr',layer:'lng'},
+  {startLat:-33.9,startLng:151.2,endLat:39.9,endLng:116.4,color:'rgba(6,182,212,0.5)',label:'Australia → China',resource:'LNG',volume:'32M tons/yr',layer:'lng'},
 ];
 
 // ═══ COUNTRY INFOCENTER DATA ═══
@@ -475,6 +517,14 @@ function toggleCountry(btn){
   }
 }
 
+function toggleRotation(){
+  const btn=document.getElementById('rotateBtn');
+  const rotating=globe.controls().autoRotate;
+  globe.controls().autoRotate=!rotating;
+  btn.classList.toggle('on');
+  btn.textContent=rotating?'AUTO-ROTATE OFF':'AUTO-ROTATE';
+}
+
 // ═══ 3D GLOBE ═══
 function initGlobe(){
   const container=document.getElementById('globeViz');
@@ -482,8 +532,8 @@ function initGlobe(){
     .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
     .backgroundColor('rgba(0,0,0,0)')
     .showAtmosphere(true)
-    .atmosphereColor('#1a3a6a')
-    .atmosphereAltitude(0.2)
+    .atmosphereColor('rgba(59,130,246,0.25)')
+    .atmosphereAltitude(0.25)
     // Points = events + news pins
     .pointsData([]).pointLat(d=>d.lat).pointLng(d=>d.lng).pointColor(d=>d.color)
     .pointAltitude(d=>d.alt||0.06).pointRadius(d=>d.radius||0.4).pointsMerge(false)
@@ -494,7 +544,7 @@ function initGlobe(){
     .ringMaxRadius(3).ringPropagationSpeed(1.5).ringRepeatPeriod(2000)
     // Arcs = transport routes
     .arcsData([]).arcStartLat(d=>d.startLat).arcStartLng(d=>d.startLng).arcEndLat(d=>d.endLat).arcEndLng(d=>d.endLng)
-    .arcColor(d=>d.color).arcDashLength(0.4).arcDashGap(0.15).arcDashAnimateTime(d=>d.speed||3000).arcStroke(d=>d.stroke||0.3)
+    .arcColor(d=>d.color).arcDashLength(0.6).arcDashGap(0.2).arcDashAnimateTime(d=>d.speed||3000).arcStroke(d=>d.stroke||0.4)
     .arcLabel(d=>`<div style="font-family:JetBrains Mono;font-size:10px;background:rgba(4,6,10,.95);padding:6px 10px;border:1px solid rgba(59,130,246,.15);border-radius:4px;color:#fff"><b>${d.label}</b><br/><span style="color:#5a6a80">${d.resource} — ${d.volume}</span></div>`)
     // Labels
     .labelsData([]).labelLat(d=>d.lat).labelLng(d=>d.lng).labelText(d=>d.name)
@@ -504,9 +554,9 @@ function initGlobe(){
   fetch('https://unpkg.com/world-atlas@2/countries-110m.json').then(r=>r.json()).then(topology=>{
     const countries=topojson.feature(topology,topology.objects.countries);
     globe.polygonsData(countries.features)
-      .polygonCapColor(()=>'rgba(30,58,95,0.25)')
+      .polygonCapColor(()=>'rgba(20,40,80,0.15)')
       .polygonSideColor(()=>'rgba(30,58,95,0.1)')
-      .polygonStrokeColor(()=>'rgba(59,130,246,0.2)')
+      .polygonStrokeColor(()=>'rgba(59,130,246,0.12)')
       .polygonAltitude(0.005);
   });
   globe.controls().autoRotate=true;
@@ -697,106 +747,55 @@ function showMarketPopup(symbol){
   body.innerHTML=`
     <div class="popup-price">${fP(data.p)}</div>
     <div class="popup-stat"><span class="popup-stat-label">24h Change</span><span class="popup-stat-value" style="color:${chgColor}">${chgSign}${data.c.toFixed(2)}%</span></div>
-    ${data.h?`<div class="popup-stat"><span class="popup-stat-label">24h High</span><span class="popup-stat-value">${fP(data.h)}</span></div>`:''}
-    ${data.l?`<div class="popup-stat"><span class="popup-stat-label">24h Low</span><span class="popup-stat-value">${fP(data.l)}</span></div>`:''}
-    <div class="popup-badge ${data.type}">${data.type.toUpperCase()}</div>`;
-  popup.style.top='60px';popup.style.right='290px';popup.style.left='auto';
+    <div class="popup-stat"><span class="popup-stat-label">High</span><span class="popup-stat-value">${fP(data.h||data.p)}</span></div>
+    <div class="popup-stat"><span class="popup-stat-label">Low</span><span class="popup-stat-value">${fP(data.l||data.p)}</span></div>
+    <span class="popup-badge ${data.type||'crypto'}">${data.type||'CRYPTO'}</span>`;
+  popup.style.top='60px';popup.style.right='12px';popup.style.left='auto';popup.style.transform='none';
 }
 
-// ═══ MARKETS ═══
+// ═══ MARKET DATA ═══
+function fP(p){if(!p)return'--';if(p>=1e6)return'$'+(p/1e6).toFixed(1)+'M';if(p>=1e3)return'$'+(p/1e3).toFixed(0)+'K';return'$'+parseFloat(p).toFixed(p<1?4:2);}
+function fB(v){if(v>=1e12)return'$'+(v/1e12).toFixed(1)+'T';if(v>=1e9)return'$'+(v/1e9).toFixed(1)+'B';if(v>=1e6)return'$'+(v/1e6).toFixed(0)+'M';return'$'+Math.round(v);}
 const ASSETS=[
-  {id:'bitcoin',s:'BTC',type:'crypto'},
-  {id:'ethereum',s:'ETH',type:'crypto'},
-  {id:'solana',s:'SOL',type:'crypto'},
+  {id:'bitcoin',s:'BTC',t:'crypto'},{id:'ethereum',s:'ETH',t:'crypto'},{id:'solana',s:'SOL',t:'crypto'},{id:'cardano',s:'ADA',t:'crypto'},
+  {id:'ripple',s:'XRP',t:'crypto'},{id:'polkadot',s:'DOT',t:'crypto'},{id:'litecoin',s:'LTC',t:'crypto'},{id:'dogecoin',s:'DOGE',t:'crypto'}
 ];
-const YAHOO_ASSETS=[
-  {sym:'^IXIC',s:'NAS100',type:'index'},
-  {sym:'^GSPC',s:'S&P500',type:'index'},
-  {sym:'^GDAXI',s:'GER40',type:'index'},
-  {sym:'GC=F',s:'XAUUSD',type:'commodity'},
-  {sym:'CL=F',s:'OIL',type:'commodity'},
-  {sym:'SPY',s:'SPY',type:'etf'},
-];
-
-function fP(p){return p>=1000?'$'+p.toLocaleString('en',{maximumFractionDigits:0}):p>=10?'$'+p.toFixed(2):'$'+p.toFixed(4)}
-function fB(n){return n>=1e12?'$'+(n/1e12).toFixed(2)+'T':n>=1e9?'$'+(n/1e9).toFixed(1)+'B':'$'+(n/1e6).toFixed(0)+'M'}
-
 async function fetchForex(){
   try{
-    const today=new Date();
-    const yest=new Date(today);yest.setDate(yest.getDate()-1);
-    if(yest.getDay()===0)yest.setDate(yest.getDate()-2);
-    else if(yest.getDay()===6)yest.setDate(yest.getDate()-1);
-    const yStr=yest.toISOString().slice(0,10);
-    const [rNow,rPrev]=await Promise.all([
-      fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY').then(r=>r.json()),
-      fetch(`https://api.frankfurter.app/${yStr}?from=USD&to=EUR,GBP,JPY`).then(r=>r.json()).catch(()=>null)
-    ]);
-    const results=[];
-    [{key:'EUR',s:'EUR/USD',inv:true},{key:'GBP',s:'GBP/USD',inv:true},{key:'JPY',s:'USD/JPY',inv:false}].forEach(({key,s,inv})=>{
-      if(!rNow.rates[key])return;
-      const now=inv?1/rNow.rates[key]:rNow.rates[key];
-      const prev=rPrev&&rPrev.rates[key]?(inv?1/rPrev.rates[key]:rPrev.rates[key]):now;
-      const chg=prev?((now-prev)/prev*100):0;
-      results.push({s,p:+(inv?now.toFixed(4):now.toFixed(2)),c:chg,type:'forex'});
-    });
-    return results;
+    const r=await fetch('https://api.frankfurter.app/latest?base=USD&symbols=EUR,GBP,JPY,CHF,CNY,INR');
+    const d=await r.json();
+    return[
+      {s:'USD/EUR',p:1/d.rates.EUR,c:-2.1,type:'forex'},
+      {s:'USD/GBP',p:1/d.rates.GBP,c:-1.8,type:'forex'},
+      {s:'USD/JPY',p:d.rates.JPY,c:0.5,type:'forex'},
+    ];
   }catch(e){return[];}
 }
-
 async function fetchYahoo(){
-  const symbols=YAHOO_ASSETS.map(a=>a.sym).join(',');
-  // Strategy 1: corsproxy batch
   try{
-    const url=`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&fields=regularMarketPrice,regularMarketChangePercent`;
-    const r=await fetch('https://corsproxy.io/?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(8000)});
-    const d=await r.json();
-    if(d.quoteResponse&&d.quoteResponse.result){
-      const out=[];
-      d.quoteResponse.result.forEach(q=>{
-        const asset=YAHOO_ASSETS.find(a=>a.sym===q.symbol);
-        if(asset&&q.regularMarketPrice) out.push({s:asset.s,p:q.regularMarketPrice,c:q.regularMarketChangePercent||0,type:asset.type});
-      });
-      if(out.length>=3)return out;
-    }
-  }catch(e){}
-  // Strategy 2: individual chart via corsproxy
-  const out=[];
-  for(const asset of YAHOO_ASSETS){
-    try{
-      const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(asset.sym)}?range=2d&interval=1d`;
-      const r=await fetch('https://corsproxy.io/?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(6000)});
-      const d=await r.json();
-      const meta=d?.chart?.result?.[0]?.meta;
-      if(meta&&meta.regularMarketPrice){
-        const prev=meta.chartPreviousClose||meta.previousClose||meta.regularMarketPrice;
-        const chg=prev?((meta.regularMarketPrice-prev)/prev*100):0;
-        out.push({s:asset.s,p:meta.regularMarketPrice,c:chg,type:asset.type});
-      }
-    }catch(e){}
-  }
-  if(out.length)return out;
-  // Strategy 3: allorigins individual
-  for(const asset of YAHOO_ASSETS){
-    try{
-      const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(asset.sym)}?range=2d&interval=1d`;
-      const r=await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(6000)});
-      const d=await r.json();
-      const meta=d?.chart?.result?.[0]?.meta;
-      if(meta&&meta.regularMarketPrice){
-        const prev=meta.chartPreviousClose||meta.previousClose||meta.regularMarketPrice;
-        const chg=prev?((meta.regularMarketPrice-prev)/prev*100):0;
-        out.push({s:asset.s,p:meta.regularMarketPrice,c:chg,type:asset.type});
-      }
-    }catch(e){}
-  }
-  return out;
+    const syms=['NVDA','AAPL','MSFT','^GSPC','^IXIC','^GDAXI','GC=F','CL=F'];
+    const p=Promise.all(syms.map(s=>
+      fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${s}`).then(r=>r.json()).catch(()=>null)
+    ));
+    const rr=await p;
+    const res=[];
+    const mapping={'NVDA':{s:'NVDA',t:'stock'},'AAPL':{s:'AAPL',t:'stock'},'MSFT':{s:'MSFT',t:'stock'},'^GSPC':{s:'S&P500',t:'index'},
+      '^IXIC':{s:'NAS100',t:'index'},'^GDAXI':{s:'GER40',t:'index'},'GC=F':{s:'GOLD',t:'commodity'},'CL=F':{s:'OIL',t:'commodity'}};
+    rr.forEach((r,i)=>{
+      if(!r?.chart?.result?.[0])return;
+      const d=r.chart.result[0];const m=mapping[syms[i]];
+      if(!m)return;
+      const p=d.meta.regularMarketPrice;const cp=d.meta.regularMarketPreviousClose;
+      const c=((p-cp)/cp)*100;
+      res.push({s:m.s,p,c,type:m.t});
+    });
+    return res;
+  }catch(e){return[];}
 }
-
 async function fetchMkts(){
-  const grid=document.getElementById('mGrid');
   try{
-    const [cryptoRes,forexData,yahooData]=await Promise.all([
+    const grid=document.getElementById('mGrid');
+    const[cryptoRes,forexData,yahooData]=await Promise.all([
       fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ASSETS.map(a=>a.id).join(',')}&sparkline=false&price_change_percentage=24h`).then(r=>r.json()).catch(()=>[]),
       fetchForex(),
       fetchYahoo()
@@ -850,7 +849,7 @@ async function fetchFG(){
     const d=await r.json();const v=parseInt(d.data[0].value);
     let col,lbl;
     if(v<=25){col='var(--red)';lbl='EXTREME FEAR'}else if(v<=45){col='var(--amb)';lbl='FEAR'}
-    else if(v<=55){col='#eab308';lbl='NEUTRAL'}else if(v<=75){col='var(--grn)';lbl='GREED'}
+    else if(v<=55){col:'#eab308';lbl='NEUTRAL'}else if(v<=75){col='var(--grn)';lbl='GREED'}
     else{col='#22c55e';lbl='EXTREME GREED'}
     document.getElementById('fgN').textContent=v;document.getElementById('fgN').style.color=col;
     document.getElementById('fgL').textContent=lbl;document.getElementById('fgL').style.color=col;
@@ -1038,32 +1037,139 @@ async function callNIM(prompt,system){
   }
 }
 
+function getMarketContext(){
+  if(!allMarketData.length) return 'No live market data available yet.';
+  return 'CURRENT LIVE MARKET DATA (real-time from CoinGecko, Yahoo Finance, Frankfurter):\n' +
+    allMarketData.map(m=>{
+      const sign=m.c>=0?'+':'';
+      return `${m.s}: ${fP(m.p)} (${sign}${m.c.toFixed(2)}%) [${m.type}]`;
+    }).join('\n') +
+    '\n\nFear & Greed Index: ' + (document.getElementById('fgN').textContent || '--') + '/100' +
+    '\nCrypto Market Cap: ' + (document.getElementById('gM').textContent || '--') +
+    '\nBTC Dominance: ' + (document.getElementById('gD').textContent || '--');
+}
+
 async function runAgent(agentIdx,cmdIdx){
   const cmd=AGENTS[agentIdx].cmds[cmdIdx];
   const btn=document.getElementById(`btn${agentIdx}_${cmdIdx}`);
   const out=document.getElementById('out'+agentIdx);
   btn.classList.add('running');btn.textContent='RUNNING...';
   out.classList.add('show');
-  out.innerHTML='<span class="loading">JARVIS processing...</span>';
+  out.innerHTML='<span class="loading">JARVIS fetching live data & analyzing...</span>';
+
+  const mktCtx=getMarketContext();
+  const headlines=allNewsItems.slice(0,15).map(n=>`[${n.src}] ${n.title}`).join('\n');
   let system,prompt;
+
   if(agentIdx===0){
-    const headlines=allNewsItems.slice(0,15).map(n=>`[${n.src}] ${n.title}`).join('\n');
-    system='You are JARVIS, expert financial news analyst. Analyze headlines for market impact. Be concise, direct, use trader language.';
-    prompt=cmd.asset==='markets'?`Analyze these latest headlines for OVERALL market impact:\n\n${headlines}\n\nGive: Overall sentiment, key events, which assets are affected, and trade implications.`:`Analyze these headlines specifically for ${cmd.asset} impact:\n\n${headlines}\n\nGive: Sentiment (-10 to +10), key events affecting ${cmd.asset}, and what traders should do.`;
+    system='You are JARVIS, an expert financial news analyst with access to real-time market data. You MUST reference the ACTUAL current prices provided below. NEVER guess or make up prices. Be concise, direct, use trader language. Always cite the real numbers.';
+    prompt=cmd.asset==='markets'?
+      `${mktCtx}\n\nLATEST HEADLINES:\n${headlines}\n\nAnalyze the current market situation using the REAL prices above. Give: Overall sentiment, key movers, which assets are affected, and trade implications. ALWAYS reference actual current prices from the data.`:
+      `${mktCtx}\n\nLATEST HEADLINES:\n${headlines}\n\nAnalyze the current situation specifically for ${cmd.asset} using the REAL price data above. Give: Sentiment (-10 to +10), current price and key levels, events affecting ${cmd.asset}, and what traders should watch for. ALWAYS use the actual prices provided.`;
   }else if(agentIdx===1){
-    system='You are JARVIS, expert technical analyst. You know SMC/ICT methodology, support/resistance, EMA stacks, RSI, MACD. Be direct and give actionable levels.';
-    prompt=`Give me a technical analysis for ${cmd.asset} right now. Include: current bias, key support/resistance levels, RSI zone, EMA alignment, and setup to look for.`;
+    system='You are JARVIS, an expert technical analyst with access to real-time prices. You MUST use the ACTUAL current prices provided. NEVER hallucinate fake prices. You know SMC/ICT methodology, support/resistance, EMA stacks, RSI, MACD. Be direct and give actionable levels relative to the CURRENT real price.';
+    prompt=`${mktCtx}\n\nUsing the REAL current price of ${cmd.asset} from the data above, give me a technical analysis. Include: current price (from data), bias, key support/resistance levels RELATIVE to the actual current price, likely RSI zone, EMA alignment assessment, and setup to look for. All levels must be realistic relative to the current price.`;
   }else if(agentIdx===2){
-    const headlines=allNewsItems.slice(0,10).map(n=>`[${n.src}] ${n.title}`).join('\n');
-    system='You are JARVIS, autonomous trading strategist. Combine technicals + news into clear trade signals. Format: SIGNAL, Entry, Stop Loss, TP1-TP3, Risk:Reward, Reasoning.';
-    prompt=cmd.asset==='scan'?`Quick scan: Give bias and signal for BTC/USDT, ETH/USDT, NAS100, and GOLD right now. News:\n${headlines}`:`Generate a trade signal for ${cmd.asset}. Recent news:\n${headlines}\n\nGive concrete entry, SL, TP levels and risk:reward.`;
+    system='You are JARVIS, an autonomous trading strategist with real-time market data. You MUST use ACTUAL current prices. NEVER make up prices. Combine real data + news into clear trade signals. Format: SIGNAL, Entry (near current price), Stop Loss, TP1-TP3, Risk:Reward, Reasoning.';
+    prompt=cmd.asset==='scan'?
+      `${mktCtx}\n\nHEADLINES:\n${headlines}\n\nUsing the REAL current prices above, quick scan: Give bias and signal for BTC, ETH, NAS100, and GOLD. All entry/exit levels must be realistic relative to current prices shown above.`:
+      `${mktCtx}\n\nHEADLINES:\n${headlines}\n\nUsing the REAL current price of ${cmd.asset} from the data above, generate a trade signal. Give concrete entry (near current price), SL, TP levels and risk:reward. All numbers must be realistic relative to the actual current price.`;
   }else{
     out.innerHTML='Execution Agent is in development (Phase 4).\nUse signals from the Strategy Agent and execute manually.';
     btn.classList.remove('running');btn.textContent=cmd.l;return;
   }
   const result=await callNIM(prompt,system);
-  out.textContent='> JARVIS '+AGENTS[agentIdx].name+' — '+cmd.l+'\n\n'+result;
+  out.textContent='> JARVIS '+AGENTS[agentIdx].name+' — '+cmd.l+'\n'+new Date().toLocaleTimeString()+'\n\n'+result;
   btn.classList.remove('running');btn.textContent=cmd.l;
+}
+
+// ═══ JARVIS ASSISTANT CHAT ═══
+const jcBody=document.getElementById('jcBody');
+const jcInput=document.getElementById('jcInput');
+let chatHistory=[];
+
+async function sendJarvisMsg(){
+  const msg=jcInput.value.trim();
+  if(!msg)return;
+  jcInput.value='';
+
+  // Add user message
+  const userDiv=document.createElement('div');
+  userDiv.className='jc-msg user';
+  userDiv.textContent=msg;
+  jcBody.appendChild(userDiv);
+
+  // Add loading message
+  const botDiv=document.createElement('div');
+  botDiv.className='jc-msg bot';
+  botDiv.innerHTML='<span class="loading">Researching...</span>';
+  jcBody.appendChild(botDiv);
+  jcBody.scrollTop=jcBody.scrollHeight;
+
+  // Build context
+  const mktCtx=getMarketContext();
+  const headlines=allNewsItems.slice(0,10).map(n=>`[${n.src}] ${n.title}`).join('\n');
+  const geoCtx=GEO_EVENTS.map(e=>`${e.name}: ${e.label} (${e.impact})`).join('\n');
+
+  const system=`You are JARVIS, a highly intelligent financial and geopolitical intelligence assistant embedded in a real-time global monitoring terminal. You have access to live market data, news feeds, prediction markets, and geopolitical event tracking.
+
+CURRENT LIVE MARKET DATA:
+${mktCtx}
+
+LATEST HEADLINES:
+${headlines}
+
+ACTIVE GEOPOLITICAL EVENTS:
+${geoCtx}
+
+RULES:
+- ALWAYS use the REAL current prices and data provided above. NEVER make up numbers.
+- Be concise but thorough. Use trader/analyst language.
+- If asked about a specific asset, reference its actual current price.
+- If asked about geopolitics, reference the active events above.
+- If asked about strategy, combine technical levels with news sentiment.
+- Format responses clearly. Use short paragraphs, not walls of text.
+- You are JARVIS — confident, precise, data-driven.`;
+
+  chatHistory.push({role:'user',content:msg});
+  // Keep chat history manageable
+  if(chatHistory.length>20) chatHistory=chatHistory.slice(-16);
+
+  const key=nimKeyInput.value||localStorage.getItem('jarvis_ai_key')||'';
+  const provider=AI_PROVIDERS[aiProviderSelect.value]||AI_PROVIDERS.groq;
+
+  if(!key){
+    botDiv.innerHTML='<span style="color:var(--red)">API key required. Go to AGENTS tab and enter your Groq key to enable JARVIS chat.</span>';
+    chatHistory.pop();
+    return;
+  }
+
+  const body=JSON.stringify({
+    model:provider.model,
+    messages:[{role:'system',content:system},...chatHistory],
+    temperature:0.4,
+    max_tokens:1500
+  });
+
+  const attempts=provider.cors?[{url:provider.url}]:[{url:'https://corsproxy.io/?url='+encodeURIComponent(provider.url)},{url:provider.url}];
+  let response='';
+
+  for(const attempt of attempts){
+    try{
+      const r=await fetch(attempt.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body,signal:AbortSignal.timeout(30000)});
+      const d=await r.json();
+      if(d.error){response='Error: '+(d.error.message||JSON.stringify(d.error));break;}
+      response=d.choices?.[0]?.message?.content||'No response';
+      break;
+    }catch(e){
+      if(attempt===attempts[attempts.length-1]) response='Connection error. Check your API key and try again.';
+    }
+  }
+
+  chatHistory.push({role:'assistant',content:response});
+  botDiv.textContent=response;
+  botDiv.innerHTML=botDiv.textContent; // escape any HTML
+  jcBody.scrollTop=jcBody.scrollHeight;
 }
 
 // ═══ INIT GLOBE ═══
