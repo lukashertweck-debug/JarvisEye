@@ -282,6 +282,12 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 </div>
 </div>
 
+<!-- Route info popup -->
+<div class="popup" id="routePopup" style="width:380px">
+<div class="popup-hd"><span class="popup-title" id="routePopupTitle">---</span><button class="popup-close" onclick="document.getElementById('routePopup').classList.remove('show')">&times;</button></div>
+<div class="popup-body" id="routePopupBody"></div>
+</div>
+
 <!-- Country popup -->
 <div class="popup" id="countryPopup">
 <div class="popup-hd"><span class="popup-title" id="popupCountryName">---</span><button class="popup-close" onclick="document.getElementById('countryPopup').classList.remove('show')">&times;</button></div>
@@ -304,7 +310,7 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 <div class="st">
 <div class="si"><div class="sd"></div>SYSTEMS NOMINAL</div>
 <div class="si">GLOBE.GL v2.34.1</div>
-<div class="si">GROQ LLM</div>
+<div class="si">POLLINATIONS AI</div>
 <div class="sr">
 <span id="stMkts">MARKETS: STANDBY</span>
 <span id="stNews">INTEL: STANDBY</span>
@@ -317,11 +323,10 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 <script src="https://unpkg.com/globe.gl@2.34.1/dist/globe.gl.min.js"></script>
 <script>
 /* ====== CONFIG ====== */
-const _gk = ['gsk','_F5JqPtxNLYwQvKKCqPUY','WGdyb3FYjDkisoGqZEfMdwvhCJa2rdU0'];
-const GROQ_KEY = _gk.join('');
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+const LLM_URL = 'https://text.pollinations.ai/openai';
+const LLM_MODEL = 'openai';
 const PROXY = u => 'https://api.allorigins.win/get?url=' + encodeURIComponent(u);
-const PROXY2 = u => 'https://corsproxy.io/?' + encodeURIComponent(u);
+const RSS2JSON = u => 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(u);
 
 /* ====== STATE ====== */
 let globe, autoRotate = true, allMarketData = {}, newsItems = [];
@@ -338,52 +343,93 @@ setInterval(()=>{
 /* ====== TRANSPORT ROUTES ====== */
 const ROUTES = [
   // Oil
-  {from:'Saudi Arabia',to:'China',startLat:24.7,startLng:46.7,endLat:31.2,endLng:121.5,type:'oil',label:'SA→CN Crude',stroke:0.3},
-  {from:'Saudi Arabia',to:'Japan',startLat:24.7,startLng:46.7,endLat:35.7,endLng:139.7,type:'oil',label:'SA→JP Crude',stroke:0.25},
-  {from:'Russia',to:'China',startLat:55.8,startLng:37.6,endLat:39.9,endLng:116.4,type:'oil',label:'RU→CN Pipeline',stroke:0.3},
-  {from:'Iraq',to:'India',startLat:33.3,startLng:44.4,endLat:19.1,endLng:72.9,type:'oil',label:'IQ→IN Crude',stroke:0.25},
-  {from:'UAE',to:'South Korea',startLat:24.5,startLng:54.7,endLat:37.6,endLng:127.0,type:'oil',label:'AE→KR Crude',stroke:0.2},
-  {from:'Nigeria',to:'US',startLat:6.5,startLng:3.4,endLat:29.8,endLng:-90.0,type:'oil',label:'NG→US Crude',stroke:0.2},
-  {from:'Norway',to:'Germany',startLat:60.4,startLng:5.3,endLat:53.5,endLng:10.0,type:'oil',label:'NO→DE Oil',stroke:0.2},
-  {from:'Venezuela',to:'India',startLat:10.5,startLng:-66.9,endLat:19.1,endLng:72.9,type:'oil',label:'VE→IN Crude',stroke:0.2},
+  {from:'Saudi Arabia',to:'China',startLat:24.7,startLng:46.7,endLat:31.2,endLng:121.5,type:'oil',label:'SA→CN Crude',stroke:0.3,
+   details:{value:'~$65B/yr',volume:'1.7M barrels/day',commodity:'Crude Oil',desc:'Saudi Arabia is China\'s top oil supplier. Shipped via tankers through the Strait of Hormuz and Malacca Strait. Critical for China\'s energy security.'}},
+  {from:'Saudi Arabia',to:'Japan',startLat:24.7,startLng:46.7,endLat:35.7,endLng:139.7,type:'oil',label:'SA→JP Crude',stroke:0.25,
+   details:{value:'~$30B/yr',volume:'1.1M barrels/day',commodity:'Crude Oil',desc:'Japan imports ~95% of its oil. Saudi Arabia supplies roughly 40% of that. Essential for Japan\'s industrial base and power generation.'}},
+  {from:'Russia',to:'China',startLat:55.8,startLng:37.6,endLat:39.9,endLng:116.4,type:'oil',label:'RU→CN Pipeline',stroke:0.3,
+   details:{value:'~$50B/yr',volume:'2.0M barrels/day',commodity:'Crude Oil (Pipeline + Seaborne)',desc:'ESPO pipeline + seaborne crude. Russia became China\'s #1 oil supplier post-2022 sanctions, with deeply discounted Urals blend.'}},
+  {from:'Iraq',to:'India',startLat:33.3,startLng:44.4,endLat:19.1,endLng:72.9,type:'oil',label:'IQ→IN Crude',stroke:0.25,
+   details:{value:'~$35B/yr',volume:'1.2M barrels/day',commodity:'Crude Oil',desc:'Iraq is India\'s second-largest oil supplier after Saudi Arabia. Basra crude shipped via Persian Gulf.'}},
+  {from:'UAE',to:'South Korea',startLat:24.5,startLng:54.7,endLat:37.6,endLng:127.0,type:'oil',label:'AE→KR Crude',stroke:0.2,
+   details:{value:'~$18B/yr',volume:'0.5M barrels/day',commodity:'Crude Oil',desc:'UAE supplies ~12% of South Korea\'s crude imports. Long-term supply agreement under ADNOC partnerships.'}},
+  {from:'Nigeria',to:'US',startLat:6.5,startLng:3.4,endLat:29.8,endLng:-90.0,type:'oil',label:'NG→US Crude',stroke:0.2,
+   details:{value:'~$5B/yr',volume:'~200K barrels/day',commodity:'Light Sweet Crude',desc:'Nigerian Bonny Light is prized for its low sulfur content. Declining volumes as US shale production grows.'}},
+  {from:'Norway',to:'Germany',startLat:60.4,startLng:5.3,endLat:53.5,endLng:10.0,type:'oil',label:'NO→DE Oil',stroke:0.2,
+   details:{value:'~$15B/yr',volume:'~0.4M barrels/day',commodity:'North Sea Crude + Gas',desc:'Norway is Europe\'s largest oil & gas producer. Pipeline and tanker shipments to German refineries.'}},
+  {from:'Venezuela',to:'India',startLat:10.5,startLng:-66.9,endLat:19.1,endLng:72.9,type:'oil',label:'VE→IN Crude',stroke:0.2,
+   details:{value:'~$8B/yr',volume:'~300K barrels/day',commodity:'Heavy Crude',desc:'Indian refiners buy discounted Venezuelan Merey crude despite US sanctions. Processed at Reliance\'s Jamnagar refinery.'}},
   // Minerals
-  {from:'Australia',to:'China',startLat:-33.9,startLng:151.2,endLat:31.2,endLng:121.5,type:'mineral',label:'AU→CN Iron Ore',stroke:0.3},
-  {from:'Chile',to:'China',startLat:-33.4,startLng:-70.7,endLat:31.2,endLng:121.5,type:'mineral',label:'CL→CN Copper',stroke:0.25},
-  {from:'DRC',to:'China',startLat:-4.3,startLng:15.3,endLat:23.1,endLng:113.3,type:'mineral',label:'CD→CN Cobalt',stroke:0.25},
-  {from:'Brazil',to:'China',startLat:-23.6,startLng:-46.6,endLat:31.2,endLng:121.5,type:'mineral',label:'BR→CN Iron Ore',stroke:0.25},
-  {from:'South Africa',to:'Germany',startLat:-33.9,startLng:18.4,endLat:51.5,endLng:6.8,type:'mineral',label:'ZA→DE Platinum',stroke:0.2},
-  {from:'Indonesia',to:'China',startLat:-6.2,startLng:106.8,endLat:23.1,endLng:113.3,type:'mineral',label:'ID→CN Nickel',stroke:0.2},
+  {from:'Australia',to:'China',startLat:-33.9,startLng:151.2,endLat:31.2,endLng:121.5,type:'mineral',label:'AU→CN Iron Ore',stroke:0.3,
+   details:{value:'~$80B/yr',volume:'700M tonnes/yr',commodity:'Iron Ore',desc:'Australia supplies ~60% of China\'s iron ore. Pilbara region mines (BHP, Rio Tinto, Fortescue) feed Chinese steel mills.'}},
+  {from:'Chile',to:'China',startLat:-33.4,startLng:-70.7,endLat:31.2,endLng:121.5,type:'mineral',label:'CL→CN Copper',stroke:0.25,
+   details:{value:'~$20B/yr',volume:'~3M tonnes/yr',commodity:'Copper Ore & Concentrate',desc:'Chile holds 28% of global copper reserves. Critical for China\'s EV batteries, electronics, and construction.'}},
+  {from:'DRC',to:'China',startLat:-4.3,startLng:15.3,endLat:23.1,endLng:113.3,type:'mineral',label:'CD→CN Cobalt',stroke:0.25,
+   details:{value:'~$5B/yr',volume:'~100K tonnes/yr',commodity:'Cobalt',desc:'DRC produces 70% of world\'s cobalt. Chinese firms (CMOC, Huayou) control most mining operations. Essential for EV batteries.'}},
+  {from:'Brazil',to:'China',startLat:-23.6,startLng:-46.6,endLat:31.2,endLng:121.5,type:'mineral',label:'BR→CN Iron Ore',stroke:0.25,
+   details:{value:'~$25B/yr',volume:'~250M tonnes/yr',commodity:'Iron Ore',desc:'Vale is the world\'s largest iron ore producer. Carajás mine produces high-grade ore shipped across the Atlantic and Indian Ocean.'}},
+  {from:'South Africa',to:'Germany',startLat:-33.9,startLng:18.4,endLat:51.5,endLng:6.8,type:'mineral',label:'ZA→DE Platinum',stroke:0.2,
+   details:{value:'~$6B/yr',volume:'~150 tonnes/yr',commodity:'Platinum Group Metals',desc:'South Africa holds 80% of known PGM reserves. Critical for German auto catalytic converters and hydrogen fuel cells.'}},
+  {from:'Indonesia',to:'China',startLat:-6.2,startLng:106.8,endLat:23.1,endLng:113.3,type:'mineral',label:'ID→CN Nickel',stroke:0.2,
+   details:{value:'~$12B/yr',volume:'~1.5M tonnes/yr',commodity:'Nickel (Ore & Processed)',desc:'Indonesia is world\'s top nickel producer. Chinese-invested smelters process laterite ore for stainless steel and EV batteries.'}},
   // Coal
-  {from:'Australia',to:'India',startLat:-33.9,startLng:151.2,endLat:19.1,endLng:72.9,type:'coal',label:'AU→IN Coal',stroke:0.25},
-  {from:'Indonesia',to:'China',startLat:-6.2,startLng:106.8,endLat:31.2,endLng:121.5,type:'coal',label:'ID→CN Coal',stroke:0.25},
-  {from:'Russia',to:'India',startLat:55.0,startLng:82.9,endLat:19.1,endLng:72.9,type:'coal',label:'RU→IN Coal',stroke:0.2},
-  {from:'US',to:'EU',startLat:37.0,startLng:-80.0,endLat:51.5,endLng:3.0,type:'coal',label:'US→EU Coal',stroke:0.2},
-  {from:'South Africa',to:'India',startLat:-33.9,startLng:18.4,endLat:19.1,endLng:72.9,type:'coal',label:'ZA→IN Coal',stroke:0.2},
+  {from:'Australia',to:'India',startLat:-33.9,startLng:151.2,endLat:19.1,endLng:72.9,type:'coal',label:'AU→IN Coal',stroke:0.25,
+   details:{value:'~$18B/yr',volume:'~100M tonnes/yr',commodity:'Coking + Thermal Coal',desc:'Australian coking coal is critical for Indian steel production. NSW Hunter Valley and QLD Bowen Basin are key sources.'}},
+  {from:'Indonesia',to:'China',startLat:-6.2,startLng:106.8,endLat:31.2,endLng:121.5,type:'coal',label:'ID→CN Coal',stroke:0.25,
+   details:{value:'~$20B/yr',volume:'~200M tonnes/yr',commodity:'Thermal Coal',desc:'Indonesia is world\'s largest thermal coal exporter. Kalimantan mines ship to Chinese power plants via bulk carriers.'}},
+  {from:'Russia',to:'India',startLat:55.0,startLng:82.9,endLat:19.1,endLng:72.9,type:'coal',label:'RU→IN Coal',stroke:0.2,
+   details:{value:'~$6B/yr',volume:'~30M tonnes/yr',commodity:'Coking Coal',desc:'Russian coal exports to India surged post-2022 as India bought discounted Russian energy. Shipped from Far East ports.'}},
+  {from:'US',to:'EU',startLat:37.0,startLng:-80.0,endLat:51.5,endLng:3.0,type:'coal',label:'US→EU Coal',stroke:0.2,
+   details:{value:'~$8B/yr',volume:'~30M tonnes/yr',commodity:'Thermal + Metallurgical Coal',desc:'US coal exports to EU rose after Russian coal ban in 2022. Appalachian met coal for European steelmakers.'}},
+  {from:'South Africa',to:'India',startLat:-33.9,startLng:18.4,endLat:19.1,endLng:72.9,type:'coal',label:'ZA→IN Coal',stroke:0.2,
+   details:{value:'~$4B/yr',volume:'~25M tonnes/yr',commodity:'Thermal Coal',desc:'Richards Bay terminal exports to Indian power utilities. Volume declining as South Africa faces domestic power crisis (Eskom).'}},
   // LNG
-  {from:'Qatar',to:'Japan',startLat:25.3,startLng:51.5,endLat:35.7,endLng:139.7,type:'lng',label:'QA→JP LNG',stroke:0.3},
-  {from:'Qatar',to:'South Korea',startLat:25.3,startLng:51.5,endLat:37.6,endLng:127.0,type:'lng',label:'QA→KR LNG',stroke:0.25},
-  {from:'US',to:'EU',startLat:29.8,startLng:-90.0,endLat:51.5,endLng:3.0,type:'lng',label:'US→EU LNG',stroke:0.3},
-  {from:'Australia',to:'Japan',startLat:-20.0,startLng:134.0,endLat:35.7,endLng:139.7,type:'lng',label:'AU→JP LNG',stroke:0.25},
-  {from:'Russia',to:'China',startLat:62.0,startLng:73.4,endLat:39.9,endLng:116.4,type:'lng',label:'RU→CN Gas Pipeline',stroke:0.25},
+  {from:'Qatar',to:'Japan',startLat:25.3,startLng:51.5,endLat:35.7,endLng:139.7,type:'lng',label:'QA→JP LNG',stroke:0.3,
+   details:{value:'~$20B/yr',volume:'~35M tonnes/yr',commodity:'LNG',desc:'Qatar is world\'s largest LNG exporter. 25-year contracts with Japanese utilities. North Field expansion will increase capacity 60%.'}},
+  {from:'Qatar',to:'South Korea',startLat:25.3,startLng:51.5,endLat:37.6,endLng:127.0,type:'lng',label:'QA→KR LNG',stroke:0.25,
+   details:{value:'~$12B/yr',volume:'~20M tonnes/yr',commodity:'LNG',desc:'South Korea is world\'s 3rd largest LNG importer. KOGAS has long-term agreements with QatarEnergy through 2050.'}},
+  {from:'US',to:'EU',startLat:29.8,startLng:-90.0,endLat:51.5,endLng:3.0,type:'lng',label:'US→EU LNG',stroke:0.3,
+   details:{value:'~$35B/yr',volume:'~60M tonnes/yr',commodity:'LNG',desc:'US LNG exports to Europe surged after Russia cut pipeline gas. Sabine Pass, Freeport, Cameron LNG terminals. US now EU\'s top LNG supplier.'}},
+  {from:'Australia',to:'Japan',startLat:-20.0,startLng:134.0,endLat:35.7,endLng:139.7,type:'lng',label:'AU→JP LNG',stroke:0.25,
+   details:{value:'~$18B/yr',volume:'~30M tonnes/yr',commodity:'LNG',desc:'Australia\'s NW Shelf and Gorgon/Wheatstone projects supply Japan. Proximity makes it a reliable and fast supply source.'}},
+  {from:'Russia',to:'China',startLat:62.0,startLng:73.4,endLat:39.9,endLng:116.4,type:'lng',label:'RU→CN Gas Pipeline',stroke:0.25,
+   details:{value:'~$10B/yr',volume:'~38 BCM/yr',commodity:'Pipeline Natural Gas',desc:'Power of Siberia pipeline delivers gas from Yakutia fields. Capacity expanding to 38 BCM/yr. Power of Siberia 2 under negotiation.'}},
   // Trade deals
-  {from:'Taiwan',to:'US',startLat:25.0,startLng:121.5,endLat:37.4,endLng:-122.1,type:'trade',label:'TW→US Semiconductors',stroke:0.35},
-  {from:'Taiwan',to:'Japan',startLat:25.0,startLng:121.5,endLat:35.7,endLng:139.7,type:'trade',label:'TW→JP Chips',stroke:0.25},
-  {from:'China',to:'Africa',startLat:23.1,startLng:113.3,endLat:-1.3,endLng:36.8,type:'trade',label:'CN→KE Tech Exports',stroke:0.25},
-  {from:'US',to:'China',startLat:41.9,startLng:-87.6,endLat:31.2,endLng:121.5,type:'trade',label:'US→CN Soybeans',stroke:0.2},
-  {from:'Brazil',to:'China',startLat:-23.6,startLng:-46.6,endLat:31.2,endLng:121.5,type:'trade',label:'BR→CN Agriculture',stroke:0.25},
-  {from:'Germany',to:'US',startLat:50.1,startLng:8.7,endLat:40.7,endLng:-74.0,type:'trade',label:'DE→US Auto/Machinery',stroke:0.25},
-  {from:'Japan',to:'US',startLat:35.7,startLng:139.7,endLat:33.7,endLng:-118.2,type:'trade',label:'JP→US Electronics',stroke:0.2},
-  {from:'South Korea',to:'EU',startLat:37.6,startLng:127.0,endLat:50.8,endLng:4.4,type:'trade',label:'KR→EU EV Batteries',stroke:0.25},
+  {from:'Taiwan',to:'US',startLat:25.0,startLng:121.5,endLat:37.4,endLng:-122.1,type:'trade',label:'TW→US Semiconductors',stroke:0.35,
+   details:{value:'~$75B/yr',volume:'Advanced chips (3nm, 5nm)',commodity:'Semiconductors',desc:'TSMC produces ~90% of world\'s most advanced chips. Apple, NVIDIA, AMD all depend on Taiwan fabs. New Arizona fab under construction.'}},
+  {from:'Taiwan',to:'Japan',startLat:25.0,startLng:121.5,endLat:35.7,endLng:139.7,type:'trade',label:'TW→JP Chips',stroke:0.25,
+   details:{value:'~$25B/yr',volume:'Semiconductor components',commodity:'IC Chips & Wafers',desc:'TSMC building Kumamoto fab in Japan. Critical for Japanese auto industry (Toyota, Honda) and Sony electronics.'}},
+  {from:'China',to:'Africa',startLat:23.1,startLng:113.3,endLat:-1.3,endLng:36.8,type:'trade',label:'CN→KE Tech Exports',stroke:0.25,
+   details:{value:'~$40B/yr',volume:'Consumer electronics, infrastructure',commodity:'Tech & Telecom Equipment',desc:'Huawei, Transsion (Tecno), and Xiaomi dominate African markets. Chinese firms building 4G/5G infrastructure across the continent.'}},
+  {from:'US',to:'China',startLat:41.9,startLng:-87.6,endLat:31.2,endLng:121.5,type:'trade',label:'US→CN Soybeans',stroke:0.2,
+   details:{value:'~$20B/yr',volume:'~30M tonnes/yr',commodity:'Soybeans',desc:'US is China\'s 2nd largest soy supplier (after Brazil). Midwest farmers depend heavily on Chinese demand. Subject to trade war tariffs.'}},
+  {from:'Brazil',to:'China',startLat:-23.6,startLng:-46.6,endLat:31.2,endLng:121.5,type:'trade',label:'BR→CN Agriculture',stroke:0.25,
+   details:{value:'~$50B/yr',volume:'Soy, beef, sugar, cotton',commodity:'Agricultural Products',desc:'Brazil is China\'s top food supplier. Cerrado soybean expansion driving deforestation concerns. Also major beef and sugar exporter.'}},
+  {from:'Germany',to:'US',startLat:50.1,startLng:8.7,endLat:40.7,endLng:-74.0,type:'trade',label:'DE→US Auto/Machinery',stroke:0.25,
+   details:{value:'~$160B/yr',volume:'Vehicles, machinery, pharma',commodity:'Manufactured Goods',desc:'Germany is US\'s largest EU trade partner. BMW, Mercedes, VW export ~$40B in vehicles alone. Siemens, BASF, Bayer are major exporters.'}},
+  {from:'Japan',to:'US',startLat:35.7,startLng:139.7,endLat:33.7,endLng:-118.2,type:'trade',label:'JP→US Electronics',stroke:0.2,
+   details:{value:'~$140B/yr',volume:'Vehicles, electronics, machinery',commodity:'Auto & Electronics',desc:'Toyota, Honda, Subaru exports + US-made vehicles. Sony PlayStation, Nintendo. Japan also supplies critical auto parts and industrial robots.'}},
+  {from:'South Korea',to:'EU',startLat:37.6,startLng:127.0,endLat:50.8,endLng:4.4,type:'trade',label:'KR→EU EV Batteries',stroke:0.25,
+   details:{value:'~$30B/yr',volume:'EV batteries, semiconductors, ships',commodity:'EV Batteries & Tech',desc:'Samsung SDI and LG Energy build battery gigafactories in Hungary and Poland. Hyundai/Kia expanding EU market share with EVs.'}},
   // Big money flows
-  {from:'US',to:'Saudi Arabia',startLat:38.9,startLng:-77.0,endLat:24.7,endLng:46.7,type:'money',label:'US→SA Arms Deal $110B',stroke:0.35},
-  {from:'Russia',to:'India',startLat:55.8,startLng:37.6,endLat:28.6,endLng:77.2,type:'money',label:'RU→IN S-400 Defense',stroke:0.3},
-  {from:'China',to:'Belt & Road',startLat:39.9,startLng:116.4,endLat:41.0,endLng:28.9,type:'money',label:'CN→TR BRI Infrastructure',stroke:0.3},
-  {from:'Japan',to:'India',startLat:35.7,startLng:139.7,endLat:19.1,endLng:72.9,type:'money',label:'JP→IN Mumbai-Ahmedabad Rail',stroke:0.25},
-  {from:'Saudi Arabia',to:'US',startLat:24.7,startLng:46.7,endLat:40.7,endLng:-74.0,type:'money',label:'SA→US Investments $500B+',stroke:0.35},
-  {from:'UAE',to:'Egypt',startLat:24.5,startLng:54.7,endLat:30.0,endLng:31.2,type:'money',label:'AE→EG Ras El-Hekma $35B',stroke:0.3},
-  {from:'US',to:'Ukraine',startLat:38.9,startLng:-77.0,endLat:50.4,endLng:30.5,type:'money',label:'US→UA Military Aid $175B+',stroke:0.35},
-  {from:'EU',to:'Ukraine',startLat:50.8,startLng:4.4,endLat:50.4,endLng:30.5,type:'money',label:'EU→UA Support Pkg',stroke:0.25},
-  {from:'China',to:'Africa',startLat:39.9,startLng:116.4,endLat:6.5,endLng:3.4,type:'money',label:'CN→NG Infrastructure Loans',stroke:0.25},
+  {from:'US',to:'Saudi Arabia',startLat:38.9,startLng:-77.0,endLat:24.7,endLng:46.7,type:'money',label:'US→SA Arms Deal $110B',stroke:0.35,
+   details:{value:'$110B+',volume:'F-15 jets, missiles, naval vessels',commodity:'Arms & Defense',desc:'Largest US arms deal in history (2017). Includes Lockheed Martin THAAD, Boeing F-15SA, Raytheon Patriot missiles. Renewed under multiple administrations.'}},
+  {from:'Russia',to:'India',startLat:55.8,startLng:37.6,endLat:28.6,endLng:77.2,type:'money',label:'RU→IN S-400 Defense',stroke:0.3,
+   details:{value:'$5.4B',volume:'5 S-400 missile systems',commodity:'Air Defense Systems',desc:'India purchased S-400 Triumf despite US CAATSA sanctions threat. Deliveries ongoing. India\'s largest active defense deal with Russia.'}},
+  {from:'China',to:'Belt & Road',startLat:39.9,startLng:116.4,endLat:41.0,endLng:28.9,type:'money',label:'CN→TR BRI Infrastructure',stroke:0.3,
+   details:{value:'$1T+ (total BRI)',volume:'Ports, railways, power plants',commodity:'Infrastructure Investment',desc:'Belt & Road Initiative spans 140+ countries. Turkey corridor includes rail links, energy projects, and Huawei 5G. Total lending exceeds World Bank.'}},
+  {from:'Japan',to:'India',startLat:35.7,startLng:139.7,endLat:19.1,endLng:72.9,type:'money',label:'JP→IN Mumbai-Ahmedabad Rail',stroke:0.25,
+   details:{value:'$17B',volume:'508km high-speed rail line',commodity:'Infrastructure (Shinkansen)',desc:'Japan\'s flagship infrastructure export: bullet train from Mumbai to Ahmedabad. JICA provides 81% financing at 0.1% interest over 50 years.'}},
+  {from:'Saudi Arabia',to:'US',startLat:24.7,startLng:46.7,endLat:40.7,endLng:-74.0,type:'money',label:'SA→US Investments $500B+',stroke:0.35,
+   details:{value:'$500B+',volume:'Tech, real estate, treasury bonds',commodity:'Sovereign Wealth Investment',desc:'PIF (Public Investment Fund) invested in Lucid, Uber, and US tech. Saudi Arabia holds ~$120B in US Treasury bonds. Vision 2030 diversification.'}},
+  {from:'UAE',to:'Egypt',startLat:24.5,startLng:54.7,endLat:30.0,endLng:31.2,type:'money',label:'AE→EG Ras El-Hekma $35B',stroke:0.3,
+   details:{value:'$35B',volume:'Coastal mega-development',commodity:'Real Estate & Tourism',desc:'ADQ acquired development rights for Ras El-Hekma on Egypt\'s Mediterranean coast. Largest FDI deal in Egyptian history. Rescued Egypt from currency crisis.'}},
+  {from:'US',to:'Ukraine',startLat:38.9,startLng:-77.0,endLat:50.4,endLng:30.5,type:'money',label:'US→UA Military Aid $175B+',stroke:0.35,
+   details:{value:'$175B+',volume:'HIMARS, Patriot, Abrams, F-16 training',commodity:'Military & Humanitarian Aid',desc:'Largest US military aid since WWII Lend-Lease. Includes HIMARS, Patriot air defense, Abrams tanks, 155mm artillery. Bipartisan support wavering.'}},
+  {from:'EU',to:'Ukraine',startLat:50.8,startLng:4.4,endLat:50.4,endLng:30.5,type:'money',label:'EU→UA Support Pkg',stroke:0.25,
+   details:{value:'€100B+',volume:'Military, financial, reconstruction',commodity:'Comprehensive Support',desc:'EU support includes military aid, macro-financial assistance, and candidate country status. €50B long-term facility approved 2024. Reconstruction fund planned.'}},
+  {from:'China',to:'Africa',startLat:39.9,startLng:116.4,endLat:6.5,endLng:3.4,type:'money',label:'CN→NG Infrastructure Loans',stroke:0.25,
+   details:{value:'$170B+ (Africa total)',volume:'Railways, ports, power plants',commodity:'Development Loans',desc:'China is Africa\'s largest bilateral lender. Nigeria: Lekki Deep Sea Port, Lagos-Calabar railway. Concerns over debt-trap diplomacy and collateral seizures.'}},
 ];
 
 const TYPE_COLORS = {
@@ -503,6 +549,29 @@ function showCountryPopup(code) {
   popup.classList.add('show');
 }
 
+/* ====== ROUTE INFO POPUP ====== */
+function showRoutePopup(d) {
+  const popup = document.getElementById('routePopup');
+  const det = d.details;
+  const typeLabels = {oil:'OIL ROUTE',mineral:'MINERAL TRADE',coal:'COAL SHIPMENT',lng:'LNG SUPPLY',trade:'TRADE DEAL',money:'MONEY FLOW'};
+  const typeColors = {oil:'#f97316',mineral:'#a78bfa',coal:'#78716c',lng:'#06b6d4',trade:'#22c55e',money:'#e879f9'};
+  document.getElementById('routePopupTitle').innerHTML = `<span style="color:${typeColors[d.type]||'#3b82f6'}">${typeLabels[d.type]||'ROUTE'}</span> — ${d.from} → ${d.to}`;
+  document.getElementById('routePopupBody').innerHTML = `
+    <div style="font-size:8px;padding:3px 8px;border-radius:3px;display:inline-block;margin-bottom:6px;background:${typeColors[d.type]||'#3b82f6'}20;color:${typeColors[d.type]||'#3b82f6'};border:1px solid ${typeColors[d.type]||'#3b82f6'}30;font-weight:700;letter-spacing:1px">${det.commodity}</div>
+    <div class="popup-stat"><span class="popup-stat-label">Annual Value</span><span class="popup-stat-value" style="color:var(--grn);font-size:14px">${det.value}</span></div>
+    <div class="popup-stat"><span class="popup-stat-label">Volume</span><span class="popup-stat-value">${det.volume}</span></div>
+    <div class="popup-section">
+      <div class="popup-section-title">ANALYSIS</div>
+      <div style="font-size:9px;color:var(--txt);line-height:1.6">${det.desc}</div>
+    </div>`;
+  popup.style.top = '120px';
+  popup.style.left = '50%';
+  popup.style.transform = 'translateX(-50%)';
+  popup.classList.add('show');
+  // Close country popup if open
+  document.getElementById('countryPopup').classList.remove('show');
+}
+
 /* ====== ARCS UPDATE ====== */
 function updateArcs() {
   if (!globe) return;
@@ -528,7 +597,8 @@ function initGlobe() {
     .arcColor(d=>TYPE_COLORS[d.type]||'rgba(59,130,246,0.3)')
     .arcStroke(d=>d.stroke||0.15)
     .arcDashLength(0.4).arcDashGap(0.3).arcDashAnimateTime(()=>Math.random()*4000+2000)
-    .arcLabel(d=>`<div style="font-family:JetBrains Mono;font-size:10px;background:rgba(4,6,10,.9);padding:4px 8px;border-radius:3px;border:1px solid rgba(59,130,246,.2);color:#fff">${d.label}</div>`)
+    .arcLabel(d=>`<div style="font-family:JetBrains Mono;font-size:10px;background:rgba(4,6,10,.9);padding:4px 8px;border-radius:3px;border:1px solid rgba(59,130,246,.2);color:#fff">${d.label}${d.details?' — click for details':''}</div>`)
+    .onArcClick(d=>{if(d.details)showRoutePopup(d);})
     // Points (geo events)
     .pointsData(GEO_EVENTS)
     .pointLat(d=>d.lat).pointLng(d=>d.lng)
@@ -595,28 +665,25 @@ async function fetchNews() {
   let items = [];
   for (const feed of feeds) {
     try {
-      const r = await fetch(PROXY(feed.url));
+      // Use rss2json for reliable JSON parsing (no XML needed)
+      const r = await fetch(RSS2JSON(feed.url));
       const j = await r.json();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(j.contents,'text/xml');
-      const entries = doc.querySelectorAll('item');
-      entries.forEach((e,i) => {
-        if(i<8){
-          const title = e.querySelector('title')?.textContent||'';
-          const link = e.querySelector('link')?.textContent||'';
-          const pubDate = e.querySelector('pubDate')?.textContent||'';
+      if(j.status==='ok' && j.items){
+        j.items.slice(0,8).forEach(e => {
+          const title = e.title||'';
+          const link = e.link||'';
+          const pubDate = e.pubDate||'';
           let sentiment = 'ne';
           const lower = title.toLowerCase();
           if(/surge|rally|boom|growth|peace|deal|record high|agreement/.test(lower)) sentiment='bu';
           else if(/crash|war|kill|attack|crisis|sanction|collapse|threat/.test(lower)) sentiment='be';
-          // Find geo location for news
           let geo = null;
           for (const [kw, coords] of Object.entries(GEO_KEYWORDS)) {
             if(lower.includes(kw)){geo=coords;break;}
           }
           items.push({title,link,src:feed.src,sentiment,time:pubDate?new Date(pubDate).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'',geo});
-        }
-      });
+        });
+      }
     } catch(e){console.log('Feed error:',feed.src,e)}
   }
   newsItems = items;
@@ -649,22 +716,24 @@ function addNewsToGlobe(items) {
 
 /* ====== POLYMARKET ====== */
 async function fetchPolymarket() {
-  try {
-    const url = 'https://gamma-api.polymarket.com/markets?closed=false&limit=15&order=volume&ascending=false';
-    let data;
-    try {
-      const r = await fetch(PROXY(url));
-      const j = await r.json();
-      data = JSON.parse(j.contents);
-    } catch(e) {
-      const r2 = await fetch(PROXY2(url));
-      data = await r2.json();
-    }
-    renderPredictions(data);
-  } catch(e){
-    console.log('Polymarket error:',e);
-    document.getElementById('pFeed').innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">PREDICTION FEED UNAVAILABLE</div>';
+  const url = 'https://gamma-api.polymarket.com/markets?closed=false&limit=15&order=volume&ascending=false';
+  // Try multiple proxy approaches
+  const attempts = [
+    async()=>{const r=await fetch(PROXY(url));const j=await r.json();return JSON.parse(j.contents);},
+    async()=>{const r=await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url));return await r.json();},
+  ];
+  for(const attempt of attempts){
+    try{
+      const data = await attempt();
+      if(data&&data.length){renderPredictions(data);return;}
+    }catch(e){console.log('Polymarket attempt failed:',e)}
   }
+  document.getElementById('pFeed').innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">PREDICTION FEED UNAVAILABLE — RETRYING...</div>';
+  // Retry once after 5s
+  setTimeout(async()=>{
+    try{const r=await fetch(PROXY(url));const j=await r.json();renderPredictions(JSON.parse(j.contents));}
+    catch(e){document.getElementById('pFeed').innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">PREDICTION FEED UNAVAILABLE</div>';}
+  },5000);
 }
 
 function renderPredictions(markets) {
@@ -797,6 +866,18 @@ function initAgents(){
     </div>`).join('');
 }
 
+async function callLLM(systemPrompt, userMsg){
+  const r = await fetch(LLM_URL,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:LLM_MODEL,messages:[
+      {role:'system',content:systemPrompt},
+      {role:'user',content:userMsg}
+    ],temperature:0.7,max_tokens:500})
+  });
+  const d = await r.json();
+  return d.choices?.[0]?.message?.content||'No response received.';
+}
+
 async function runAgent(id, prompt, btn){
   const out = document.getElementById('out-'+id);
   out.classList.add('show');
@@ -805,15 +886,8 @@ async function runAgent(id, prompt, btn){
   const agent = AGENTS.find(a=>a.id===id);
   const ctx = getMarketContext();
   try{
-    const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-      body:JSON.stringify({model:GROQ_MODEL,messages:[
-        {role:'system',content:agent.system+'\n\n'+ctx},
-        {role:'user',content:prompt}
-      ],temperature:0.7,max_tokens:500})
-    });
-    const d = await r.json();
-    out.textContent = d.choices?.[0]?.message?.content||'No response';
+    const reply = await callLLM(agent.system+'\n\n'+ctx, prompt);
+    out.textContent = reply;
   }catch(e){out.textContent='Error: '+e.message;}
   if(btn){btn.classList.remove('running');btn.textContent=prompt;}
 }
@@ -832,19 +906,8 @@ async function sendJarvisMsg(){
   const ctx = getMarketContext();
   const recentNews = newsItems.slice(0,5).map(n=>n.title).join('; ');
   try{
-    const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-      body:JSON.stringify({model:GROQ_MODEL,messages:[
-        {role:'system',content:`You are JARVIS, an elite AI intelligence assistant. You have access to real-time data. Use the market data and news provided. Be precise, concise, and actionable. Never fabricate prices or data - if you don't have data, say so.
-
-${ctx}
-
-RECENT NEWS: ${recentNews||'No news loaded yet.'}`},
-        {role:'user',content:msg}
-      ],temperature:0.7,max_tokens:800})
-    });
-    const d = await r.json();
-    const reply = d.choices?.[0]?.message?.content||'Unable to process request.';
+    const sysPrompt = `You are JARVIS, an elite AI intelligence assistant. You have access to real-time data. Use the market data and news provided. Be precise, concise, and actionable. Never fabricate prices or data - if you don't have data, say so.\n\n${ctx}\n\nRECENT NEWS: ${recentNews||'No news loaded yet.'}`;
+    const reply = await callLLM(sysPrompt, msg);
     const loading = document.getElementById('jcLoading');
     if(loading){loading.id='';loading.innerHTML=reply;}
   }catch(e){
