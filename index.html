@@ -282,6 +282,28 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 </div>
 </div>
 
+<!-- SETTINGS -->
+<div class="panel" id="panelSettings" style="width:380px;height:auto;top:50%;left:50%;transform:translate(-50%,-50%)">
+<div class="panel-hd"><span class="panel-dot" style="background:var(--amb)"></span><span class="panel-title">Settings</span>
+<button class="panel-close" onclick="togglePanel('Settings')">&times;</button></div>
+<div class="panel-body" style="padding:14px">
+<div style="font-size:8px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:8px">AI PROVIDER</div>
+<div style="font-size:9px;color:var(--txt);line-height:1.6;margin-bottom:10px">
+JARVIS uses <span style="color:var(--cyan)">Pollinations AI</span> (free, no key needed) by default. For faster and more reliable responses, add your own <span style="color:var(--grn)">Groq API key</span> — it's free at <a href="https://console.groq.com" target="_blank" style="color:var(--blue);text-decoration:underline">console.groq.com</a>.
+</div>
+<div style="display:flex;gap:6px;margin-bottom:8px">
+<input id="groqKeyInput" type="password" placeholder="Paste Groq API key (gsk_...)" style="flex:1;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:7px 10px;border-radius:4px;outline:none">
+<button onclick="saveGroqKey()" style="font-family:var(--f);font-size:8px;padding:6px 12px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2);color:var(--grn);border-radius:4px;cursor:pointer;letter-spacing:1px;font-weight:700">SAVE</button>
+</div>
+<div id="groqStatus" style="font-size:8px;color:var(--t2);margin-bottom:6px"></div>
+<div style="font-size:7px;color:var(--t3);line-height:1.6">Key is stored in browser memory only — never sent to any server except Groq's API. Cleared when you close the tab.</div>
+<div style="border-top:1px solid var(--bdr);margin-top:12px;padding-top:10px">
+<div style="font-size:8px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:6px">AI STATUS</div>
+<div id="aiStatusDisplay" style="font-size:9px;color:var(--txt);line-height:1.6"></div>
+</div>
+</div>
+</div>
+
 <!-- Route info popup -->
 <div class="popup" id="routePopup" style="width:380px">
 <div class="popup-hd"><span class="popup-title" id="routePopupTitle">---</span><button class="popup-close" onclick="document.getElementById('routePopup').classList.remove('show')">&times;</button></div>
@@ -303,6 +325,8 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 <button class="tb-btn" onclick="togglePanel('Agents')"><span class="dot" style="background:#a78bfa"></span>AGENTS</button>
 <div class="tb-sep"></div>
 <button class="tb-btn" id="rotateBtn" onclick="toggleRotation()">&#x21BB; AUTO-ROTATE</button>
+<div class="tb-sep"></div>
+<button class="tb-btn" onclick="togglePanel('Settings')">&#x2699; SETTINGS</button>
 </div>
 </div>
 
@@ -323,15 +347,14 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 <script src="https://unpkg.com/globe.gl@2.34.1/dist/globe.gl.min.js"></script>
 <script>
 /* ====== CONFIG ====== */
-const LLM_URL = 'https://text.pollinations.ai/openai';
-const LLM_MODEL = 'openai';
+let userGroqKey = ''; // User can set via settings gear
 const PROXY = u => 'https://api.allorigins.win/get?url=' + encodeURIComponent(u);
 const RSS2JSON = u => 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(u);
 
 /* ====== STATE ====== */
 let globe, autoRotate = true, allMarketData = {}, newsItems = [];
 const activeLayers = {oil:true,mineral:true,coal:true,lng:true,trade:true,money:true,news:true};
-const panelState = {Intel:false,Pred:false,Markets:false,Jarvis:false,Agents:false};
+const panelState = {Intel:false,Pred:false,Markets:false,Jarvis:false,Agents:false,Settings:false};
 
 /* ====== CLOCK ====== */
 setInterval(()=>{
@@ -500,6 +523,34 @@ function togglePanel(name) {
     const btns = document.querySelectorAll('.tb-btn');
     const idx = {Intel:0,Pred:1,Markets:2,Jarvis:3,Agents:4}[name];
     if (idx !== undefined && btns[idx]) btns[idx].classList.add('active');
+  }
+}
+
+async function saveGroqKey(){
+  const input = document.getElementById('groqKeyInput');
+  const key = input.value.trim();
+  const status = document.getElementById('groqStatus');
+  if(!key){userGroqKey='';status.innerHTML='<span style="color:var(--amb)">Key cleared — using Pollinations (free)</span>';updateAiStatus();return;}
+  status.innerHTML='<span class="loading">Testing key...</span>';
+  try{
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:'Hi'}],max_tokens:5})
+    });
+    const d = await r.json();
+    if(d.choices){userGroqKey=key;status.innerHTML='<span style="color:var(--grn)">✓ Key valid — using Groq (fast)</span>';}
+    else{status.innerHTML='<span style="color:var(--red)">✗ Invalid key: '+(d.error?.message||'Unknown error')+'</span>';}
+  }catch(e){status.innerHTML='<span style="color:var(--red)">✗ Connection error</span>';}
+  updateAiStatus();
+}
+
+function updateAiStatus(){
+  const el = document.getElementById('aiStatusDisplay');
+  if(!el)return;
+  if(userGroqKey){
+    el.innerHTML='Provider: <span style="color:var(--grn);font-weight:700">Groq</span> (Llama 3.3 70B) — fast & reliable';
+  }else{
+    el.innerHTML='Provider: <span style="color:var(--cyan);font-weight:700">Pollinations</span> (free) — may be slow or retry on server errors';
   }
 }
 
@@ -867,15 +918,53 @@ function initAgents(){
 }
 
 async function callLLM(systemPrompt, userMsg){
-  const r = await fetch(LLM_URL,{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:LLM_MODEL,messages:[
-      {role:'system',content:systemPrompt},
-      {role:'user',content:userMsg}
-    ],temperature:0.7,max_tokens:500})
-  });
-  const d = await r.json();
-  return d.choices?.[0]?.message?.content||'No response received.';
+  const msgs = [{role:'system',content:systemPrompt},{role:'user',content:userMsg}];
+
+  // Provider 1: User's own Groq key (if set)
+  if(userGroqKey){
+    try{
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+        method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+userGroqKey},
+        body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,temperature:0.7,max_tokens:500})
+      });
+      const d = await r.json();
+      if(d.choices?.[0]?.message?.content) return d.choices[0].message.content;
+    }catch(e){console.log('Groq error:',e)}
+  }
+
+  // Provider 2: Pollinations (free, CORS, no key) — retry up to 3 times
+  for(let attempt=0;attempt<3;attempt++){
+    try{
+      const r = await fetch('https://text.pollinations.ai/',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({messages:msgs,model:'openai',jsonMode:false})
+      });
+      if(!r.ok){
+        if(attempt<2){await new Promise(ok=>setTimeout(ok,2000));continue;}
+        throw new Error('HTTP '+r.status);
+      }
+      const text = await r.text();
+      // Pollinations returns plain text or JSON depending on endpoint
+      try{const j=JSON.parse(text);if(j.choices?.[0]?.message?.content)return j.choices[0].message.content;if(j.error)throw new Error(j.error);}catch(e){}
+      if(text && text.length>2 && !text.includes('"error"')) return text;
+      if(attempt<2) await new Promise(ok=>setTimeout(ok,2000));
+    }catch(e){
+      console.log('Pollinations attempt '+(attempt+1)+' error:',e);
+      if(attempt<2) await new Promise(ok=>setTimeout(ok,2000));
+    }
+  }
+
+  // Provider 3: Pollinations /openai endpoint as final fallback
+  try{
+    const r = await fetch('https://text.pollinations.ai/openai',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'openai',messages:msgs,temperature:0.7,max_tokens:500})
+    });
+    const d = await r.json();
+    if(d.choices?.[0]?.message?.content) return d.choices[0].message.content;
+  }catch(e){console.log('Pollinations /openai fallback error:',e)}
+
+  return 'AI temporarily unavailable. Tip: click the ⚙ icon and add a free Groq API key (console.groq.com) for reliable access.';
 }
 
 async function runAgent(id, prompt, btn){
@@ -921,6 +1010,7 @@ async function sendJarvisMsg(){
 window.addEventListener('DOMContentLoaded',()=>{
   initGlobe();
   initAgents();
+  updateAiStatus();
   fetchNews();
   fetchPolymarket();
   fetchMarkets();
