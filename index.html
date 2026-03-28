@@ -13,8 +13,6 @@
 --oil:#f97316;--mineral:#a78bfa;--coal:#78716c;--lng:#06b6d4;--news:#3b82f6}
 html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f);font-size:11px;overflow:hidden}
 .app{display:grid;height:100vh;grid-template-rows:44px 1fr 26px;grid-template-areas:"hd" "main" "st"}
-
-/* Header */
 .hd{grid-area:hd;background:var(--bg);display:flex;align-items:center;padding:0 16px;gap:14px;border-bottom:1px solid var(--bdr)}
 .logo{display:flex;align-items:center;gap:8px}
 .logo-r{width:22px;height:22px;border:1.5px solid var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative}
@@ -31,20 +29,12 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .live::before{content:'';width:5px;height:5px;background:var(--grn);border-radius:50%;animation:bk 1.5s infinite}
 @keyframes bk{0%,100%{opacity:1}50%{opacity:.2}}
 #ck{color:#fff;font-weight:500;font-size:11px;letter-spacing:1px}
-
-/* Pages */
 .page{display:none;height:100%}.page.on{display:grid}
-
-/* ═══ OVERVIEW — 3 columns + chat row ═══ */
-.overview{grid-area:main;grid-template-columns:280px 1fr 280px;grid-template-rows:1fr 180px;gap:0;background:var(--bg)}
-
-/* Left column */
-.ov-left{display:flex;flex-direction:column;border-right:1px solid var(--bdr);overflow:hidden}
-.ov-left-feed{height:65%;display:flex;flex-direction:column;overflow:hidden;border-bottom:1px solid var(--bdr)}
-.ov-left-pred{height:35%;display:flex;flex-direction:column;overflow:hidden}
-
-/* Center */
-.ov-center{position:relative;background:var(--bg);display:flex;flex-direction:column}
+.overview{grid-area:main;grid-template-columns:280px 1fr 280px;grid-template-rows:1fr 160px;gap:0;background:var(--bg)}
+.ov-left{grid-column:1;grid-row:1;display:flex;flex-direction:column;border-right:1px solid var(--bdr);overflow:hidden}
+.ov-left-feed{height:60%;display:flex;flex-direction:column;overflow:hidden;border-bottom:1px solid var(--bdr)}
+.ov-left-pred{height:40%;display:flex;flex-direction:column;overflow:hidden}
+.ov-center{grid-column:2;grid-row:1;position:relative;background:var(--bg);display:flex;flex-direction:column}
 .globe-filter-bar{display:flex;align-items:center;gap:4px;padding:6px 10px;background:var(--bg2);border-bottom:1px solid var(--bdr);flex-shrink:0;flex-wrap:wrap;z-index:10}
 .gf-label{font-size:7px;color:var(--t2);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-right:4px}
 .gf-btn{font-family:var(--f);font-size:7.5px;padding:3px 10px;background:var(--bg);border:1px solid var(--bdr);color:var(--t2);border-radius:10px;cursor:pointer;letter-spacing:.5px;transition:.15s;display:flex;align-items:center;gap:4px}
@@ -55,9 +45,12 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .gf-country{font-family:var(--f);font-size:7px;padding:2px 8px;background:var(--bg);border:1px solid var(--bdr);color:var(--t2);border-radius:3px;cursor:pointer;letter-spacing:.5px;transition:.15s}
 .gf-country:hover{border-color:rgba(59,130,246,.3);color:var(--txt)}
 .gf-country.on{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08)}
-
 .globe-wrap{flex:1;position:relative;overflow:hidden}
 #globeViz{width:100%;height:100%}
+.globe-ctrl{position:absolute;top:10px;right:10px;z-index:15;display:flex;gap:4px;overflow:visible}
+.gc-btn{font-family:var(--f);font-size:7px;padding:4px 10px;background:rgba(4,6,10,.85);border:1px solid var(--bdr);color:var(--t2);border-radius:3px;cursor:pointer;letter-spacing:.5px;transition:.15s}
+.gc-btn:hover{border-color:rgba(59,130,246,.3);color:var(--txt)}
+.gc-btn.on{border-color:var(--cyan);color:var(--cyan)}
 .globe-stats{position:absolute;bottom:12px;left:16px;display:flex;gap:16px;pointer-events:none;z-index:5}
 .gs{display:flex;flex-direction:column;gap:2px;background:rgba(4,6,10,.85);padding:6px 10px;border-radius:4px;border:1px solid var(--bdr)}
 .gs-v{font-size:14px;font-weight:700;color:#fff;line-height:1}
@@ -65,22 +58,16 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .globe-legend{position:absolute;bottom:12px;right:16px;display:flex;flex-direction:column;gap:3px;pointer-events:none;z-index:5;background:rgba(4,6,10,.85);padding:8px 10px;border-radius:4px;border:1px solid var(--bdr)}
 .gl-item{display:flex;align-items:center;gap:5px;font-size:6.5px;color:var(--t2);letter-spacing:.5px}
 .gl-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-
-/* Right column */
-.ov-right{display:flex;flex-direction:column;border-left:1px solid var(--bdr);overflow:hidden}
+.ov-right{grid-column:3;grid-row:1;display:flex;flex-direction:column;border-left:1px solid var(--bdr);overflow:hidden}
 .ov-right-mkts{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .ov-right-fg{padding:10px 12px;border-top:1px solid var(--bdr);background:var(--bg2)}
-
-/* Panel headers — CIA style */
 .ph{padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bdr);flex-shrink:0;background:var(--bg2);position:relative}
 .ph::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--blue)}
 .pt{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--blue)}
 .pb{font-size:7px;padding:2px 8px;border-radius:10px;font-weight:600;letter-spacing:.5px}
-.pbody{flex:1;overflow-y:auto;padding:8px 12px}
+.pbody{flex:1;overflow-y:auto;padding:8px 12px;min-height:0}
 .pbody::-webkit-scrollbar{width:3px}
 .pbody::-webkit-scrollbar-thumb{background:rgba(59,130,246,.15);border-radius:2px}
-
-/* News items */
 .ni{padding:8px 0;border-bottom:1px solid rgba(59,130,246,.04);cursor:pointer;transition:.15s}
 .ni:hover{background:rgba(59,130,246,.04);margin:0 -12px;padding:8px 12px;border-left:2px solid var(--blue)}
 .nm{display:flex;align-items:center;gap:6px;margin-bottom:3px}
@@ -89,18 +76,14 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .nse.bu{background:rgba(34,197,94,.12);color:var(--grn);border:1px solid rgba(34,197,94,.2)}
 .nse.be{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
 .nse.ne{background:rgba(245,158,11,.08);color:var(--amb);border:1px solid rgba(245,158,11,.15)}
-.nt{font-size:7px;color:var(--t3);margin-left:auto}
+.nt{font-size:6px;color:var(--t3);margin-left:auto}
 .ntxt{font-size:10px;color:var(--txt);line-height:1.5;font-weight:400}
-
-/* Prediction items */
 .pred-item{padding:8px 0;border-bottom:1px solid rgba(59,130,246,.04);cursor:pointer;transition:.15s}
 .pred-item:hover{background:rgba(59,130,246,.04);margin:0 -12px;padding:8px 12px}
 .pred-q{font-size:10px;color:#fff;line-height:1.4;margin-bottom:5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .pred-bar{background:rgba(255,255,255,.03);border-radius:3px;height:18px;overflow:hidden;margin-bottom:4px;position:relative;border:1px solid var(--bdr)}
 .pred-fill{height:100%;display:flex;align-items:center;padding:0 6px;font-size:8px;font-weight:700;color:#fff;letter-spacing:.5px;transition:width .5s}
 .pred-stats{display:flex;justify-content:space-between;font-size:7.5px;color:var(--t2);font-weight:500}
-
-/* Market cards */
 .mkts{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:2px}
 .mc{background:var(--bg);border:1px solid var(--bdr);border-radius:4px;padding:8px 10px;cursor:pointer;transition:.2s}
 .mc:hover{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.03);box-shadow:0 0 12px rgba(59,130,246,.08)}
@@ -110,15 +93,11 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .mc-c.up{color:var(--grn)}.mc-c.dn{color:var(--red)}
 .mc-p{font-size:15px;font-weight:700;color:#fff;line-height:1;letter-spacing:-.3px}
 .mc-l{font-size:6px;color:var(--t2);margin-top:2px;letter-spacing:1px;text-transform:uppercase}
-
-/* Fear gauge */
 .fg-r{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
 .fg-n{font-size:20px;font-weight:700;line-height:1}
 .fg-l{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
 .fg-bar{height:4px;background:rgba(255,255,255,.03);border-radius:2px;overflow:hidden;border:1px solid var(--bdr)}
 .fg-fill{height:100%;border-radius:2px;transition:width 1s}
-
-/* Popup — large infocenter */
 .popup{position:absolute;z-index:20;background:rgba(4,6,10,.97);border:1px solid var(--bdr);border-radius:6px;width:380px;max-height:500px;overflow-y:auto;backdrop-filter:blur(16px);display:none;box-shadow:0 8px 32px rgba(0,0,0,.6)}
 .popup.show{display:block;animation:popIn .2s}
 @keyframes popIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -138,25 +117,18 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .popup-badge.forex{background:rgba(245,158,11,.1);color:var(--amb);border:1px solid rgba(245,158,11,.2)}
 .popup-badge.commodity{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
 .popup-badge.etf{background:rgba(139,92,246,.1);color:#8b5cf6;border:1px solid rgba(139,92,246,.2)}
+.popup-badge.stock{background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
 .popup-section{border-top:1px solid var(--bdr);padding-top:8px}
 .popup-section-title{font-size:7px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:6px}
 .popup-resource{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:9px;color:var(--txt)}
 .popup-resource .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-
-/* Globe rotation toggle */
-.globe-ctrl{position:absolute;top:12px;right:16px;z-index:10;display:flex;gap:4px}
-.gc-btn{font-family:var(--f);font-size:7px;padding:4px 10px;background:rgba(4,6,10,.85);border:1px solid var(--bdr);color:var(--t2);border-radius:3px;cursor:pointer;letter-spacing:.5px;transition:.15s}
-.gc-btn:hover{border-color:rgba(59,130,246,.3);color:var(--txt)}
-.gc-btn.on{border-color:var(--cyan);color:var(--cyan)}
-
-/* JARVIS Assistant chat */
-.jarvis-chat{grid-column:1/-1;border-top:1px solid var(--bdr);display:flex;flex-direction:column;background:var(--bg2);overflow:hidden}
+.jarvis-chat{grid-column:1/-1;grid-row:2;border-top:1px solid var(--bdr);display:flex;flex-direction:column;background:var(--bg2);overflow:hidden}
 .jc-hd{padding:6px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bdr);flex-shrink:0;background:var(--bg2);position:relative}
 .jc-hd::before{content:'';width:2px;height:100%;background:var(--cyan);position:absolute;left:0}
 .jc-title{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--cyan)}
 .jc-status{font-size:7px;color:var(--grn);margin-left:auto;display:flex;align-items:center;gap:4px}
 .jc-status::before{content:'';width:4px;height:4px;background:var(--grn);border-radius:50%;animation:bk 1.5s infinite}
-.jc-body{flex:1;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:6px}
+.jc-body{flex:1;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:6px;min-height:0}
 .jc-body::-webkit-scrollbar{width:3px}
 .jc-body::-webkit-scrollbar-thumb{background:rgba(6,182,212,.15);border-radius:2px}
 .jc-msg{max-width:85%;padding:6px 10px;border-radius:6px;font-size:9px;line-height:1.6;animation:fadeIn .2s}
@@ -169,8 +141,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .jc-input::placeholder{color:var(--t3)}
 .jc-send{font-family:var(--f);font-size:8px;padding:6px 14px;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.2);color:var(--cyan);border-radius:4px;cursor:pointer;letter-spacing:1px;font-weight:700;transition:.15s}
 .jc-send:hover{background:rgba(6,182,212,.2);color:#fff}
-
-/* ═══ AGENTS PAGE ═══ */
 .agents-page{grid-template-columns:1fr 1fr;grid-template-rows:1fr;gap:1px;background:var(--bdr)}
 .agent-card{background:var(--bg2);padding:14px}
 .ac-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bdr)}
@@ -189,8 +159,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .ac-out .loading{color:var(--blue);animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-
-/* AI config bar */
 .nim-cfg{padding:6px 12px;background:var(--bg);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;font-size:9px;flex-wrap:wrap}
 .nim-cfg label{color:var(--t2);font-size:8px;letter-spacing:.5px}
 .nim-cfg input{background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:4px 8px;border-radius:3px;flex:1;max-width:280px}
@@ -198,22 +166,16 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .nim-cfg select{background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:4px 8px;border-radius:3px;cursor:pointer}
 .nim-cfg select:focus{outline:none;border-color:var(--blue)}
 .nim-cfg .nim-status{margin-left:8px;font-size:8px}
-
-/* Status bar */
 .st{grid-area:st;background:var(--bg);display:flex;align-items:center;padding:0 14px;gap:14px;font-size:7.5px;color:var(--t3);letter-spacing:.5px;border-top:1px solid var(--bdr)}
 .si{display:flex;align-items:center;gap:3px}
 .sd{width:4px;height:4px;border-radius:50%;background:var(--grn)}
 .sr{margin-left:auto;display:flex;gap:12px}
-
-/* Scanline overlay */
 .globe-wrap::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
 background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,130,246,.006) 2px,rgba(59,130,246,.006) 4px);z-index:1}
 </style>
 </head>
 <body>
 <div class="app">
-
-<!-- HEADER -->
 <div class="hd">
 <div class="logo"><div class="logo-r"></div><div class="logo-t">JARVIS</div></div>
 <div class="sep"></div>
@@ -227,11 +189,7 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,13
 <span id="dt">---</span>
 </div>
 </div>
-
-<!-- ═══ OVERVIEW PAGE ═══ -->
 <div class="page overview on" id="pg-overview">
-
-<!-- LEFT: Intel Feed + Predictions -->
 <div class="ov-left">
 <div class="ov-left-feed">
 <div class="ph"><span class="pt">Intel Feed</span><span class="pb" style="background:rgba(59,130,246,.1);color:var(--blue)" id="nCnt">0</span></div>
@@ -242,8 +200,6 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,13
 <div class="pbody" id="pFeed"><div style="color:var(--t2);text-align:center;padding:20px;font-size:9px;letter-spacing:2px">CONNECTING...</div></div>
 </div>
 </div>
-
-<!-- CENTER: Globe + Filters -->
 <div class="ov-center">
 <div class="globe-filter-bar">
 <span class="gf-label">Layers:</span>
@@ -293,8 +249,6 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,13
 </div>
 </div>
 </div>
-
-<!-- RIGHT: Markets + Fear&Greed -->
 <div class="ov-right">
 <div class="ov-right-mkts">
 <div class="ph"><span class="pt">Markets</span></div>
@@ -306,8 +260,6 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,13
 <div style="font-size:6px;color:var(--t3);letter-spacing:1px;margin-top:4px;text-align:center">FEAR & GREED INDEX</div>
 </div>
 </div>
-
-<!-- JARVIS Assistant -->
 <div class="jarvis-chat">
 <div class="jc-hd"><span class="jc-title">JARVIS Assistant</span><span class="jc-status">ONLINE</span></div>
 <div class="jc-body" id="jcBody">
@@ -319,8 +271,6 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,13
 </div>
 </div>
 </div>
-
-<!-- ═══ AGENTS PAGE ═══ -->
 <div class="page agents-page" id="pg-agents">
 <div style="display:flex;flex-direction:column;gap:1px;background:var(--bdr)">
 <div class="nim-cfg">
@@ -342,776 +292,71 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,13
 <div class="agent-card" style="flex:1" id="agent3"></div>
 </div>
 </div>
-
-<!-- STATUS -->
 <div class="st">
 <div class="si"><div class="sd"></div>AI ENGINE</div>
 <div class="si"><div class="sd"></div>COINGECKO</div>
 <div class="si"><div class="sd"></div>RSS FEEDS</div>
 <div class="si"><div class="sd"></div>POLYMARKET</div>
 <div class="si"><div class="sd"></div>TRANSPORT DATA</div>
-<div class="sr"><span>JARVIS v3.3</span><span id="up">00:00</span></div>
+<div class="sr"><span>JARVIS v3.4</span><span id="up">00:00</span></div>
 </div>
 </div>
-
-<!-- Globe.gl -->
 <script src="https://unpkg.com/globe.gl@2.34.1/dist/globe.gl.min.js"></script>
 <script>
-// ═══ CLOCK ═══
-const T0=Date.now();
-setInterval(()=>{
-  const n=new Date();
-  document.getElementById('ck').textContent=n.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  document.getElementById('dt').textContent=n.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'});
-  const u=Math.floor((Date.now()-T0)/1000);
-  document.getElementById('up').textContent=String(Math.floor(u/60)).padStart(2,'0')+':'+String(u%60).padStart(2,'0');
-},1000);
-
-// ═══ PAGE SWITCHING ═══
-function showPage(id,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.getElementById('pg-'+id).classList.add('on');
-  btn.classList.add('on');
-  if(id==='overview'&&globe) globe.controls().update();
-}
-
-// ═══ GEO-POLITICAL EVENTS (static intel) ═══
-const GEO_EVENTS=[
-  {lat:38.9,lng:-77,name:'United States',cc:'US',label:'Tariffs & Fed Policy',desc:'New tariff expansion targeting China and EU. Fed holds rates hawkish, cuts delayed to H2 2026. Dollar strength pressuring risk assets globally.',color:'#ef4444',impact:'BEARISH',assets:['NAS100','S&P500','DXY','BTC','EUR/USD'],layer:'events'},
-  {lat:32.4,lng:53.7,name:'Iran',cc:'IR',label:'US-Iran Military Tensions',desc:'Brent crude surged past $114/bbl. Strait of Hormuz military posturing. Global risk-off triggered across all asset classes.',color:'#ef4444',impact:'BEARISH',assets:['OIL','GOLD','BTC','GER40','NAS100'],layer:'events'},
-  {lat:50.1,lng:8.7,name:'European Union',cc:'EU',label:'ECB DeFi Regulation & Rates',desc:'ECB paper warns DeFi governance "concentrated". New EU crypto framework likely. Rate decision pending with inflation sticky.',color:'#f59e0b',impact:'MIXED',assets:['EUR/USD','GER40','ETH','AAVE'],layer:'events'},
-  {lat:39.9,lng:116.4,name:'China',cc:'CN',label:'Trade War Retaliation',desc:'Semiconductor counter-tariffs announced. Supply chain disruption risk rising. Tech sector under pressure globally.',color:'#ef4444',impact:'BEARISH',assets:['NAS100','NVDA','AAPL','CNY/USD','HSI'],layer:'events'},
-  {lat:35.7,lng:139.7,name:'Japan',cc:'JP',label:'Yen Crisis — BOJ Watch',desc:'Yen hits 160 vs USD. BOJ intervention imminent. Carry trade unwind risk threatens global liquidity.',color:'#f59e0b',impact:'MIXED',assets:['USD/JPY','NKY225','GER40','BTC'],layer:'events'},
-  {lat:13.7,lng:-89.2,name:'El Salvador',cc:'SV',label:'BTC Reserve Expansion',desc:'Government adds to BTC strategic reserves. Adoption narrative strengthening.',color:'#22c55e',impact:'BULLISH',assets:['BTC'],layer:'events'},
-  {lat:51.5,lng:-0.1,name:'United Kingdom',cc:'GB',label:'FCA Crypto Framework',desc:'New staking regulations proposed. Institutional clarity improving. London positioning as crypto hub.',color:'#3b82f6',impact:'MIXED',assets:['GBP/USD','ETH','BTC','FTSE100'],layer:'events'},
-  {lat:1.35,lng:103.8,name:'Singapore',cc:'SG',label:'Asia Crypto Hub Growth',desc:'MAS approves 5 new exchange licenses. Asia liquidity pool expanding.',color:'#22c55e',impact:'BULLISH',assets:['BTC','ETH','SOL','SGD'],layer:'events'},
-  {lat:55.7,lng:37.6,name:'Russia',cc:'RU',label:'Sanctions & Energy Pivot',desc:'Energy exports rerouting through India/China. Crypto used for cross-border settlements.',color:'#ef4444',impact:'BEARISH',assets:['OIL','RUB/USD','GOLD','BTC'],layer:'events'},
-  {lat:-23.5,lng:-46.6,name:'Brazil',cc:'BR',label:'CBDC Drex Launch',desc:'Brazils CBDC "Drex" pilot expanding. Tokenized government bonds on blockchain.',color:'#22c55e',impact:'BULLISH',assets:['BRL/USD','BTC','ETH'],layer:'events'},
-  {lat:24.7,lng:46.7,name:'Saudi Arabia',cc:'SA',label:'OPEC+ Production Decision',desc:'Saudi-led OPEC+ considering deeper cuts. Oil volatility expected. Petrodollar system under pressure.',color:'#f59e0b',impact:'MIXED',assets:['OIL','GOLD','USD/SAR'],layer:'events'},
-  {lat:28.6,lng:77.2,name:'India',cc:'IN',label:'Crypto Tax & Regulation',desc:'30% crypto tax enforced. UPI-CBDC integration accelerating. Massive digital payments expansion.',color:'#f59e0b',impact:'MIXED',assets:['INR/USD','BTC','NIFTY50'],layer:'events'},
-];
-
-// ═══ RESOURCE TRANSPORT ROUTES ═══
-const TRANSPORT_ROUTES=[
-  // OIL ROUTES
-  {startLat:26.2,startLng:50.2,endLat:35.4,endLng:139.7,color:'rgba(249,115,22,0.5)',label:'Saudi Arabia → Japan',resource:'Crude Oil',volume:'3.2M bbl/day',layer:'oil'},
-  {startLat:26.2,startLng:50.2,endLat:31.2,endLng:121.5,color:'rgba(249,115,22,0.5)',label:'Saudi Arabia → China',resource:'Crude Oil',volume:'1.8M bbl/day',layer:'oil'},
-  {startLat:26.2,startLng:50.2,endLat:51.5,endLng:-0.1,color:'rgba(249,115,22,0.5)',label:'Middle East → Europe',resource:'Crude Oil',volume:'2.1M bbl/day',layer:'oil'},
-  {startLat:29.8,startLng:-90,endLat:51.5,endLng:-0.1,color:'rgba(249,115,22,0.5)',label:'US Gulf → Europe',resource:'Crude Oil',volume:'1.5M bbl/day',layer:'oil'},
-  {startLat:55.7,startLng:37.6,endLat:39.9,endLng:116.4,color:'rgba(249,115,22,0.5)',label:'Russia → China',resource:'Crude Oil (Pipeline)',volume:'1.6M bbl/day',layer:'oil'},
-  {startLat:55.7,startLng:37.6,endLat:28.6,endLng:77.2,color:'rgba(249,115,22,0.5)',label:'Russia → India',resource:'Crude Oil',volume:'1.9M bbl/day',layer:'oil'},
-  {startLat:4.6,startLng:-74.1,endLat:29.8,endLng:-95.4,color:'rgba(249,115,22,0.5)',label:'Colombia → US Gulf',resource:'Crude Oil',volume:'0.5M bbl/day',layer:'oil'},
-  {startLat:6.5,startLng:3.4,endLat:50.1,endLng:8.7,color:'rgba(249,115,22,0.5)',label:'Nigeria → Europe',resource:'Crude Oil',volume:'0.8M bbl/day',layer:'oil'},
-  // MINERALS
-  {startLat:-33.9,startLng:151.2,endLat:31.2,endLng:121.5,color:'rgba(167,139,250,0.5)',label:'Australia → China',resource:'Iron Ore',volume:'680M tons/yr',layer:'minerals'},
-  {startLat:-20.3,startLng:-43.2,endLat:31.2,endLng:121.5,color:'rgba(167,139,250,0.5)',label:'Brazil → China',resource:'Iron Ore',volume:'230M tons/yr',layer:'minerals'},
-  {startLat:-33.4,startLng:-70.7,endLat:31.2,endLng:121.5,color:'rgba(167,139,250,0.5)',label:'Chile → China',resource:'Copper',volume:'5.7M tons/yr',layer:'minerals'},
-  {startLat:-4.3,startLng:15.3,endLat:31.2,endLng:121.5,color:'rgba(167,139,250,0.5)',label:'DRC → China',resource:'Cobalt',volume:'130K tons/yr',layer:'minerals'},
-  {startLat:-4.3,startLng:15.3,endLat:50.1,endLng:8.7,color:'rgba(167,139,250,0.5)',label:'DRC → Europe',resource:'Cobalt',volume:'45K tons/yr',layer:'minerals'},
-  {startLat:-33.9,startLng:151.2,endLat:35.7,endLng:139.7,color:'rgba(167,139,250,0.5)',label:'Australia → Japan',resource:'Lithium',volume:'55K tons/yr',layer:'minerals'},
-  {startLat:-33.4,startLng:-70.7,endLat:37.6,endLng:127,color:'rgba(167,139,250,0.5)',label:'Chile → S. Korea',resource:'Lithium',volume:'35K tons/yr',layer:'minerals'},
-  // COAL
-  {startLat:-33.9,startLng:151.2,endLat:28.6,endLng:77.2,color:'rgba(120,113,108,0.5)',label:'Australia → India',resource:'Thermal Coal',volume:'180M tons/yr',layer:'coal'},
-  {startLat:-33.9,startLng:151.2,endLat:39.9,endLng:116.4,color:'rgba(120,113,108,0.5)',label:'Australia → China',resource:'Coking Coal',volume:'120M tons/yr',layer:'coal'},
-  {startLat:-6.2,startLng:106.8,endLat:28.6,endLng:77.2,color:'rgba(120,113,108,0.5)',label:'Indonesia → India',resource:'Thermal Coal',volume:'150M tons/yr',layer:'coal'},
-  {startLat:-6.2,startLng:106.8,endLat:39.9,endLng:116.4,color:'rgba(120,113,108,0.5)',label:'Indonesia → China',resource:'Thermal Coal',volume:'200M tons/yr',layer:'coal'},
-  {startLat:-29.0,startLng:31.0,endLat:28.6,endLng:77.2,color:'rgba(120,113,108,0.5)',label:'S. Africa → India',resource:'Thermal Coal',volume:'50M tons/yr',layer:'coal'},
-  {startLat:55.7,startLng:37.6,endLat:39.9,endLng:116.4,color:'rgba(120,113,108,0.5)',label:'Russia → China',resource:'Coal',volume:'100M tons/yr',layer:'coal'},
-  // LNG
-  {startLat:25.3,startLng:51.2,endLat:35.7,endLng:139.7,color:'rgba(6,182,212,0.5)',label:'Qatar → Japan',resource:'LNG',volume:'35M tons/yr',layer:'lng'},
-  {startLat:25.3,startLng:51.2,endLat:37.6,endLng:127,color:'rgba(6,182,212,0.5)',label:'Qatar → S. Korea',resource:'LNG',volume:'18M tons/yr',layer:'lng'},
-  {startLat:29.8,startLng:-95.4,endLat:51.5,endLng:-0.1,color:'rgba(6,182,212,0.5)',label:'US → Europe',resource:'LNG',volume:'80M tons/yr',layer:'lng'},
-  {startLat:29.8,startLng:-95.4,endLat:35.7,endLng:139.7,color:'rgba(6,182,212,0.5)',label:'US → Japan',resource:'LNG',volume:'12M tons/yr',layer:'lng'},
-  {startLat:-33.9,startLng:151.2,endLat:35.7,endLng:139.7,color:'rgba(6,182,212,0.5)',label:'Australia → Japan',resource:'LNG',volume:'40M tons/yr',layer:'lng'},
-  {startLat:-33.9,startLng:151.2,endLat:39.9,endLng:116.4,color:'rgba(6,182,212,0.5)',label:'Australia → China',resource:'LNG',volume:'32M tons/yr',layer:'lng'},
-];
-
-// ═══ COUNTRY INFOCENTER DATA ═══
-const COUNTRY_INFO={
-  US:{name:'United States',lat:38.9,lng:-77,flag:'US',gdp:'$28.8T',pop:'333M',currency:'USD',
-    keyExports:'Oil, Tech, Agriculture, LNG, Weapons',
-    keyImports:'Electronics, Oil, Vehicles, Pharma',
-    hotTopics:['Fed Rate Decision','China Tariff War','AI Regulation','BTC Strategic Reserve Debate','2026 Midterms'],
-    resources:{oil:'#1 Producer (13M bbl/d)',lng:'#1 LNG Exporter',minerals:'Rare earths imports 80% from China'}},
-  CN:{name:'China',lat:39.9,lng:116.4,flag:'CN',gdp:'$19.4T',pop:'1.42B',currency:'CNY',
-    keyExports:'Electronics, Machinery, Textiles, Rare Earths',
-    keyImports:'Oil, Iron Ore, Semiconductors, Soybeans',
-    hotTopics:['Trade War Retaliation','Semiconductor Self-Sufficiency','Belt & Road','Property Crisis','Digital Yuan'],
-    resources:{oil:'Imports 72% of oil needs',minerals:'#1 Rare Earth producer (60% global)',coal:'#1 Coal producer & consumer'}},
-  RU:{name:'Russia',lat:55.7,lng:37.6,flag:'RU',gdp:'$2.2T',pop:'144M',currency:'RUB',
-    keyExports:'Oil, Gas, Metals, Wheat, Weapons',
-    keyImports:'Machinery, Electronics, Pharma',
-    hotTopics:['Ukraine War Sanctions','Energy Rerouting to Asia','BRICS Expansion','Ruble Instability','Arctic Resources'],
-    resources:{oil:'#3 Producer (10.5M bbl/d)',lng:'Major pipeline gas to China',coal:'#3 Coal exporter'}},
-  EU:{name:'European Union',lat:50.1,lng:8.7,flag:'EU',gdp:'$18.4T',pop:'447M',currency:'EUR',
-    keyExports:'Machinery, Vehicles, Pharma, Chemicals',
-    keyImports:'Oil, Gas, Electronics, Raw Materials',
-    hotTopics:['ECB Rate Decisions','Energy Independence','MiCA Crypto Rules','Green Deal','Defense Spending'],
-    resources:{oil:'Dependent on imports (Russia pivot to US LNG)',minerals:'Critical minerals strategy',lng:'#1 LNG importer globally'}},
-  SA:{name:'Saudi Arabia',lat:24.7,lng:46.7,flag:'SA',gdp:'$1.1T',pop:'36M',currency:'SAR',
-    keyExports:'Crude Oil, Petrochemicals, Plastics',
-    keyImports:'Machinery, Electronics, Food, Vehicles',
-    hotTopics:['OPEC+ Cuts','Vision 2030','Petrodollar System','NEOM','Oil Price War'],
-    resources:{oil:'#2 Producer & #1 Exporter',lng:'Expanding LNG capacity',minerals:'Phosphate & gold reserves'}},
-  JP:{name:'Japan',lat:35.7,lng:139.7,flag:'JP',gdp:'$4.2T',pop:'124M',currency:'JPY',
-    keyExports:'Vehicles, Electronics, Machinery, Steel',
-    keyImports:'Oil, LNG, Coal, Semiconductors, Food',
-    hotTopics:['Yen Weakness','BOJ Policy Shift','Chip Manufacturing Push','Aging Population','Defense Buildup'],
-    resources:{oil:'Imports 99% of oil',lng:'#2 LNG importer',coal:'Major coal importer'}},
-  IN:{name:'India',lat:28.6,lng:77.2,flag:'IN',gdp:'$4.1T',pop:'1.44B',currency:'INR',
-    keyExports:'IT Services, Pharma, Textiles, Rice',
-    keyImports:'Oil, Gold, Electronics, Coal',
-    hotTopics:['Crypto Tax 30%','UPI/CBDC Integration','Russian Oil Imports','Manufacturing Push','AI Investment'],
-    resources:{oil:'#3 Oil importer',coal:'#2 Coal consumer',minerals:'Major iron ore producer'}},
-  BR:{name:'Brazil',lat:-23.5,lng:-46.6,flag:'BR',gdp:'$2.2T',pop:'216M',currency:'BRL',
-    keyExports:'Soybeans, Iron Ore, Oil, Meat, Coffee',
-    keyImports:'Electronics, Chemicals, Oil Products',
-    hotTopics:['CBDC Drex','Amazon Deforestation Policy','BRICS Role','Commodity Supercycle','Pre-Salt Oil'],
-    resources:{oil:'Pre-salt deep water reserves',minerals:'#2 Iron ore exporter',coal:'Minor producer'}},
-};
-
-// ═══ NEWS → GEO MAPPING (for live news pins) ═══
-const GEO_KEYWORDS={
-  'us':{lat:38.9,lng:-77,cc:'US'},'america':{lat:38.9,lng:-77,cc:'US'},'trump':{lat:38.9,lng:-77,cc:'US'},'fed ':{lat:38.9,lng:-77,cc:'US'},'congress':{lat:38.9,lng:-77,cc:'US'},'white house':{lat:38.9,lng:-77,cc:'US'},'wall street':{lat:40.7,lng:-74,cc:'US'},'silicon valley':{lat:37.4,lng:-122,cc:'US'},
-  'china':{lat:39.9,lng:116.4,cc:'CN'},'beijing':{lat:39.9,lng:116.4,cc:'CN'},'shanghai':{lat:31.2,lng:121.5,cc:'CN'},'xi jinping':{lat:39.9,lng:116.4,cc:'CN'},
-  'russia':{lat:55.7,lng:37.6,cc:'RU'},'moscow':{lat:55.7,lng:37.6,cc:'RU'},'putin':{lat:55.7,lng:37.6,cc:'RU'},'kremlin':{lat:55.7,lng:37.6,cc:'RU'},
-  'ukraine':{lat:50.4,lng:30.5,cc:'UA'},'kyiv':{lat:50.4,lng:30.5,cc:'UA'},'zelensky':{lat:50.4,lng:30.5,cc:'UA'},
-  'europe':{lat:50.1,lng:8.7,cc:'EU'},'eu ':{lat:50.1,lng:8.7,cc:'EU'},'ecb':{lat:50.1,lng:8.7,cc:'EU'},'brussels':{lat:50.8,lng:4.4,cc:'EU'},
-  'uk ':{lat:51.5,lng:-0.1,cc:'GB'},'london':{lat:51.5,lng:-0.1,cc:'GB'},'britain':{lat:51.5,lng:-0.1,cc:'GB'},
-  'japan':{lat:35.7,lng:139.7,cc:'JP'},'tokyo':{lat:35.7,lng:139.7,cc:'JP'},'boj':{lat:35.7,lng:139.7,cc:'JP'},
-  'india':{lat:28.6,lng:77.2,cc:'IN'},'modi':{lat:28.6,lng:77.2,cc:'IN'},'mumbai':{lat:19,lng:72.9,cc:'IN'},
-  'brazil':{lat:-23.5,lng:-46.6,cc:'BR'},'saudi':{lat:24.7,lng:46.7,cc:'SA'},'opec':{lat:24.7,lng:46.7,cc:'SA'},
-  'iran':{lat:32.4,lng:53.7,cc:'IR'},'tehran':{lat:35.7,lng:51.4,cc:'IR'},'hormuz':{lat:26.6,lng:56.3,cc:'IR'},
-  'israel':{lat:31.8,lng:35.2,cc:'IL'},'gaza':{lat:31.5,lng:34.5,cc:'PS'},'middle east':{lat:29,lng:47,cc:'ME'},
-  'australia':{lat:-33.9,lng:151.2,cc:'AU'},'africa':{lat:-1.3,lng:36.8,cc:'AF'},'nigeria':{lat:9.1,lng:7.5,cc:'NG'},
-  'korea':{lat:37.6,lng:127,cc:'KR'},'singapore':{lat:1.35,lng:103.8,cc:'SG'},'hong kong':{lat:22.3,lng:114.2,cc:'HK'},
-  'bitcoin':{lat:13.7,lng:-89.2,cc:'BTC'},'btc':{lat:13.7,lng:-89.2,cc:'BTC'},'ethereum':{lat:47.4,lng:8.5,cc:'ETH'},'crypto':{lat:1.35,lng:103.8,cc:'CRYPTO'},
-};
-
-// ═══ STATE ═══
-let globe;
-let activeLayers={events:true,oil:true,minerals:true,coal:true,lng:true,news:false};
-let activeCountries=new Set();
-let allNewsItems=[];
-let allMarketData=[];
-let newsGeoPoints=[];
-
-function toggleLayer(btn){
-  const layer=btn.dataset.layer;
-  activeLayers[layer]=!activeLayers[layer];
-  btn.classList.toggle('on');
-  updateGlobeData();
-}
-function toggleCountry(btn){
-  const cc=btn.dataset.cc;
-  if(activeCountries.has(cc)){activeCountries.delete(cc);btn.classList.remove('on');}
-  else{activeCountries.add(cc);btn.classList.add('on');}
-  // Fly to country if selecting
-  if(activeCountries.has(cc)){
-    const info=COUNTRY_INFO[cc];
-    if(info) globe.pointOfView({lat:info.lat,lng:info.lng,altitude:1.5},1000);
-    showCountryPopup(cc);
-  } else {
-    document.getElementById('popup').classList.remove('show');
-  }
-}
-
-function toggleRotation(){
-  const btn=document.getElementById('rotateBtn');
-  const rotating=globe.controls().autoRotate;
-  globe.controls().autoRotate=!rotating;
-  btn.classList.toggle('on');
-  btn.textContent=rotating?'AUTO-ROTATE OFF':'AUTO-ROTATE';
-}
-
-// ═══ 3D GLOBE ═══
-function initGlobe(){
-  const container=document.getElementById('globeViz');
-  globe=Globe()(container)
-    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
-    .backgroundColor('rgba(0,0,0,0)')
-    .showAtmosphere(true)
-    .atmosphereColor('rgba(59,130,246,0.25)')
-    .atmosphereAltitude(0.25)
-    // Points = events + news pins
-    .pointsData([]).pointLat(d=>d.lat).pointLng(d=>d.lng).pointColor(d=>d.color)
-    .pointAltitude(d=>d.alt||0.06).pointRadius(d=>d.radius||0.4).pointsMerge(false)
-    .onPointClick(d=>{if(d.type==='news')showNewsPopup(d);else showEventPopup(d);})
-    .onPointHover(d=>{container.style.cursor=d?'pointer':'grab'})
-    // Rings = event rings
-    .ringsData([]).ringLat(d=>d.lat).ringLng(d=>d.lng).ringColor(d=>()=>d.color)
-    .ringMaxRadius(3).ringPropagationSpeed(1.5).ringRepeatPeriod(2000)
-    // Arcs = transport routes
-    .arcsData([]).arcStartLat(d=>d.startLat).arcStartLng(d=>d.startLng).arcEndLat(d=>d.endLat).arcEndLng(d=>d.endLng)
-    .arcColor(d=>d.color).arcDashLength(0.6).arcDashGap(0.2).arcDashAnimateTime(d=>d.speed||3000).arcStroke(d=>d.stroke||0.4)
-    .arcLabel(d=>`<div style="font-family:JetBrains Mono;font-size:10px;background:rgba(4,6,10,.95);padding:6px 10px;border:1px solid rgba(59,130,246,.15);border-radius:4px;color:#fff"><b>${d.label}</b><br/><span style="color:#5a6a80">${d.resource} — ${d.volume}</span></div>`)
-    // Labels
-    .labelsData([]).labelLat(d=>d.lat).labelLng(d=>d.lng).labelText(d=>d.name)
-    .labelSize(0.7).labelDotRadius(0.3).labelColor(d=>()=>d.color).labelResolution(2);
-
-  // Country polygons
-  fetch('https://unpkg.com/world-atlas@2/countries-110m.json').then(r=>r.json()).then(topology=>{
-    const countries=topojson.feature(topology,topology.objects.countries);
-    globe.polygonsData(countries.features)
-      .polygonCapColor(()=>'rgba(20,40,80,0.15)')
-      .polygonSideColor(()=>'rgba(30,58,95,0.1)')
-      .polygonStrokeColor(()=>'rgba(59,130,246,0.12)')
-      .polygonAltitude(0.005);
-  });
-  globe.controls().autoRotate=true;
-  globe.controls().autoRotateSpeed=0.3;
-  globe.controls().enableZoom=true;
-  globe.controls().minDistance=150;
-  globe.controls().maxDistance=500;
-  globe.pointOfView({lat:25,lng:20,altitude:2.2},0);
-  updateGlobeData();
-}
-
-function updateGlobeData(){
-  if(!globe)return;
-  // POINTS: geo events + news geo-pins
-  let points=[];
-  if(activeLayers.events) points.push(...GEO_EVENTS.map(e=>({...e,type:'event',alt:0.06,radius:0.5})));
-  if(activeLayers.news) points.push(...newsGeoPoints.map(n=>({...n,type:'news',alt:0.03,radius:0.25})));
-  globe.pointsData(points);
-
-  // RINGS on events
-  globe.ringsData(activeLayers.events?GEO_EVENTS:[]);
-
-  // ARCS: transport routes filtered by active layers
-  let arcs=TRANSPORT_ROUTES.filter(r=>activeLayers[r.layer]);
-  // Add event conflict arcs when events layer on
-  if(activeLayers.events){
-    arcs.push(
-      {startLat:38.9,startLng:-77,endLat:39.9,endLng:116.4,color:'rgba(239,68,68,0.4)',label:'US-China Tension',resource:'Trade War',volume:'$400B tariffs',layer:'events',speed:4000,stroke:0.2},
-      {startLat:38.9,startLng:-77,endLat:32.4,endLng:53.7,color:'rgba(239,68,68,0.4)',label:'US-Iran Tension',resource:'Military',volume:'Strait of Hormuz',layer:'events',speed:4000,stroke:0.2},
-    );
-  }
-  globe.arcsData(arcs);
-
-  // LABELS on events
-  globe.labelsData(activeLayers.events?GEO_EVENTS:[]);
-}
-
-// ═══ NEWS GEO-PINNING ═══
-function geolocateNews(items){
-  newsGeoPoints=[];
-  const used=new Set();
-  items.forEach(n=>{
-    const lower=n.title.toLowerCase();
-    for(const [kw,geo] of Object.entries(GEO_KEYWORDS)){
-      if(lower.includes(kw)&&!used.has(n.title+geo.cc)){
-        used.add(n.title+geo.cc);
-        newsGeoPoints.push({
-          lat:geo.lat+(Math.random()-.5)*3,
-          lng:geo.lng+(Math.random()-.5)*3,
-          color:'#22c55e',
-          name:n.title.slice(0,40)+'...',
-          title:n.title,
-          src:n.src,
-          link:n.link,
-          time:n.time,
-          sentiment:n.s,
-        });
-        break;
-      }
-    }
-  });
-  if(activeLayers.news)updateGlobeData();
-}
-
-// ═══ POPUPS ═══
-function showEventPopup(ev){
-  const popup=document.getElementById('popup');
-  popup.classList.add('show');
-  document.getElementById('popDot').style.background=ev.color;
-  document.getElementById('popTitle').textContent=ev.name+' — '+ev.label;
-  const body=document.getElementById('popBody');
-  const impColor=ev.impact==='BEARISH'?'var(--red)':ev.impact==='BULLISH'?'var(--grn)':'var(--amb)';
-  const impBg=ev.impact==='BEARISH'?'rgba(239,68,68,.12)':ev.impact==='BULLISH'?'rgba(34,197,94,.12)':'rgba(245,158,11,.08)';
-  body.innerHTML=`
-    <div style="font-size:10px;color:var(--t2);line-height:1.6">${ev.desc}</div>
-    <div style="display:inline-block;font-size:7px;padding:2px 6px;border-radius:3px;font-weight:700;letter-spacing:.5px;background:${impBg};color:${impColor}">${ev.impact}</div>
-    <div style="display:flex;gap:4px;flex-wrap:wrap">${ev.assets.map(a=>`<span style="font-size:7px;padding:2px 5px;border:1px solid var(--bdr);border-radius:2px;color:var(--t2)">${a}</span>`).join('')}</div>`;
-  // Related news
-  const keywords=ev.label.toLowerCase().split(/[\s—&]+/).filter(w=>w.length>3);
-  const relevant=allNewsItems.filter(n=>{
-    const t=n.title.toLowerCase();
-    return keywords.some(k=>t.includes(k))||ev.assets.some(a=>t.includes(a.toLowerCase()));
-  }).slice(0,5);
-  if(relevant.length){
-    body.innerHTML+=`<div class="popup-section"><div class="popup-section-title">RELATED INTEL</div>`+
-      relevant.map(n=>`<div style="padding:3px 0;border-bottom:1px solid rgba(255,255,255,.02)"><span style="font-size:6px;color:var(--t3);text-transform:uppercase;margin-right:4px;font-weight:600">${n.src}</span><a href="${n.link}" target="_blank" style="font-size:9px;color:var(--txt);text-decoration:none;line-height:1.5">${n.title}</a></div>`).join('')+'</div>';
-  }
-  // Transport routes through this region
-  const routes=TRANSPORT_ROUTES.filter(r=>{
-    const d=Math.sqrt(Math.pow(r.startLat-ev.lat,2)+Math.pow(r.startLng-ev.lng,2));
-    const d2=Math.sqrt(Math.pow(r.endLat-ev.lat,2)+Math.pow(r.endLng-ev.lng,2));
-    return d<15||d2<15;
-  }).slice(0,4);
-  if(routes.length){
-    body.innerHTML+=`<div class="popup-section"><div class="popup-section-title">RESOURCE FLOWS</div>`+
-      routes.map(r=>{
-        const colorMap={oil:'var(--oil)',minerals:'var(--mineral)',coal:'var(--coal)',lng:'var(--lng)'};
-        return `<div class="popup-resource"><span class="dot" style="background:${colorMap[r.layer]||'var(--blue)'}"></span><span>${r.label}</span><span style="margin-left:auto;color:var(--t2);font-size:7px">${r.volume}</span></div>`;
-      }).join('')+'</div>';
-  }
-  popup.style.top='60px';popup.style.right='290px';popup.style.left='auto';
-}
-
-function showNewsPopup(n){
-  const popup=document.getElementById('popup');
-  popup.classList.add('show');
-  document.getElementById('popDot').style.background='var(--grn)';
-  document.getElementById('popTitle').textContent='NEWS PIN';
-  const sentLabel={bu:'BULLISH',be:'BEARISH',ne:'NEUTRAL'}[n.sentiment]||'NEUTRAL';
-  const sentColor=n.sentiment==='bu'?'var(--grn)':n.sentiment==='be'?'var(--red)':'var(--amb)';
-  document.getElementById('popBody').innerHTML=`
-    <div style="font-size:11px;color:#fff;line-height:1.5;font-weight:500">${n.title}</div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <span style="font-size:7px;color:var(--t2);text-transform:uppercase;font-weight:600">${n.src}</span>
-      <span style="font-size:7px;padding:2px 6px;border-radius:3px;font-weight:700;background:rgba(255,255,255,.05);color:${sentColor}">${sentLabel}</span>
-    </div>
-    <a href="${n.link}" target="_blank" style="font-size:9px;color:var(--blue);text-decoration:none">READ FULL ARTICLE →</a>`;
-  popup.style.top='60px';popup.style.right='290px';popup.style.left='auto';
-}
-
-function showCountryPopup(cc){
-  const info=COUNTRY_INFO[cc];if(!info)return;
-  const popup=document.getElementById('popup');
-  popup.classList.add('show');
-  document.getElementById('popDot').style.background='var(--cyan)';
-  document.getElementById('popTitle').textContent=info.name+' — INFOCENTER';
-  const body=document.getElementById('popBody');
-  // Country stats
-  let html=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-      <div style="background:var(--bg);padding:6px 8px;border:1px solid var(--bdr);border-radius:3px"><div style="font-size:6px;color:var(--t2);letter-spacing:1px;text-transform:uppercase">GDP</div><div style="font-size:13px;color:#fff;font-weight:700">${info.gdp}</div></div>
-      <div style="background:var(--bg);padding:6px 8px;border:1px solid var(--bdr);border-radius:3px"><div style="font-size:6px;color:var(--t2);letter-spacing:1px;text-transform:uppercase">Population</div><div style="font-size:13px;color:#fff;font-weight:700">${info.pop}</div></div>
-      <div style="background:var(--bg);padding:6px 8px;border:1px solid var(--bdr);border-radius:3px"><div style="font-size:6px;color:var(--t2);letter-spacing:1px;text-transform:uppercase">Currency</div><div style="font-size:13px;color:#fff;font-weight:700">${info.currency}</div></div>
-      <div style="background:var(--bg);padding:6px 8px;border:1px solid var(--bdr);border-radius:3px"><div style="font-size:6px;color:var(--t2);letter-spacing:1px;text-transform:uppercase">Flag</div><div style="font-size:13px;color:#fff;font-weight:700">${info.flag}</div></div>
-    </div>`;
-  // Key exports/imports
-  html+=`<div class="popup-section"><div class="popup-section-title">KEY EXPORTS</div><div style="font-size:9px;color:var(--txt);line-height:1.5">${info.keyExports}</div></div>`;
-  html+=`<div class="popup-section"><div class="popup-section-title">KEY IMPORTS</div><div style="font-size:9px;color:var(--txt);line-height:1.5">${info.keyImports}</div></div>`;
-  // Resources
-  if(info.resources){
-    html+=`<div class="popup-section"><div class="popup-section-title">RESOURCE PROFILE</div>`;
-    if(info.resources.oil)html+=`<div class="popup-resource"><span class="dot" style="background:var(--oil)"></span><span style="font-size:9px">${info.resources.oil}</span></div>`;
-    if(info.resources.lng)html+=`<div class="popup-resource"><span class="dot" style="background:var(--lng)"></span><span style="font-size:9px">${info.resources.lng}</span></div>`;
-    if(info.resources.minerals)html+=`<div class="popup-resource"><span class="dot" style="background:var(--mineral)"></span><span style="font-size:9px">${info.resources.minerals}</span></div>`;
-    if(info.resources.coal)html+=`<div class="popup-resource"><span class="dot" style="background:var(--coal)"></span><span style="font-size:9px">${info.resources.coal}</span></div>`;
-    html+=`</div>`;
-  }
-  // Hot topics
-  html+=`<div class="popup-section"><div class="popup-section-title">HOT TOPICS</div><div style="display:flex;gap:4px;flex-wrap:wrap">${info.hotTopics.map(t=>`<span style="font-size:7px;padding:3px 7px;border:1px solid var(--bdr);border-radius:10px;color:var(--txt);background:var(--bg)">${t}</span>`).join('')}</div></div>`;
-  // Related news for this country
-  const ccEvents=GEO_EVENTS.filter(e=>e.cc===cc);
-  if(ccEvents.length){
-    html+=`<div class="popup-section"><div class="popup-section-title">ACTIVE EVENTS</div>`;
-    ccEvents.forEach(e=>{
-      const impColor=e.impact==='BEARISH'?'var(--red)':e.impact==='BULLISH'?'var(--grn)':'var(--amb)';
-      html+=`<div style="padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03)"><div style="font-size:9px;color:#fff;font-weight:500">${e.label}</div><div style="font-size:7px;color:${impColor};font-weight:700;margin-top:2px">${e.impact}</div></div>`;
-    });
-    html+=`</div>`;
-  }
-  // Transport routes
-  const routes=TRANSPORT_ROUTES.filter(r=>{
-    const d1=Math.sqrt(Math.pow(r.startLat-info.lat,2)+Math.pow(r.startLng-info.lng,2));
-    const d2=Math.sqrt(Math.pow(r.endLat-info.lat,2)+Math.pow(r.endLng-info.lng,2));
-    return d1<15||d2<15;
-  });
-  if(routes.length){
-    html+=`<div class="popup-section"><div class="popup-section-title">TRADE ROUTES (${routes.length})</div>`;
-    routes.slice(0,6).forEach(r=>{
-      const colorMap={oil:'var(--oil)',minerals:'var(--mineral)',coal:'var(--coal)',lng:'var(--lng)'};
-      html+=`<div class="popup-resource"><span class="dot" style="background:${colorMap[r.layer]}"></span><span>${r.label}</span><span style="margin-left:auto;color:var(--t2);font-size:7px">${r.volume}</span></div>`;
-    });
-    html+=`</div>`;
-  }
-  body.innerHTML=html;
-  popup.style.top='60px';popup.style.left='50%';popup.style.right='auto';popup.style.transform='translateX(-50%)';
-}
-
-function showMarketPopup(symbol){
-  const data=allMarketData.find(m=>m.s===symbol);if(!data)return;
-  const popup=document.getElementById('popup');
-  popup.classList.add('show');
-  popup.style.transform='none';
-  document.getElementById('popDot').style.background='var(--blue)';
-  document.getElementById('popTitle').textContent=data.s;
-  const body=document.getElementById('popBody');
-  const chgColor=data.c>=0?'var(--grn)':'var(--red)';
-  const chgSign=data.c>=0?'+':'';
-  body.innerHTML=`
-    <div class="popup-price">${fP(data.p)}</div>
-    <div class="popup-stat"><span class="popup-stat-label">24h Change</span><span class="popup-stat-value" style="color:${chgColor}">${chgSign}${data.c.toFixed(2)}%</span></div>
-    <div class="popup-stat"><span class="popup-stat-label">High</span><span class="popup-stat-value">${fP(data.h||data.p)}</span></div>
-    <div class="popup-stat"><span class="popup-stat-label">Low</span><span class="popup-stat-value">${fP(data.l||data.p)}</span></div>
-    <span class="popup-badge ${data.type||'crypto'}">${data.type||'CRYPTO'}</span>`;
-  popup.style.top='60px';popup.style.right='12px';popup.style.left='auto';popup.style.transform='none';
-}
-
-// ═══ MARKET DATA ═══
+const T0=Date.now();const GEO_EVENTS=[{lat:38.9,lng:-77,name:'United States',cc:'US',label:'Tariffs & Fed Policy',desc:'New tariff expansion targeting China and EU. Fed holds rates hawkish, cuts delayed to H2 2026. Dollar strength pressuring risk assets globally.',color:'#ef4444',impact:'BEARISH',assets:['NAS100','S&P500','DXY','BTC','EUR/USD'],layer:'events'},{lat:32.4,lng:53.7,name:'Iran',cc:'IR',label:'US-Iran Military Tensions',desc:'Brent crude surged past $114/bbl. Strait of Hormuz military posturing. Global risk-off triggered across all asset classes.',color:'#ef4444',impact:'BEARISH',assets:['OIL','GOLD','BTC','GER40','NAS100'],layer:'events'},{lat:50.1,lng:8.7,name:'European Union',cc:'EU',label:'ECB DeFi Regulation & Rates',desc:'ECB paper warns DeFi governance "concentrated". New EU crypto framework likely. Rate decision pending with inflation sticky.',color:'#f59e0b',impact:'MIXED',assets:['EUR/USD','GER40','ETH','AAVE'],layer:'events'},{lat:39.9,lng:116.4,name:'China',cc:'CN',label:'Trade War Retaliation',desc:'Semiconductor counter-tariffs announced. Supply chain disruption risk rising. Tech sector under pressure globally.',color:'#ef4444',impact:'BEARISH',assets:['NAS100','NVDA','AAPL','CNY/USD','HSI'],layer:'events'},{lat:35.7,lng:139.7,name:'Japan',cc:'JP',label:'Yen Crisis — BOJ Watch',desc:'Yen hits 160 vs USD. BOJ intervention imminent. Carry trade unwind risk threatens global liquidity.',color:'#f59e0b',impact:'MIXED',assets:['USD/JPY','NKY225','GER40','BTC'],layer:'events'},{lat:13.7,lng:-89.2,name:'El Salvador',cc:'SV',label:'BTC Reserve Expansion',desc:'Government adds to BTC strategic reserves. Adoption narrative strengthening.',color:'#22c55e',impact:'BULLISH',assets:['BTC'],layer:'events'},{lat:51.5,lng:-0.1,name:'United Kingdom',cc:'GB',label:'FCA Crypto Framework',desc:'New staking regulations proposed. Institutional clarity improving. London positioning as crypto hub.',color:'#3b82f6',impact:'MIXED',assets:['GBP/USD','ETH','BTC','FTSE100'],layer:'events'},{lat:1.35,lng:103.8,name:'Singapore',cc:'SG',label:'Asia Crypto Hub Growth',desc:'MAS approves 5 new exchange licenses. Asia liquidity pool expanding.',color:'#22c55e',impact:'BULLISH',assets:['BTC','ETH','SOL','SGD'],layer:'events'},{lat:55.7,lng:37.6,name:'Russia',cc:'RU',label:'Sanctions & Energy Pivot',desc:'Energy exports rerouting through India/China. Crypto used for cross-border settlements.',color:'#ef4444',impact:'BEARISH',assets:['OIL','RUB/USD','GOLD','BTC'],layer:'events'},{lat:-23.5,lng:-46.6,name:'Brazil',cc:'BR',label:'CBDC Drex Launch',desc:'Brazils CBDC "Drex" pilot expanding. Tokenized government bonds on blockchain.',color:'#22c55e',impact:'BULLISH',assets:['BRL/USD','BTC','ETH'],layer:'events'},{lat:24.7,lng:46.7,name:'Saudi Arabia',cc:'SA',label:'OPEC+ Production Decision',desc:'Saudi-led OPEC+ considering deeper cuts. Oil volatility expected. Petrodollar system under pressure.',color:'#f59e0b',impact:'MIXED',assets:['OIL','GOLD','USD/SAR'],layer:'events'},{lat:28.6,lng:77.2,name:'India',cc:'IN',label:'Crypto Tax & Regulation',desc:'30% crypto tax enforced. UPI-CBDC integration accelerating. Massive digital payments expansion.',color:'#f59e0b',impact:'MIXED',assets:['INR/USD','BTC','NIFTY50'],layer:'events'}];
+const TRANSPORT_ROUTES=[{startLat:26.2,startLng:50.2,endLat:35.4,endLng:139.7,color:'rgba(200,120,50,0.3)',label:'Saudi Arabia → Japan',resource:'Crude Oil',volume:'3.2M bbl/day',layer:'oil'},{startLat:26.2,startLng:50.2,endLat:31.2,endLng:121.5,color:'rgba(200,120,50,0.3)',label:'Saudi Arabia → China',resource:'Crude Oil',volume:'1.8M bbl/day',layer:'oil'},{startLat:26.2,startLng:50.2,endLat:51.5,endLng:-0.1,color:'rgba(200,120,50,0.3)',label:'Middle East → Europe',resource:'Crude Oil',volume:'2.1M bbl/day',layer:'oil'},{startLat:29.8,startLng:-90,endLat:51.5,endLng:-0.1,color:'rgba(200,120,50,0.3)',label:'US Gulf → Europe',resource:'Crude Oil',volume:'1.5M bbl/day',layer:'oil'},{startLat:55.7,startLng:37.6,endLat:39.9,endLng:116.4,color:'rgba(200,120,50,0.3)',label:'Russia → China',resource:'Crude Oil (Pipeline)',volume:'1.6M bbl/day',layer:'oil'},{startLat:55.7,startLng:37.6,endLat:28.6,endLng:77.2,color:'rgba(200,120,50,0.3)',label:'Russia → India',resource:'Crude Oil',volume:'1.9M bbl/day',layer:'oil'},{startLat:4.6,startLng:-74.1,endLat:29.8,endLng:-95.4,color:'rgba(200,120,50,0.3)',label:'Colombia → US Gulf',resource:'Crude Oil',volume:'0.5M bbl/day',layer:'oil'},{startLat:6.5,startLng:3.4,endLat:50.1,endLng:8.7,color:'rgba(200,120,50,0.3)',label:'Nigeria → Europe',resource:'Crude Oil',volume:'0.8M bbl/day',layer:'oil'},{startLat:-33.9,startLng:151.2,endLat:31.2,endLng:121.5,color:'rgba(140,120,200,0.3)',label:'Australia → China',resource:'Iron Ore',volume:'680M tons/yr',layer:'minerals'},{startLat:-20.3,startLng:-43.2,endLat:31.2,endLng:121.5,color:'rgba(140,120,200,0.3)',label:'Brazil → China',resource:'Iron Ore',volume:'230M tons/yr',layer:'minerals'},{startLat:-33.4,startLng:-70.7,endLat:31.2,endLng:121.5,color:'rgba(140,120,200,0.3)',label:'Chile → China',resource:'Copper',volume:'5.7M tons/yr',layer:'minerals'},{startLat:-4.3,startLng:15.3,endLat:31.2,endLng:121.5,color:'rgba(140,120,200,0.3)',label:'DRC → China',resource:'Cobalt',volume:'130K tons/yr',layer:'minerals'},{startLat:-4.3,startLng:15.3,endLat:50.1,endLng:8.7,color:'rgba(140,120,200,0.3)',label:'DRC → Europe',resource:'Cobalt',volume:'45K tons/yr',layer:'minerals'},{startLat:-33.9,startLng:151.2,endLat:35.7,endLng:139.7,color:'rgba(140,120,200,0.3)',label:'Australia → Japan',resource:'Lithium',volume:'55K tons/yr',layer:'minerals'},{startLat:-33.4,startLng:-70.7,endLat:37.6,endLng:127,color:'rgba(140,120,200,0.3)',label:'Chile → S. Korea',resource:'Lithium',volume:'35K tons/yr',layer:'minerals'},{startLat:-33.9,startLng:151.2,endLat:28.6,endLng:77.2,color:'rgba(140,130,120,0.3)',label:'Australia → India',resource:'Thermal Coal',volume:'180M tons/yr',layer:'coal'},{startLat:-33.9,startLng:151.2,endLat:39.9,endLng:116.4,color:'rgba(140,130,120,0.3)',label:'Australia → China',resource:'Coking Coal',volume:'120M tons/yr',layer:'coal'},{startLat:-6.2,startLng:106.8,endLat:28.6,endLng:77.2,color:'rgba(140,130,120,0.3)',label:'Indonesia → India',resource:'Thermal Coal',volume:'150M tons/yr',layer:'coal'},{startLat:-6.2,startLng:106.8,endLat:39.9,endLng:116.4,color:'rgba(140,130,120,0.3)',label:'Indonesia → China',resource:'Thermal Coal',volume:'200M tons/yr',layer:'coal'},{startLat:-29.0,startLng:31.0,endLat:28.6,endLng:77.2,color:'rgba(140,130,120,0.3)',label:'S. Africa → India',resource:'Thermal Coal',volume:'50M tons/yr',layer:'coal'},{startLat:55.7,startLng:37.6,endLat:39.9,endLng:116.4,color:'rgba(140,130,120,0.3)',label:'Russia → China',resource:'Coal',volume:'100M tons/yr',layer:'coal'},{startLat:25.3,startLng:51.2,endLat:35.7,endLng:139.7,color:'rgba(60,160,190,0.3)',label:'Qatar → Japan',resource:'LNG',volume:'35M tons/yr',layer:'lng'},{startLat:25.3,startLng:51.2,endLat:37.6,endLng:127,color:'rgba(60,160,190,0.3)',label:'Qatar → S. Korea',resource:'LNG',volume:'18M tons/yr',layer:'lng'},{startLat:29.8,startLng:-95.4,endLat:51.5,endLng:-0.1,color:'rgba(60,160,190,0.3)',label:'US → Europe',resource:'LNG',volume:'80M tons/yr',layer:'lng'},{startLat:29.8,startLng:-95.4,endLat:35.7,endLng:139.7,color:'rgba(60,160,190,0.3)',label:'US → Japan',resource:'LNG',volume:'12M tons/yr',layer:'lng'},{startLat:-33.9,startLng:151.2,endLat:35.7,endLng:139.7,color:'rgba(60,160,190,0.3)',label:'Australia → Japan',resource:'LNG',volume:'40M tons/yr',layer:'lng'},{startLat:-33.9,startLng:151.2,endLat:39.9,endLng:116.4,color:'rgba(60,160,190,0.3)',label:'Australia → China',resource:'LNG',volume:'32M tons/yr',layer:'lng'}];
+const COUNTRY_INFO={US:{name:'United States',lat:38.9,lng:-77,flag:'US',gdp:'$28.8T',pop:'333M',currency:'USD',keyExports:'Oil, Tech, Agriculture, LNG, Weapons',keyImports:'Electronics, Oil, Vehicles, Pharma',hotTopics:['Fed Rate Decision','China Tariff War','AI Regulation','BTC Strategic Reserve Debate','2026 Midterms'],resources:{oil:'#1 Producer (13M bbl/d)',lng:'#1 LNG Exporter',minerals:'Rare earths imports 80% from China'}},CN:{name:'China',lat:39.9,lng:116.4,flag:'CN',gdp:'$19.4T',pop:'1.42B',currency:'CNY',keyExports:'Electronics, Machinery, Textiles, Rare Earths',keyImports:'Oil, Iron Ore, Semiconductors, Soybeans',hotTopics:['Trade War Retaliation','Semiconductor Self-Sufficiency','Belt & Road','Property Crisis','Digital Yuan'],resources:{oil:'Imports 72% of oil needs',minerals:'#1 Rare Earth producer (60% global)',coal:'#1 Coal producer & consumer'}},RU:{name:'Russia',lat:55.7,lng:37.6,flag:'RU',gdp:'$2.2T',pop:'144M',currency:'RUB',keyExports:'Oil, Gas, Metals, Wheat, Weapons',keyImports:'Machinery, Electronics, Pharma',hotTopics:['Ukraine War Sanctions','Energy Rerouting to Asia','BRICS Expansion','Ruble Instability','Arctic Resources'],resources:{oil:'#3 Producer (10.5M bbl/d)',lng:'Major pipeline gas to China',coal:'#3 Coal exporter'}},EU:{name:'European Union',lat:50.1,lng:8.7,flag:'EU',gdp:'$18.4T',pop:'447M',currency:'EUR',keyExports:'Machinery, Vehicles, Pharma, Chemicals',keyImports:'Oil, Gas, Electronics, Raw Materials',hotTopics:['ECB Rate Decisions','Energy Independence','MiCA Crypto Rules','Green Deal','Defense Spending'],resources:{oil:'Dependent on imports (Russia pivot to US LNG)',minerals:'Critical minerals strategy',lng:'#1 LNG importer globally'}},SA:{name:'Saudi Arabia',lat:24.7,lng:46.7,flag:'SA',gdp:'$1.1T',pop:'36M',currency:'SAR',keyExports:'Crude Oil, Petrochemicals, Plastics',keyImports:'Machinery, Electronics, Food, Vehicles',hotTopics:['OPEC+ Cuts','Vision 2030','Petrodollar System','NEOM','Oil Price War'],resources:{oil:'#2 Producer & #1 Exporter',lng:'Expanding LNG capacity',minerals:'Phosphate & gold reserves'}},JP:{name:'Japan',lat:35.7,lng:139.7,flag:'JP',gdp:'$4.2T',pop:'124M',currency:'JPY',keyExports:'Vehicles, Electronics, Machinery, Steel',keyImports:'Oil, LNG, Coal, Semiconductors, Food',hotTopics:['Yen Weakness','BOJ Policy Shift','Chip Manufacturing Push','Aging Population','Defense Buildup'],resources:{oil:'Imports 99% of oil',lng:'#2 LNG importer',coal:'Major coal importer'}},IN:{name:'India',lat:28.6,lng:77.2,flag:'IN',gdp:'$4.1T',pop:'1.44B',currency:'INR',keyExports:'IT Services, Pharma, Textiles, Rice',keyImports:'Oil, Gold, Electronics, Coal',hotTopics:['Crypto Tax 30%','UPI/CBDC Integration','Russian Oil Imports','Manufacturing Push','AI Investment'],resources:{oil:'#3 Oil importer',coal:'#2 Coal consumer',minerals:'Major iron ore producer'}},BR:{name:'Brazil',lat:-23.5,lng:-46.6,flag:'BR',gdp:'$2.2T',pop:'216M',currency:'BRL',keyExports:'Soybeans, Iron Ore, Oil, Meat, Coffee',keyImports:'Electronics, Chemicals, Oil Products',hotTopics:['CBDC Drex','Amazon Deforestation Policy','BRICS Role','Commodity Supercycle','Pre-Salt Oil'],resources:{oil:'Pre-salt deep water reserves',minerals:'#2 Iron ore exporter',coal:'Minor producer'}}};
+const GEO_KEYWORDS={'us':{lat:38.9,lng:-77,cc:'US'},'america':{lat:38.9,lng:-77,cc:'US'},'trump':{lat:38.9,lng:-77,cc:'US'},'fed ':{lat:38.9,lng:-77,cc:'US'},'congress':{lat:38.9,lng:-77,cc:'US'},'white house':{lat:38.9,lng:-77,cc:'US'},'wall street':{lat:40.7,lng:-74,cc:'US'},'silicon valley':{lat:37.4,lng:-122,cc:'US'},'china':{lat:39.9,lng:116.4,cc:'CN'},'beijing':{lat:39.9,lng:116.4,cc:'CN'},'shanghai':{lat:31.2,lng:121.5,cc:'CN'},'xi jinping':{lat:39.9,lng:116.4,cc:'CN'},'russia':{lat:55.7,lng:37.6,cc:'RU'},'moscow':{lat:55.7,lng:37.6,cc:'RU'},'putin':{lat:55.7,lng:37.6,cc:'RU'},'kremlin':{lat:55.7,lng:37.6,cc:'RU'},'ukraine':{lat:50.4,lng:30.5,cc:'UA'},'kyiv':{lat:50.4,lng:30.5,cc:'UA'},'zelensky':{lat:50.4,lng:30.5,cc:'UA'},'europe':{lat:50.1,lng:8.7,cc:'EU'},'eu ':{lat:50.1,lng:8.7,cc:'EU'},'ecb':{lat:50.1,lng:8.7,cc:'EU'},'brussels':{lat:50.8,lng:4.4,cc:'EU'},'uk ':{lat:51.5,lng:-0.1,cc:'GB'},'london':{lat:51.5,lng:-0.1,cc:'GB'},'britain':{lat:51.5,lng:-0.1,cc:'GB'},'japan':{lat:35.7,lng:139.7,cc:'JP'},'tokyo':{lat:35.7,lng:139.7,cc:'JP'},'boj':{lat:35.7,lng:139.7,cc:'JP'},'india':{lat:28.6,lng:77.2,cc:'IN'},'modi':{lat:28.6,lng:77.2,cc:'IN'},'mumbai':{lat:19,lng:72.9,cc:'IN'},'brazil':{lat:-23.5,lng:-46.6,cc:'BR'},'saudi':{lat:24.7,lng:46.7,cc:'SA'},'opec':{lat:24.7,lng:46.7,cc:'SA'},'iran':{lat:32.4,lng:53.7,cc:'IR'},'tehran':{lat:35.7,lng:51.4,cc:'IR'},'hormuz':{lat:26.6,lng:56.3,cc:'IR'},'israel':{lat:31.8,lng:35.2,cc:'IL'},'gaza':{lat:31.5,lng:34.5,cc:'PS'},'middle east':{lat:29,lng:47,cc:'ME'},'australia':{lat:-33.9,lng:151.2,cc:'AU'},'africa':{lat:-1.3,lng:36.8,cc:'AF'},'nigeria':{lat:9.1,lng:7.5,cc:'NG'},'korea':{lat:37.6,lng:127,cc:'KR'},'singapore':{lat:1.35,lng:103.8,cc:'SG'},'hong kong':{lat:22.3,lng:114.2,cc:'HK'},'bitcoin':{lat:13.7,lng:-89.2,cc:'BTC'},'btc':{lat:13.7,lng:-89.2,cc:'BTC'},'ethereum':{lat:47.4,lng:8.5,cc:'ETH'},'crypto':{lat:1.35,lng:103.8,cc:'CRYPTO'}};
+let globe,activeLayers={events:true,oil:true,minerals:true,coal:true,lng:true,news:false},activeCountries=new Set(),allNewsItems=[],allMarketData=[],newsGeoPoints=[];
+setInterval(()=>{const n=new Date();document.getElementById('ck').textContent=n.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});document.getElementById('dt').textContent=n.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'});const u=Math.floor((Date.now()-T0)/1000);document.getElementById('up').textContent=String(Math.floor(u/60)).padStart(2,'0')+':'+String(u%60).padStart(2,'0');},1000);
+function showPage(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.getElementById('pg-'+id).classList.add('on');btn.classList.add('on');if(id==='overview'&&globe)globe.controls().update();}
+function toggleLayer(btn){const layer=btn.dataset.layer;activeLayers[layer]=!activeLayers[layer];btn.classList.toggle('on');updateGlobeData();}
+function toggleCountry(btn){const cc=btn.dataset.cc;if(activeCountries.has(cc)){activeCountries.delete(cc);btn.classList.remove('on');}else{activeCountries.add(cc);btn.classList.add('on');}if(activeCountries.has(cc)){const info=COUNTRY_INFO[cc];if(info)globe.pointOfView({lat:info.lat,lng:info.lng,altitude:1.5},1000);showCountryPopup(cc);}else{document.getElementById('popup').classList.remove('show');}}
+function toggleRotation(){const btn=document.getElementById('rotateBtn');const rotating=globe.controls().autoRotate;globe.controls().autoRotate=!rotating;btn.classList.toggle('on');btn.textContent=rotating?'AUTO-ROTATE OFF':'AUTO-ROTATE';}
+function initGlobe(){const container=document.getElementById('globeViz');globe=Globe()(container).globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg').backgroundColor('rgba(0,0,0,0)').showAtmosphere(true).atmosphereColor('rgba(40,80,160,0.2)').atmosphereAltitude(0.18).pointsData([]).pointLat(d=>d.lat).pointLng(d=>d.lng).pointColor(d=>d.color).pointAltitude(d=>d.alt||0.06).pointRadius(d=>d.radius||0.4).pointsMerge(false).onPointClick(d=>{if(d.type==='news')showNewsPopup(d);else showEventPopup(d);}).onPointHover(d=>{container.style.cursor=d?'pointer':'grab'}).ringsData([]).ringLat(d=>d.lat).ringLng(d=>d.lng).ringColor(d=>()=>d.color).ringMaxRadius(3).ringPropagationSpeed(1.5).ringRepeatPeriod(2000).arcsData([]).arcStartLat(d=>d.startLat).arcStartLng(d=>d.startLng).arcEndLat(d=>d.endLat).arcEndLng(d=>d.endLng).arcColor(d=>d.color).arcDashLength(0.5).arcDashGap(0.3).arcDashAnimateTime(d=>d.speed||4000).arcStroke(d=>d.stroke||0.2).arcLabel(d=>`<div style="font-family:JetBrains Mono;font-size:10px;background:rgba(4,6,10,.95);padding:6px 10px;border:1px solid rgba(59,130,246,.15);border-radius:4px;color:#fff"><b>${d.label}</b><br/><span style="color:#5a6a80">${d.resource} — ${d.volume}</span></div>`).labelsData([]).labelLat(d=>d.lat).labelLng(d=>d.lng).labelText(d=>d.name).labelSize(0.7).labelDotRadius(0.3).labelColor(d=>()=>d.color).labelResolution(2);fetch('https://unpkg.com/world-atlas@2/countries-110m.json').then(r=>r.json()).then(topology=>{const countries=topojson.feature(topology,topology.objects.countries);globe.polygonsData(countries.features).polygonCapColor(()=>'rgba(15,30,60,0.1)').polygonSideColor(()=>'rgba(15,30,60,0.05)').polygonStrokeColor(()=>'rgba(59,130,246,0.08)').polygonAltitude(0.005);});globe.controls().autoRotate=true;globe.controls().autoRotateSpeed=0.3;globe.controls().enableZoom=true;globe.controls().minDistance=150;globe.controls().maxDistance=500;globe.pointOfView({lat:25,lng:20,altitude:2.2},0);updateGlobeData();}
+function updateGlobeData(){if(!globe)return;let points=[];if(activeLayers.events)points.push(...GEO_EVENTS.map(e=>({...e,type:'event',alt:0.06,radius:0.5})));if(activeLayers.news)points.push(...newsGeoPoints.map(n=>({...n,type:'news',alt:0.03,radius:0.25})));globe.pointsData(points);globe.ringsData(activeLayers.events?GEO_EVENTS:[]);let arcs=TRANSPORT_ROUTES.filter(r=>activeLayers[r.layer]);if(activeLayers.events){arcs.push({startLat:38.9,startLng:-77,endLat:39.9,endLng:116.4,color:'rgba(200,80,80,0.2)',label:'US-China Tension',resource:'Trade War',volume:'$400B tariffs',layer:'events',speed:4000,stroke:0.2},{startLat:38.9,startLng:-77,endLat:32.4,endLng:53.7,color:'rgba(200,80,80,0.2)',label:'US-Iran Tension',resource:'Military',volume:'Strait of Hormuz',layer:'events',speed:4000,stroke:0.2});}globe.arcsData(arcs);globe.labelsData(activeLayers.events?GEO_EVENTS:[]);}
+function geolocateNews(items){newsGeoPoints=[];const used=new Set();items.forEach(n=>{const lower=n.title.toLowerCase();for(const [kw,geo] of Object.entries(GEO_KEYWORDS)){if(lower.includes(kw)&&!used.has(n.title+geo.cc)){used.add(n.title+geo.cc);newsGeoPoints.push({lat:geo.lat+(Math.random()-.5)*3,lng:geo.lng+(Math.random()-.5)*3,color:'#22c55e',name:n.title.slice(0,40)+'...',title:n.title,src:n.src,link:n.link,time:n.time,sentiment:n.s});break;}}});if(activeLayers.news)updateGlobeData();}
+function showEventPopup(ev){const popup=document.getElementById('popup');popup.classList.add('show');document.getElementById('popDot').style.background=ev.color;document.getElementById('popTitle').textContent=ev.name+' — '+ev.label;const body=document.getElementById('popBody');const impColor=ev.impact==='BEARISH'?'var(--red)':ev.impact==='BULLISH'?'var(--grn)':'var(--amb)';const impBg=ev.impact==='BEARISH'?'rgba(239,68,68,.12)':ev.impact==='BULLISH'?'rgba(34,197,94,.12)':'rgba(245,158,11,.08)';body.innerHTML=`<div style="font-size:10px;color:var(--t2);line-height:1.6">${ev.desc}</div><div style="display:inline-block;font-size:7px;padding:2px 6px;border-radius:3px;font-weight:700;letter-spacing:.5px;background:${impBg};color:${impColor}">${ev.impact}</div><div style="display:flex;gap:4px;flex-wrap:wrap">${ev.assets.map(a=>`<span style="font-size:7px;padding:2px 5px;border:1px solid var(--bdr);border-radius:2px;color:var(--t2)">${a}</span>`).join('')}</div>`;const keywords=ev.label.toLowerCase().split(/[\s—&]+/).filter(w=>w.length>3);const relevant=allNewsItems.filter(n=>{const t=n.title.toLowerCase();return keywords.some(k=>t.includes(k))||ev.assets.some(a=>t.includes(a.toLowerCase()));}).slice(0,5);if(relevant.length){body.innerHTML+=`<div class="popup-section"><div class="popup-section-title">RELATED INTEL</div>`+relevant.map(n=>`<div style="padding:3px 0;border-bottom:1px solid rgba(255,255,255,.02)"><span style="font-size:6px;color:var(--t3);text-transform:uppercase;margin-right:4px;font-weight:600">${n.src}</span><a href="${n.link}" target="_blank" style="font-size:9px;color:var(--txt);text-decoration:none;line-height:1.5">${n.title}</a></div>`).join('')+'</div>';}const routes=TRANSPORT_ROUTES.filter(r=>{const d=Math.sqrt(Math.pow(r.startLat-ev.lat,2)+Math.pow(r.startLng-ev.lng,2));const d2=Math.sqrt(Math.pow(r.endLat-ev.lat,2)+Math.pow(r.endLng-ev.lng,2));return d<15||d2<15;}).slice(0,4);if(routes.length){body.innerHTML+=`<div class="popup-section"><div class="popup-section-title">RESOURCE FLOWS</div>`+routes.map(r=>{const colorMap={oil:'var(--oil)',minerals:'var(--mineral)',coal:'var(--coal)',lng:'var(--lng)'};return `<div class="popup-resource"><span class="dot" style="background:${colorMap[r.layer]||'var(--blue)'}"></span><span>${r.label}</span><span style="margin-left:auto;color:var(--t2);font-size:7px">${r.volume}</span></div>`;}).join('')+'</div>';}popup.style.top='60px';popup.style.right='290px';popup.style.left='auto';}
+function showNewsPopup(n){const popup=document.getElementById('popup');popup.classList.add('show');document.getElementById('popDot').style.background='var(--grn)';document.getElementById('popTitle').textContent='NEWS PIN';const sentLabel={bu:'BULLISH',be:'BEARISH',ne:'NEUTRAL'}[n.sentiment]||'NEUTRAL';const sentColor=n.sentiment==='bu'?'var(--grn)':n.sentiment==='be'?'var(--red)':'var(--amb)';document.getElementById('popBody').innerHTML=`<div style="font-size:11px;color:#fff;line-height:1.5;font-weight:500">${n.title}</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:7px;color:var(--t2);text-transform:uppercase;font-weight:600">${n.src}</span><span style="font-size:7px;padding:2px 6px;border-radius:3px;font-weight:700;background:rgba(255,255,255,.05);color:${sentColor}">${sentLabel}</span></div><a href="${n.link}" target="_blank" style="font-size:9px;color:var(--blue);text-decoration:none">READ FULL ARTICLE →</a>`;popup.style.top='60px';popup.style.right='290px';popup.style.left='auto';}
+function showCountryPopup(cc){const info=COUNTRY_INFO[cc];if(!info)return;const popup=document.getElementById('popup');popup.classList.add('show');document.getElementById('popDot').style.background='var(--cyan)';document.getElementById('popTitle').textContent=info.name+' — INFOCENTER';const body=document.getElementById('popBody');let html=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="background:var(--bg);padding:6px 8px;border:1px solid var(--bdr);border-radius:3px"><div style="font-size:6px;color:var(--t2);letter-spacing:1px;text-transform:uppercase">GDP</div><div style="font-size:13px;color:#fff;font-weight:700">${info.gdp}</div></div><div style="background:var(--bg);padding:6px 8px;border:1px solid var(--bdr);border-radius:3px"><div style="font-size:6px;color:var(--t2);letter-spacing:1px;text-transform:uppercase">Population</div><div style="font-size:13px;color:#fff;font-weight:700">${info.pop}</div></div><div style="background:var(--bg);padding:6px 8px;border:1px solid var(--bdr);border-radius:3px"><div style="font-size:6px;color:var(--t2);letter-spacing:1px;text-transform:uppercase">Currency</div><div style="font-size:13px;color:#fff;font-weight:700">${info.currency}</div></div><div style="background:var(--bg);padding:6px 8px;border:1px solid var(--bdr);border-radius:3px"><div style="font-size:6px;color:var(--t2);letter-spacing:1px;text-transform:uppercase">Flag</div><div style="font-size:13px;color:#fff;font-weight:700">${info.flag}</div></div></div>`;html+=`<div class="popup-section"><div class="popup-section-title">KEY EXPORTS</div><div style="font-size:9px;color:var(--txt);line-height:1.5">${info.keyExports}</div></div>`;html+=`<div class="popup-section"><div class="popup-section-title">KEY IMPORTS</div><div style="font-size:9px;color:var(--txt);line-height:1.5">${info.keyImports}</div></div>`;if(info.resources){html+=`<div class="popup-section"><div class="popup-section-title">RESOURCE PROFILE</div>`;if(info.resources.oil)html+=`<div class="popup-resource"><span class="dot" style="background:var(--oil)"></span><span style="font-size:9px">${info.resources.oil}</span></div>`;if(info.resources.lng)html+=`<div class="popup-resource"><span class="dot" style="background:var(--lng)"></span><span style="font-size:9px">${info.resources.lng}</span></div>`;if(info.resources.minerals)html+=`<div class="popup-resource"><span class="dot" style="background:var(--mineral)"></span><span style="font-size:9px">${info.resources.minerals}</span></div>`;if(info.resources.coal)html+=`<div class="popup-resource"><span class="dot" style="background:var(--coal)"></span><span style="font-size:9px">${info.resources.coal}</span></div>`;html+=`</div>`;}html+=`<div class="popup-section"><div class="popup-section-title">HOT TOPICS</div><div style="display:flex;gap:4px;flex-wrap:wrap">${info.hotTopics.map(t=>`<span style="font-size:7px;padding:3px 7px;border:1px solid var(--bdr);border-radius:10px;color:var(--txt);background:var(--bg)">${t}</span>`).join('')}</div></div>`;const ccEvents=GEO_EVENTS.filter(e=>e.cc===cc);if(ccEvents.length){html+=`<div class="popup-section"><div class="popup-section-title">ACTIVE EVENTS</div>`;ccEvents.forEach(e=>{const impColor=e.impact==='BEARISH'?'var(--red)':e.impact==='BULLISH'?'var(--grn)':'var(--amb)';html+=`<div style="padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03)"><div style="font-size:9px;color:#fff;font-weight:500">${e.label}</div><div style="font-size:7px;color:${impColor};font-weight:700;margin-top:2px">${e.impact}</div></div>`;});html+=`</div>`;}const routes=TRANSPORT_ROUTES.filter(r=>{const d1=Math.sqrt(Math.pow(r.startLat-info.lat,2)+Math.pow(r.startLng-info.lng,2));const d2=Math.sqrt(Math.pow(r.endLat-info.lat,2)+Math.pow(r.endLng-info.lng,2));return d1<15||d2<15;});if(routes.length){html+=`<div class="popup-section"><div class="popup-section-title">TRADE ROUTES (${routes.length})</div>`;routes.slice(0,6).forEach(r=>{const colorMap={oil:'var(--oil)',minerals:'var(--mineral)',coal:'var(--coal)',lng:'var(--lng)'};html+=`<div class="popup-resource"><span class="dot" style="background:${colorMap[r.layer]}"></span><span>${r.label}</span><span style="margin-left:auto;color:var(--t2);font-size:7px">${r.volume}</span></div>`;});html+=`</div>`;}body.innerHTML=html;popup.style.top='60px';popup.style.left='50%';popup.style.right='auto';popup.style.transform='translateX(-50%)';}
+function showMarketPopup(symbol){const data=allMarketData.find(m=>m.s===symbol);if(!data)return;const popup=document.getElementById('popup');popup.classList.add('show');popup.style.transform='none';document.getElementById('popDot').style.background='var(--blue)';document.getElementById('popTitle').textContent=data.s;const body=document.getElementById('popBody');const chgColor=data.c>=0?'var(--grn)':'var(--red)';const chgSign=data.c>=0?'+':'';body.innerHTML=`<div class="popup-price">${fP(data.p)}</div><div class="popup-stat"><span class="popup-stat-label">24h Change</span><span class="popup-stat-value" style="color:${chgColor}">${chgSign}${data.c.toFixed(2)}%</span></div><div class="popup-stat"><span class="popup-stat-label">High</span><span class="popup-stat-value">${fP(data.h||data.p)}</span></div><div class="popup-stat"><span class="popup-stat-label">Low</span><span class="popup-stat-value">${fP(data.l||data.p)}</span></div><span class="popup-badge ${data.type||'crypto'}">${data.type||'CRYPTO'}</span>`;popup.style.top='60px';popup.style.right='12px';popup.style.left='auto';popup.style.transform='none';}
 function fP(p){if(!p)return'--';if(p>=1e6)return'$'+(p/1e6).toFixed(1)+'M';if(p>=1e3)return'$'+(p/1e3).toFixed(0)+'K';return'$'+parseFloat(p).toFixed(p<1?4:2);}
 function fB(v){if(v>=1e12)return'$'+(v/1e12).toFixed(1)+'T';if(v>=1e9)return'$'+(v/1e9).toFixed(1)+'B';if(v>=1e6)return'$'+(v/1e6).toFixed(0)+'M';return'$'+Math.round(v);}
-const ASSETS=[
-  {id:'bitcoin',s:'BTC',t:'crypto'},{id:'ethereum',s:'ETH',t:'crypto'},{id:'solana',s:'SOL',t:'crypto'},{id:'cardano',s:'ADA',t:'crypto'},
-  {id:'ripple',s:'XRP',t:'crypto'},{id:'polkadot',s:'DOT',t:'crypto'},{id:'litecoin',s:'LTC',t:'crypto'},{id:'dogecoin',s:'DOGE',t:'crypto'}
-];
-async function fetchForex(){
-  try{
-    const r=await fetch('https://api.frankfurter.app/latest?base=USD&symbols=EUR,GBP,JPY,CHF,CNY,INR');
-    const d=await r.json();
-    return[
-      {s:'USD/EUR',p:1/d.rates.EUR,c:-2.1,type:'forex'},
-      {s:'USD/GBP',p:1/d.rates.GBP,c:-1.8,type:'forex'},
-      {s:'USD/JPY',p:d.rates.JPY,c:0.5,type:'forex'},
-    ];
-  }catch(e){return[];}
-}
-async function fetchYahoo(){
-  try{
-    const syms=['NVDA','AAPL','MSFT','^GSPC','^IXIC','^GDAXI','GC=F','CL=F'];
-    const p=Promise.all(syms.map(s=>
-      fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${s}`).then(r=>r.json()).catch(()=>null)
-    ));
-    const rr=await p;
-    const res=[];
-    const mapping={'NVDA':{s:'NVDA',t:'stock'},'AAPL':{s:'AAPL',t:'stock'},'MSFT':{s:'MSFT',t:'stock'},'^GSPC':{s:'S&P500',t:'index'},
-      '^IXIC':{s:'NAS100',t:'index'},'^GDAXI':{s:'GER40',t:'index'},'GC=F':{s:'GOLD',t:'commodity'},'CL=F':{s:'OIL',t:'commodity'}};
-    rr.forEach((r,i)=>{
-      if(!r?.chart?.result?.[0])return;
-      const d=r.chart.result[0];const m=mapping[syms[i]];
-      if(!m)return;
-      const p=d.meta.regularMarketPrice;const cp=d.meta.regularMarketPreviousClose;
-      const c=((p-cp)/cp)*100;
-      res.push({s:m.s,p,c,type:m.t});
-    });
-    return res;
-  }catch(e){return[];}
-}
-async function fetchMkts(){
-  try{
-    const grid=document.getElementById('mGrid');
-    const[cryptoRes,forexData,yahooData]=await Promise.all([
-      fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ASSETS.map(a=>a.id).join(',')}&sparkline=false&price_change_percentage=24h`).then(r=>r.json()).catch(()=>[]),
-      fetchForex(),
-      fetchYahoo()
-    ]);
-    let html='';
-    allMarketData=[];
-    if(Array.isArray(cryptoRes)){
-      cryptoRes.forEach(c=>{
-        const a=ASSETS.find(x=>x.id===c.id);if(!a)return;
-        const ch=c.price_change_percentage_24h||0;
-        allMarketData.push({s:a.s,p:c.current_price,c:ch,type:'crypto',h:c.high_24h,l:c.low_24h});
-        html+=mkCard(a.s,fP(c.current_price),ch,'crypto');
-      });
-    }
-    const extra=[...yahooData,...forexData];
-    extra.forEach(a=>{
-      allMarketData.push({s:a.s,p:a.p,c:a.c,type:a.type});
-      html+=mkCard(a.s,fP(a.p),a.c!==undefined?a.c:0,a.type);
-    });
-    grid.innerHTML=html||'<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">NO DATA — RETRYING...</div>';
-    if(!html)setTimeout(fetchMkts,10000);
-  }catch(e){
-    grid.innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">RETRYING...</div>';
-    setTimeout(fetchMkts,10000);
-  }
-}
-function mkCard(sym,price,ch,type){
-  const cls=ch>=0?'up':'dn';const sign=ch>=0?'+':'';
-  return `<div class="mc" onclick="showMarketPopup('${sym}')"><div class="mc-h"><span class="mc-s">${sym}</span><span class="mc-c ${cls}">${sign}${ch.toFixed(2)}%</span></div><div class="mc-p">${price}</div><div class="mc-l">${type}</div></div>`;
-}
+const ASSETS=[{id:'bitcoin',s:'BTC',t:'crypto'},{id:'ethereum',s:'ETH',t:'crypto'},{id:'solana',s:'SOL',t:'crypto'},{id:'cardano',s:'ADA',t:'crypto'},{id:'ripple',s:'XRP',t:'crypto'},{id:'polkadot',s:'DOT',t:'crypto'},{id:'litecoin',s:'LTC',t:'crypto'},{id:'dogecoin',s:'DOGE',t:'crypto'}];
+async function fetchForex(){try{const r=await fetch('https://api.frankfurter.app/latest?base=USD&symbols=EUR,GBP,JPY,CHF,CNY,INR');const d=await r.json();return[{s:'USD/EUR',p:1/d.rates.EUR,c:-2.1,type:'forex'},{s:'USD/GBP',p:1/d.rates.GBP,c:-1.8,type:'forex'},{s:'USD/JPY',p:d.rates.JPY,c:0.5,type:'forex'}];}catch(e){return[];}}
+async function fetchYahoo(){try{const syms=['NVDA','AAPL','MSFT','^GSPC','^IXIC','^GDAXI','GC=F','CL=F'];const p=Promise.all(syms.map(s=>fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${s}`).then(r=>r.json()).catch(()=>null)));const rr=await p;const res=[];const mapping={'NVDA':{s:'NVDA',t:'stock'},'AAPL':{s:'AAPL',t:'stock'},'MSFT':{s:'MSFT',t:'stock'},'^GSPC':{s:'S&P500',t:'index'},'^IXIC':{s:'NAS100',t:'index'},'^GDAXI':{s:'GER40',t:'index'},'GC=F':{s:'GOLD',t:'commodity'},'CL=F':{s:'OIL',t:'commodity'}};rr.forEach((r,i)=>{if(!r?.chart?.result?.[0])return;const d=r.chart.result[0];const m=mapping[syms[i]];if(!m)return;const p=d.meta.regularMarketPrice;const cp=d.meta.regularMarketPreviousClose;const c=((p-cp)/cp)*100;res.push({s:m.s,p,c,type:m.t});});return res;}catch(e){return[];}}
+async function fetchMkts(){const grid=document.getElementById('mGrid');try{const[cryptoRes,forexData,yahooData]=await Promise.all([fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ASSETS.map(a=>a.id).join(',')}&sparkline=false&price_change_percentage=24h`).then(r=>r.json()).catch(()=>[]),fetchForex().catch(()=>[]),fetchYahoo().catch(()=>[])]);let html='';allMarketData=[];if(Array.isArray(cryptoRes)&&cryptoRes.length){cryptoRes.forEach(c=>{const a=ASSETS.find(x=>x.id===c.id);if(!a)return;const ch=c.price_change_percentage_24h||0;allMarketData.push({s:a.s,p:c.current_price,c:ch,type:'crypto',h:c.high_24h,l:c.low_24h});html+=mkCard(a.s,fP(c.current_price),ch,'crypto');});}const extra=[...(yahooData||[]||[]),...(forexData||[])];extra.forEach(a=>{allMarketData.push({s:a.s,p:a.p,c:a.c,type:a.type});html+=mkCard(a.s,fP(a.p),a.c!==undefined?a.c:0,a.type);});grid.innerHTML=html||'<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">LOADING MARKET DATA...</div>';}catch(e){grid.innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">RETRYING...</div>';setTimeout(fetchMkts,8000);}}
+function mkCard(sym,price,ch,type){const cls=ch>=0?'up':'dn';const sign=ch>=0?'+':'';return `<div class="mc" onclick="showMarketPopup('${sym}')"><div class="mc-h"><span class="mc-s">${sym}</span><span class="mc-c ${cls}">${sign}${ch.toFixed(2)}%</span></div><div class="mc-p">${price}</div><div class="mc-l">${type}</div></div>`;}
 fetchMkts();setInterval(fetchMkts,60000);
-
-// Global crypto stats
-async function fetchGlobalCrypto(){
-  try{
-    const r=await fetch('https://api.coingecko.com/api/v3/global');
-    const d=await r.json();
-    if(d.data){
-      if(d.data.total_market_cap?.usd)document.getElementById('gM').textContent=fB(d.data.total_market_cap.usd);
-      if(d.data.market_cap_percentage?.btc)document.getElementById('gD').textContent=d.data.market_cap_percentage.btc.toFixed(1)+'%';
-      if(d.data.total_volume?.usd)document.getElementById('gV').textContent=fB(d.data.total_volume.usd);
-    }
-  }catch(e){}
-}
+async function fetchGlobalCrypto(){try{const r=await fetch('https://api.coingecko.com/api/v3/global');const d=await r.json();if(d.data){if(d.data.total_market_cap?.usd)document.getElementById('gM').textContent=fB(d.data.total_market_cap.usd);if(d.data.market_cap_percentage?.btc)document.getElementById('gD').textContent=d.data.market_cap_percentage.btc.toFixed(1)+'%';if(d.data.total_volume?.usd)document.getElementById('gV').textContent=fB(d.data.total_volume.usd);}}catch(e){}}
 fetchGlobalCrypto();
-
-// ═══ FEAR & GREED ═══
-async function fetchFG(){
-  try{
-    const r=await fetch('https://api.alternative.me/fng/?limit=1');
-    const d=await r.json();const v=parseInt(d.data[0].value);
-    let col,lbl;
-    if(v<=25){col='var(--red)';lbl='EXTREME FEAR'}else if(v<=45){col='var(--amb)';lbl='FEAR'}
-    else if(v<=55){col:'#eab308';lbl='NEUTRAL'}else if(v<=75){col='var(--grn)';lbl='GREED'}
-    else{col='#22c55e';lbl='EXTREME GREED'}
-    document.getElementById('fgN').textContent=v;document.getElementById('fgN').style.color=col;
-    document.getElementById('fgL').textContent=lbl;document.getElementById('fgL').style.color=col;
-    document.getElementById('fgF').style.width=v+'%';document.getElementById('fgF').style.background=col;
-    document.getElementById('gF').textContent=v+'/100';document.getElementById('gF').style.color=col;
-  }catch(e){}
-}
+async function fetchFG(){try{const r=await fetch('https://api.alternative.me/fng/?limit=1');const d=await r.json();const v=parseInt(d.data[0].value);let col,lbl;if(v<=25){col='var(--red)';lbl='EXTREME FEAR'}else if(v<=45){col='var(--amb)';lbl='FEAR'}else if(v<=55){col:'#eab308';lbl='NEUTRAL'}else if(v<=75){col='var(--grn)';lbl='GREED'}else{col='#22c55e';lbl='EXTREME GREED'}document.getElementById('fgN').textContent=v;document.getElementById('fgN').style.color=col;document.getElementById('fgL').textContent=lbl;document.getElementById('fgL').style.color=col;document.getElementById('fgF').style.width=v+'%';document.getElementById('fgF').style.background=col;document.getElementById('gF').textContent=v+'/100';document.getElementById('gF').style.color=col;}catch(e){}}
 fetchFG();setInterval(fetchFG,300000);
-
-// ═══ NEWS ═══
-const FEEDS=[
-  {n:'TheBlock',u:'https://www.theblock.co/rss.xml'},
-  {n:'Decrypt',u:'https://decrypt.co/feed'},
-  {n:'BBC Biz',u:'http://feeds.bbci.co.uk/news/business/rss.xml'},
-  {n:'BBC World',u:'http://feeds.bbci.co.uk/news/world/rss.xml'},
-  {n:'CNBC',u:'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114'},
-  {n:'Reuters',u:'https://feeds.reuters.com/reuters/businessNews'},
-];
-const SW={bu:['surge','rally','adoption','bullish','gain','soar','record','inflows','positive','recovery','growth','approval','buy','accumulation','etf inflow'],
-be:['crash','dump','bearish','fear','sell','drop','decline','ban','hack','exploit','tariff','war','sanction','tension','correction','outflow','plunge','tumble','crisis','iran','military','hawkish','recession']};
+const FEEDS=[{n:'TheBlock',u:'https://www.theblock.co/rss.xml'},{n:'Decrypt',u:'https://decrypt.co/feed'},{n:'BBC Biz',u:'http://feeds.bbci.co.uk/news/business/rss.xml'},{n:'BBC World',u:'http://feeds.bbci.co.uk/news/world/rss.xml'},{n:'CNBC',u:'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114'},{n:'Reuters',u:'https://feeds.reuters.com/reuters/businessNews'}];
+const SW={bu:['surge','rally','adoption','bullish','gain','soar','record','inflows','positive','recovery','growth','approval','buy','accumulation','etf inflow'],be:['crash','dump','bearish','fear','sell','drop','decline','ban','hack','exploit','tariff','war','sanction','tension','correction','outflow','plunge','tumble','crisis','iran','military','hawkish','recession']};
 function sent(t){const l=t.toLowerCase();let b=0,r=0;SW.bu.forEach(k=>{if(l.includes(k))b++});SW.be.forEach(k=>{if(l.includes(k))r++});return b>r?'bu':r>b?'be':'ne'}
 function ago(d){const s=(Date.now()-d)/1000;if(s<60)return'now';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d'}
-
-async function fetchNews(){
-  const items=[];
-  for(const f of FEEDS){
-    try{
-      const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(f.u)}`,{signal:AbortSignal.timeout(8000)});
-      const txt=await r.text();
-      const xml=new DOMParser().parseFromString(txt,'text/xml');
-      xml.querySelectorAll('item').forEach((it,i)=>{
-        if(i>=5)return;
-        const title=it.querySelector('title')?.textContent?.trim();
-        const pub=it.querySelector('pubDate')?.textContent;
-        const link=it.querySelector('link')?.textContent;
-        if(title)items.push({src:f.n,title,time:pub?new Date(pub).getTime():Date.now(),link,s:sent(title)});
-      });
-    }catch(e){}
-  }
-  items.sort((a,b)=>b.time-a.time);
-  allNewsItems=items;
-  geolocateNews(items);
-  document.getElementById('nCnt').textContent=items.length;
-  const feed=document.getElementById('nFeed');
-  if(!items.length){feed.innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">NO INTEL</div>';return}
-  feed.innerHTML=items.slice(0,15).map(it=>{
-    const sLabel={bu:'BULL',be:'BEAR',ne:'NEUT'}[it.s];
-    return `<div class="ni" onclick="window.open('${it.link}','_blank')"><div class="nm"><span class="ns">${it.src}</span><span class="nse ${it.s}">${sLabel}</span><span class="nt">${ago(it.time)}</span></div><div class="ntxt">${it.title}</div></div>`;
-  }).join('');
-}
+async function fetchNews(){const items=[];for(const f of FEEDS){try{const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(f.u)}`,{signal:AbortSignal.timeout(8000)});const txt=await r.text();const xml=new DOMParser().parseFromString(txt,'text/xml');xml.querySelectorAll('item').forEach((it,i)=>{if(i>=5)return;const title=it.querySelector('title')?.textContent?.trim();const pub=it.querySelector('pubDate')?.textContent;const link=it.querySelector('link')?.textContent;if(title)items.push({src:f.n,title,time:pub?new Date(pub).getTime():Date.now(),link,s:sent(title)});});}catch(e){}}items.sort((a,b)=>b.time-a.time);allNewsItems=items;geolocateNews(items);document.getElementById('nCnt').textContent=items.length;const feed=document.getElementById('nFeed');if(!items.length){feed.innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">NO INTEL</div>';return}feed.innerHTML=items.slice(0,15).map(it=>{const sLabel={bu:'BULL',be:'BEAR',ne:'NEUT'}[it.s];return `<div class="ni" onclick="window.open('${it.link}','_blank')"><div class="nm"><span class="ns">${it.src}</span><span class="nse ${it.s}">${sLabel}</span><span class="nt">${ago(it.time)}</span></div><div class="ntxt">${it.title}</div></div>`;}).join('');}
 fetchNews();setInterval(fetchNews,120000);
-
-// ═══ POLYMARKET PREDICTIONS ═══
 const SPORTS_FILTERS=['vs.','spartans','huskies','celtics','lakers','warriors','knicks','nets','sixers','heat','nuggets','suns','mavericks','grizzlies','pacers','cavaliers','bucks','timberwolves','thunder','kings','spurs','pelicans','clippers','rockets','hawks','blazers','raptors','pistons','hornets','magic','superbowl','nfl','nba','nhl','mlb','football','basketball','baseball','hockey','soccer','premier league','champions league','world cup','ncaa','march madness','touchdown','quarterback','slam dunk','red storm','blue devils','volunteers','fighting illini','hawkeyes','boilermakers','wildcats','bulldogs','bears','tigers','lions','panthers','eagles','ravens','steelers','patriots','cowboys','chiefs','49ers','saints','chargers','broncos','raiders','colts','bengals','jaguars','titans','texans','commanders','seahawks','cardinals','falcons','buccaneers','rams','giants','jets','dolphins','bills','browns','vikings'];
-
 let polyRetries=0;
-async function fetchPolymarket(){
-  const feed=document.getElementById('pFeed');
-  const proxies=[
-    url=>'https://api.allorigins.win/get?url='+encodeURIComponent(url),
-    url=>'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
-    url=>'https://corsproxy.io/?url='+encodeURIComponent(url),
-  ];
-  const apiUrl='https://gamma-api.polymarket.com/markets?limit=25&active=true&closed=false&order=volume24hr&ascending=false';
-
-  for(let i=0;i<proxies.length;i++){
-    try{
-      const proxyUrl=proxies[i](apiUrl);
-      const r=await fetch(proxyUrl,{signal:AbortSignal.timeout(15000)});
-      let data;
-      if(i===0){
-        // allorigins /get returns {contents: "..."}
-        const wrapper=await r.json();
-        if(!wrapper.contents)continue;
-        data=JSON.parse(wrapper.contents);
-      } else {
-        data=await r.json();
-      }
-      if(!Array.isArray(data))continue;
-
-      const preds=data
-        .filter(m=>{
-          const q=(m.question||'').toLowerCase();
-          return !SPORTS_FILTERS.some(s=>q.includes(s));
-        })
-        .slice(0,8)
-        .map(m=>{
-          let yesPct=50;
-          try{
-            const prices=typeof m.outcomePrices==='string'?JSON.parse(m.outcomePrices):m.outcomePrices;
-            if(Array.isArray(prices))yesPct=(parseFloat(prices[0])||0.5)*100;
-          }catch(e){}
-          return {q:m.question||'Unknown',yesPct,vol:m.volume24hr||0,slug:m.slug||''};
-        });
-      document.getElementById('pCnt').textContent=preds.length;
-      polyRetries=0;
-      if(!preds.length){
-        feed.innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">NO PREDICTIONS</div>';
-        return;
-      }
-      feed.innerHTML=preds.map(p=>{
-        const barColor=p.yesPct>50?'var(--grn)':'var(--red)';
-        const volStr=p.vol>=1e6?'$'+(p.vol/1e6).toFixed(1)+'M':p.vol>=1e3?'$'+(p.vol/1e3).toFixed(0)+'K':'$'+Math.round(p.vol);
-        return `<div class="pred-item" onclick="window.open('https://polymarket.com/event/${p.slug}','_blank')">
-          <div class="pred-q">${p.q}</div>
-          <div class="pred-bar"><div class="pred-fill" style="width:${Math.max(p.yesPct,8)}%;background:${barColor}">${p.yesPct.toFixed(0)}%</div></div>
-          <div class="pred-stats"><span>YES ${p.yesPct.toFixed(0)}% / NO ${(100-p.yesPct).toFixed(0)}%</span><span>${volStr}</span></div>
-        </div>`;
-      }).join('');
-      return; // success
-    }catch(e){continue;}
-  }
-  // All proxies failed
-  polyRetries++;
-  const delay=Math.min(polyRetries*5000,30000);
-  feed.innerHTML=`<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px;letter-spacing:1px">RECONNECTING... (attempt ${polyRetries})</div>`;
-  setTimeout(fetchPolymarket,delay);
-}
+async function fetchPolymarket(){const feed=document.getElementById('pFeed');const proxies=[url=>'https://api.allorigins.win/get?url='+encodeURIComponent(url),url=>'https://api.allorigins.win/raw?url='+encodeURIComponent(url),url=>'https://corsproxy.io/?url='+encodeURIComponent(url)];const apiUrl='https://gamma-api.polymarket.com/markets?limit=25&active=true&closed=false&order=volume24hr&ascending=false';for(let i=0;i<proxies.length;i++){try{const proxyUrl=proxies[i](apiUrl);const r=await fetch(proxyUrl,{signal:AbortSignal.timeout(15000)});let data;if(i===0){const wrapper=await r.json();if(!wrapper.contents)continue;data=JSON.parse(wrapper.contents);}else{data=await r.json();}if(!Array.isArray(data))continue;const preds=data.filter(m=>{const q=(m.question||'').toLowerCase();return !SPORTS_FILTERS.some(s=>q.includes(s));}).slice(0,8).map(m=>{let yesPct=50;try{const prices=typeof m.outcomePrices==='string'?JSON.parse(m.outcomePrices):m.outcomePrices;if(Array.isArray(prices))yesPct=(parseFloat(prices[0])||0.5)*100;}catch(e){}const eventSlug=(m.events&&m.events[0]&&m.events[0].slug)||'';return {q:m.question||'Unknown',yesPct,vol:m.volume24hr||0,slug:m.slug||'',eventSlug};});document.getElementById('pCnt').textContent=preds.length;polyRetries=0;if(!preds.length){feed.innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">NO PREDICTIONS</div>';return;}feed.innerHTML=preds.map(p=>{const barColor=p.yesPct>50?'var(--grn)':'var(--red)';const volStr=p.vol>=1e6?'$'+(p.vol/1e6).toFixed(1)+'M':p.vol>=1e3?'$'+(p.vol/1e3).toFixed(0)+'K':'$'+Math.round(p.vol);const url=p.eventSlug?'https://polymarket.com/event/'+p.eventSlug+'/'+p.slug:'https://polymarket.com/market/'+p.slug;return `<div class="pred-item" onclick="window.open('${url}','_blank')"><div class="pred-q">${p.q}</div><div class="pred-bar"><div class="pred-fill" style="width:${Math.max(p.yesPct,8)}%;background:${barColor}">${p.yesPct.toFixed(0)}%</div></div><div class="pred-stats"><span>YES ${p.yesPct.toFixed(0)}% / NO ${(100-p.yesPct).toFixed(0)}%</span><span>${volStr}</span></div></div>`;}).join('');return;}catch(e){continue;}}polyRetries++;const delay=Math.min(polyRetries*5000,30000);feed.innerHTML=`<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px;letter-spacing:1px">RECONNECTING... (attempt ${polyRetries})</div>`;setTimeout(fetchPolymarket,delay);}
 fetchPolymarket();setInterval(fetchPolymarket,120000);
-
-// ═══ AGENTS ═══
-const AGENTS=[
-  {name:'News Agent',desc:'Fetches live headlines from RSS feeds and analyzes sentiment via AI (Groq/NIM). Covers crypto, forex, indices, and geopolitical events.',online:true,
-    cmds:[{l:'BTC BRIEFING',asset:'BTC'},{l:'ETH BRIEFING',asset:'ETH'},{l:'MARKET OVERVIEW',asset:'markets'}]},
-  {name:'Chart Agent',desc:'Technical analysis on any asset. Calculates 20+ indicators (EMA, RSI, MACD, Bollinger, VWAP, ATR) and uses AI to interpret patterns and bias.',online:true,
-    cmds:[{l:'BTC ANALYSIS',asset:'BTC/USDT'},{l:'ETH ANALYSIS',asset:'ETH/USDT'}]},
-  {name:'Strategy Agent',desc:'Combines chart + news into trade signals. Entry, Stop Loss, TP1-TP3, Risk:Reward ratio. Uses your APEX Confluence rules.',online:true,
-    cmds:[{l:'BTC SIGNAL',asset:'BTC/USDT'},{l:'ETH SIGNAL',asset:'ETH/USDT'},{l:'SCAN WATCHLIST',asset:'scan'}]},
-  {name:'Execution Agent',desc:'Places orders via CCXT, manages position sizing (max 2% risk), trailing stops, partial take profits. Currently in development.',online:false,
-    cmds:[{l:'STATUS',asset:'status'}]},
-];
-function renderAgents(){
-  AGENTS.forEach((a,i)=>{
-    document.getElementById('agent'+i).innerHTML=`
-      <div class="ac-hd"><div class="ac-dot ${a.online?'':'off'}"></div><div class="ac-nm">${a.name}</div><div class="ac-st" style="color:${a.online?'var(--grn)':'var(--amb)'}">${a.online?'ONLINE':'PHASE 4'}</div></div>
-      <div class="ac-desc">${a.desc}</div>
-      <div class="ac-btns">${a.cmds.map((c,j)=>`<button class="ac-btn" id="btn${i}_${j}" onclick="runAgent(${i},${j})">${c.l}</button>`).join('')}</div>
-      <div class="ac-out" id="out${i}"></div>`;
-  });
-}
+const AGENTS=[{name:'News Agent',desc:'Fetches live headlines from RSS feeds and analyzes sentiment via AI (Groq/NIM). Covers crypto, forex, indices, and geopolitical events.',online:true,cmds:[{l:'BTC BRIEFING',asset:'BTC'},{l:'ETH BRIEFING',asset:'ETH'},{l:'MARKET OVERVIEW',asset:'markets'}]},{name:'Chart Agent',desc:'Technical analysis on any asset. Calculates 20+ indicators (EMA, RSI, MACD, Bollinger, VWAP, ATR) and uses AI to interpret patterns and bias.',online:true,cmds:[{l:'BTC ANALYSIS',asset:'BTC/USDT'},{l:'ETH ANALYSIS',asset:'ETH/USDT'}]},{name:'Strategy Agent',desc:'Combines chart + news into trade signals. Entry, Stop Loss, TP1-TP3, Risk:Reward ratio. Uses your APEX Confluence rules.',online:true,cmds:[{l:'BTC SIGNAL',asset:'BTC/USDT'},{l:'ETH SIGNAL',asset:'ETH/USDT'},{l:'SCAN WATCHLIST',asset:'scan'}]},{name:'Execution Agent',desc:'Places orders via CCXT, manages position sizing (max 2% risk), trailing stops, partial take profits. Currently in development.',online:false,cmds:[{l:'STATUS',asset:'status'}]}];
+function renderAgents(){AGENTS.forEach((a,i)=>{document.getElementById('agent'+i).innerHTML=`<div class="ac-hd"><div class="ac-dot ${a.online?'':'off'}"></div><div class="ac-nm">${a.name}</div><div class="ac-st" style="color:${a.online?'var(--grn)':'var(--amb)'}">${a.online?'ONLINE':'PHASE 4'}</div></div><div class="ac-desc">${a.desc}</div><div class="ac-btns">${a.cmds.map((c,j)=>`<button class="ac-btn" id="btn${i}_${j}" onclick="runAgent(${i},${j})">${c.l}</button>`).join('')}</div><div class="ac-out" id="out${i}"></div>`;});}
 renderAgents();
-
-// ═══ AI PROVIDERS ═══
-const AI_PROVIDERS={
-  groq:{name:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',model:'llama-3.3-70b-versatile',keyUrl:'https://console.groq.com/keys',keyPrefix:'gsk_',cors:true},
-  nim:{name:'NVIDIA NIM',url:'https://integrate.api.nvidia.com/v1/chat/completions',model:'meta/llama-3.3-70b-instruct',keyUrl:'https://build.nvidia.com/settings/api-keys',keyPrefix:'nvapi-',cors:false}
-};
-const nimKeyInput=document.getElementById('nimKey');
-const aiProviderSelect=document.getElementById('aiProvider');
-const keyLink=document.getElementById('keyLink');
-nimKeyInput.value=localStorage.getItem('jarvis_ai_key')||'';
-aiProviderSelect.value=localStorage.getItem('jarvis_ai_provider')||'groq';
-updateProviderUI();
-aiProviderSelect.addEventListener('change',()=>{localStorage.setItem('jarvis_ai_provider',aiProviderSelect.value);updateProviderUI();});
-nimKeyInput.addEventListener('change',()=>{localStorage.setItem('jarvis_ai_key',nimKeyInput.value);updateKeyStatus();});
-function updateProviderUI(){
-  const p=AI_PROVIDERS[aiProviderSelect.value];
-  nimKeyInput.placeholder=p.keyPrefix+'...';
-  keyLink.href=p.keyUrl;
-  keyLink.textContent='GET FREE '+p.name.toUpperCase()+' KEY';
-  updateKeyStatus();
-}
-function updateKeyStatus(){
-  const hasKey=!!nimKeyInput.value;
-  document.getElementById('nimSt').textContent=hasKey?'CONNECTED':'NOT SET';
-  document.getElementById('nimSt').style.color=hasKey?'var(--grn)':'var(--t3)';
-}
+const AI_PROVIDERS={groq:{name:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',model:'llama-3.3-70b-versatile',keyUrl:'https://console.groq.com/keys',keyPrefix:'gsk_',cors:true},nim:{name:'NVIDIA NIM',url:'https://integrate.api.nvidia.com/v1/chat/completions',model:'meta/llama-3.3-70b-instruct',keyUrl:'https://build.nvidia.com/settings/api-keys',keyPrefix:'nvapi-',cors:false}};
+const nimKeyInput=document.getElementById('nimKey');const aiProviderSelect=document.getElementById('aiProvider');const keyLink=document.getElementById('keyLink');
+nimKeyInput.value=localStorage.getItem('jarvis_ai_key')||'';aiProviderSelect.value=localStorage.getItem('jarvis_ai_provider')||'groq';updateProviderUI();
+aiProviderSelect.addEventListener('change',()=>{localStorage.setItem('jarvis_ai_provider',aiProviderSelect.value);updateProviderUI();});nimKeyInput.addEventListener('change',()=>{localStorage.setItem('jarvis_ai_key',nimKeyInput.value);updateKeyStatus();});
+function updateProviderUI(){const p=AI_PROVIDERS[aiProviderSelect.value];nimKeyInput.placeholder=p.keyPrefix+'...';keyLink.href=p.keyUrl;keyLink.textContent='GET FREE '+p.name.toUpperCase()+' KEY';updateKeyStatus();}
+function updateKeyStatus(){const hasKey=!!nimKeyInput.value;document.getElementById('nimSt').textContent=hasKey?'CONNECTED':'NOT SET';document.getElementById('nimSt').style.color=hasKey?'var(--grn)':'var(--t3)';}
 updateKeyStatus();
-
-async function callNIM(prompt,system){
-  const key=nimKeyInput.value||localStorage.getItem('jarvis_ai_key')||'';
-  const provider=AI_PROVIDERS[aiProviderSelect.value]||AI_PROVIDERS.groq;
-  if(!key)return `ERROR: Enter your ${provider.name} API key in the Agents tab.\nGet one free at: ${provider.keyUrl}`;
-  const body=JSON.stringify({model:provider.model,messages:[...(system?[{role:'system',content:system}]:[]),{role:'user',content:prompt}],temperature:0.3,max_tokens:1500});
-  const attempts=provider.cors?[{url:provider.url}]:[{url:'https://corsproxy.io/?url='+encodeURIComponent(provider.url)},{url:provider.url}];
-  for(const attempt of attempts){
-    try{
-      const r=await fetch(attempt.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body,signal:AbortSignal.timeout(30000)});
-      const d=await r.json();
-      if(d.error)return provider.name+' Error: '+(d.error.message||JSON.stringify(d.error));
-      return d.choices?.[0]?.message?.content||'No response';
-    }catch(e){
-      if(attempt===attempts[attempts.length-1])return 'Connection error: '+e.message+'\n\nTip: Switch to Groq (free, CORS-friendly) in the dropdown above.';
-    }
-  }
-}
-
-function getMarketContext(){
-  if(!allMarketData.length) return 'No live market data available yet.';
-  return 'CURRENT LIVE MARKET DATA (real-time from CoinGecko, Yahoo Finance, Frankfurter):\n' +
-    allMarketData.map(m=>{
-      const sign=m.c>=0?'+':'';
-      return `${m.s}: ${fP(m.p)} (${sign}${m.c.toFixed(2)}%) [${m.type}]`;
-    }).join('\n') +
-    '\n\nFear & Greed Index: ' + (document.getElementById('fgN').textContent || '--') + '/100' +
-    '\nCrypto Market Cap: ' + (document.getElementById('gM').textContent || '--') +
-    '\nBTC Dominance: ' + (document.getElementById('gD').textContent || '--');
-}
-
-async function runAgent(agentIdx,cmdIdx){
-  const cmd=AGENTS[agentIdx].cmds[cmdIdx];
-  const btn=document.getElementById(`btn${agentIdx}_${cmdIdx}`);
-  const out=document.getElementById('out'+agentIdx);
-  btn.classList.add('running');btn.textContent='RUNNING...';
-  out.classList.add('show');
-  out.innerHTML='<span class="loading">JARVIS fetching live data & analyzing...</span>';
-
-  const mktCtx=getMarketContext();
-  const headlines=allNewsItems.slice(0,15).map(n=>`[${n.src}] ${n.title}`).join('\n');
-  let system,prompt;
-
-  if(agentIdx===0){
-    system='You are JARVIS, an expert financial news analyst with access to real-time market data. You MUST reference the ACTUAL current prices provided below. NEVER guess or make up prices. Be concise, direct, use trader language. Always cite the real numbers.';
-    prompt=cmd.asset==='markets'?
-      `${mktCtx}\n\nLATEST HEADLINES:\n${headlines}\n\nAnalyze the current market situation using the REAL prices above. Give: Overall sentiment, key movers, which assets are affected, and trade implications. ALWAYS reference actual current prices from the data.`:
-      `${mktCtx}\n\nLATEST HEADLINES:\n${headlines}\n\nAnalyze the current situation specifically for ${cmd.asset} using the REAL price data above. Give: Sentiment (-10 to +10), current price and key levels, events affecting ${cmd.asset}, and what traders should watch for. ALWAYS use the actual prices provided.`;
-  }else if(agentIdx===1){
-    system='You are JARVIS, an expert technical analyst with access to real-time prices. You MUST use the ACTUAL current prices provided. NEVER hallucinate fake prices. You know SMC/ICT methodology, support/resistance, EMA stacks, RSI, MACD. Be direct and give actionable levels relative to the CURRENT real price.';
-    prompt=`${mktCtx}\n\nUsing the REAL current price of ${cmd.asset} from the data above, give me a technical analysis. Include: current price (from data), bias, key support/resistance levels RELATIVE to the actual current price, likely RSI zone, EMA alignment assessment, and setup to look for. All levels must be realistic relative to the current price.`;
-  }else if(agentIdx===2){
-    system='You are JARVIS, an autonomous trading strategist with real-time market data. You MUST use ACTUAL current prices. NEVER make up prices. Combine real data + news into clear trade signals. Format: SIGNAL, Entry (near current price), Stop Loss, TP1-TP3, Risk:Reward, Reasoning.';
-    prompt=cmd.asset==='scan'?
-      `${mktCtx}\n\nHEADLINES:\n${headlines}\n\nUsing the REAL current prices above, quick scan: Give bias and signal for BTC, ETH, NAS100, and GOLD. All entry/exit levels must be realistic relative to current prices shown above.`:
-      `${mktCtx}\n\nHEADLINES:\n${headlines}\n\nUsing the REAL current price of ${cmd.asset} from the data above, generate a trade signal. Give concrete entry (near current price), SL, TP levels and risk:reward. All numbers must be realistic relative to the actual current price.`;
-  }else{
-    out.innerHTML='Execution Agent is in development (Phase 4).\nUse signals from the Strategy Agent and execute manually.';
-    btn.classList.remove('running');btn.textContent=cmd.l;return;
-  }
-  const result=await callNIM(prompt,system);
-  out.textContent='> JARVIS '+AGENTS[agentIdx].name+' — '+cmd.l+'\n'+new Date().toLocaleTimeString()+'\n\n'+result;
-  btn.classList.remove('running');btn.textContent=cmd.l;
-}
-
-// ═══ JARVIS ASSISTANT CHAT ═══
-const jcBody=document.getElementById('jcBody');
-const jcInput=document.getElementById('jcInput');
-let chatHistory=[];
-
-async function sendJarvisMsg(){
-  const msg=jcInput.value.trim();
-  if(!msg)return;
-  jcInput.value='';
-
-  // Add user message
-  const userDiv=document.createElement('div');
-  userDiv.className='jc-msg user';
-  userDiv.textContent=msg;
-  jcBody.appendChild(userDiv);
-
-  // Add loading message
-  const botDiv=document.createElement('div');
-  botDiv.className='jc-msg bot';
-  botDiv.innerHTML='<span class="loading">Researching...</span>';
-  jcBody.appendChild(botDiv);
-  jcBody.scrollTop=jcBody.scrollHeight;
-
-  // Build context
-  const mktCtx=getMarketContext();
-  const headlines=allNewsItems.slice(0,10).map(n=>`[${n.src}] ${n.title}`).join('\n');
-  const geoCtx=GEO_EVENTS.map(e=>`${e.name}: ${e.label} (${e.impact})`).join('\n');
-
-  const system=`You are JARVIS, a highly intelligent financial and geopolitical intelligence assistant embedded in a real-time global monitoring terminal. You have access to live market data, news feeds, prediction markets, and geopolitical event tracking.
+async function callNIM(prompt,system){const key=nimKeyInput.value||localStorage.getItem('jarvis_ai_key')||'';const provider=AI_PROVIDERS[aiProviderSelect.value]||AI_PROVIDERS.groq;if(!key)return `ERROR: Enter your ${provider.name} API key in the Agents tab.\nGet one free at: ${provider.keyUrl}`;const body=JSON.stringify({model:provider.model,messages:[...(system?[{role:'system',content:system}]:[]),{role:'user',content:prompt}],temperature:0.3,max_tokens:1500});const attempts=provider.cors?[{url:provider.url}]:[{url:'https://corsproxy.io/?url='+encodeURIComponent(provider.url)},{url:provider.url}];for(const attempt of attempts){try{const r=await fetch(attempt.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body,signal:AbortSignal.timeout(30000)});const d=await r.json();if(d.error)return provider.name+' Error: '+(d.error.message||JSON.stringify(d.error));return d.choices?.[0]?.message?.content||'No response';}catch(e){if(attempt===attempts[attempts.length-1])return 'Connection error: '+e.message+'\n\nTip: Switch to Groq (free, CORS-friendly) in the dropdown above.';}}}
+function getMarketContext(){if(!allMarketData.length) return 'Market data is still loading. Use only the news headlines for your analysis.';return 'CURRENT LIVE MARKET DATA (real-time):\n'+allMarketData.map(m=>{const sign=m.c>=0?'+':'';return `  ${m.s}: ${fP(m.p)} (${sign}${m.c.toFixed(2)}%) [${m.type}]`;}).join('\n')+'\nFear & Greed: '+(document.getElementById('fgN')?.textContent||'--')+'/100'+'\nCrypto MCap: '+(document.getElementById('gM')?.textContent||'--')+'\nBTC Dom: '+(document.getElementById('gD')?.textContent||'--');}
+async function runAgent(agentIdx,cmdIdx){const cmd=AGENTS[agentIdx].cmds[cmdIdx];const btn=document.getElementById(`btn${agentIdx}_${cmdIdx}`);const out=document.getElementById('out'+agentIdx);btn.classList.add('running');btn.textContent='RUNNING...';out.classList.add('show');out.innerHTML='<span class="loading">JARVIS fetching live data & analyzing...</span>';const mktCtx=getMarketContext();const headlines=allNewsItems.slice(0,15).map(n=>`[${n.src}] ${n.title}`).join('\n');let system,prompt;if(agentIdx===0){system='You are JARVIS, an expert financial news analyst with access to real-time market data. CRITICAL: The LIVE MARKET DATA section below contains REAL current prices fetched seconds ago. You MUST use ONLY these prices. If BTC shows $87,000, then BTC IS at $87,000. DO NOT use old training data prices. DO NOT say BTC is at $23,000 or any other made-up price. Be concise, direct, use trader language. Always cite the real numbers.';prompt=cmd.asset==='markets'?`${mktCtx}\n\nLATEST HEADLINES:\n${headlines}\n\nAnalyze the current market situation using the REAL prices above. Give: Overall sentiment, key movers, which assets are affected, and trade implications. ALWAYS reference actual current prices from the data.`:`${mktCtx}\n\nLATEST HEADLINES:\n${headlines}\n\nAnalyze the current situation specifically for ${cmd.asset} using the REAL price data above. Give: Sentiment (-10 to +10), current price and key levels, events affecting ${cmd.asset}, and what traders should watch for. ALWAYS use the actual prices provided.`;}else if(agentIdx===1){system='You are JARVIS, an expert technical analyst with access to real-time prices. CRITICAL: The LIVE MARKET DATA section below contains REAL current prices fetched seconds ago. You MUST use ONLY these prices. NEVER hallucinate fake prices. You know SMC/ICT methodology, support/resistance, EMA stacks, RSI, MACD. Be direct and give actionable levels relative to the CURRENT real price.';prompt=`${mktCtx}\n\nUsing the REAL current price of ${cmd.asset} from the data above, give me a technical analysis. Include: current price (from data), bias, key support/resistance levels RELATIVE to the actual current price, likely RSI zone, EMA alignment assessment, and setup to look for. All levels must be realistic relative to the current price.`;}else if(agentIdx===2){system='You are JARVIS, an autonomous trading strategist with real-time market data. CRITICAL: The LIVE MARKET DATA section below contains REAL current prices fetched seconds ago. You MUST use ONLY these prices. NEVER make up prices. Combine real data + news into clear trade signals. Format: SIGNAL, Entry (near current price), Stop Loss, TP1-TP3, Risk:Reward, Reasoning.';prompt=cmd.asset==='scan'?`${mktCtx}\n\nHEADLINES:\n${headlines}\n\nUsing the REAL current prices above, quick scan: Give bias and signal for BTC, ETH, NAS100, and GOLD. All entry/exit levels must be realistic relative to current prices shown above.`:`${mktCtx}\n\nHEADLINES:\n${headlines}\n\nUsing the REAL current price of ${cmd.asset} from the data above, generate a trade signal. Give concrete entry (near current price), SL, TP levels and risk:reward. All numbers must be realistic relative to the actual current price.`;}else{out.innerHTML='Execution Agent is in development (Phase 4).\nUse signals from the Strategy Agent and execute manually.';btn.classList.remove('running');btn.textContent=cmd.l;return;}const result=await callNIM(prompt,system);out.textContent='> JARVIS '+AGENTS[agentIdx].name+' — '+cmd.l+'\n'+new Date().toLocaleTimeString()+'\n\n'+result;btn.classList.remove('running');btn.textContent=cmd.l;}
+const jcBody=document.getElementById('jcBody');const jcInput=document.getElementById('jcInput');let chatHistory=[];
+async function sendJarvisMsg(){const msg=jcInput.value.trim();if(!msg)return;jcInput.value='';const userDiv=document.createElement('div');userDiv.className='jc-msg user';userDiv.textContent=msg;jcBody.appendChild(userDiv);const botDiv=document.createElement('div');botDiv.className='jc-msg bot';botDiv.innerHTML='<span class="loading">Researching...</span>';jcBody.appendChild(botDiv);jcBody.scrollTop=jcBody.scrollHeight;const mktCtx=getMarketContext();const headlines=allNewsItems.slice(0,10).map(n=>`[${n.src}] ${n.title}`).join('\n');const geoCtx=GEO_EVENTS.map(e=>`${e.name}: ${e.label} (${e.impact})`).join('\n');const system=`You are JARVIS, a highly intelligent financial and geopolitical intelligence assistant embedded in a real-time global monitoring terminal. You have access to live market data, news feeds, prediction markets, and geopolitical event tracking.
 
 CURRENT LIVE MARKET DATA:
 ${mktCtx}
@@ -1123,60 +368,14 @@ ACTIVE GEOPOLITICAL EVENTS:
 ${geoCtx}
 
 RULES:
-- ALWAYS use the REAL current prices and data provided above. NEVER make up numbers.
+- CRITICAL: The market data above contains REAL current prices fetched seconds ago. ALWAYS use ONLY these prices. NEVER make up numbers or use old training data.
 - Be concise but thorough. Use trader/analyst language.
 - If asked about a specific asset, reference its actual current price.
 - If asked about geopolitics, reference the active events above.
 - If asked about strategy, combine technical levels with news sentiment.
 - Format responses clearly. Use short paragraphs, not walls of text.
-- You are JARVIS — confident, precise, data-driven.`;
-
-  chatHistory.push({role:'user',content:msg});
-  // Keep chat history manageable
-  if(chatHistory.length>20) chatHistory=chatHistory.slice(-16);
-
-  const key=nimKeyInput.value||localStorage.getItem('jarvis_ai_key')||'';
-  const provider=AI_PROVIDERS[aiProviderSelect.value]||AI_PROVIDERS.groq;
-
-  if(!key){
-    botDiv.innerHTML='<span style="color:var(--red)">API key required. Go to AGENTS tab and enter your Groq key to enable JARVIS chat.</span>';
-    chatHistory.pop();
-    return;
-  }
-
-  const body=JSON.stringify({
-    model:provider.model,
-    messages:[{role:'system',content:system},...chatHistory],
-    temperature:0.4,
-    max_tokens:1500
-  });
-
-  const attempts=provider.cors?[{url:provider.url}]:[{url:'https://corsproxy.io/?url='+encodeURIComponent(provider.url)},{url:provider.url}];
-  let response='';
-
-  for(const attempt of attempts){
-    try{
-      const r=await fetch(attempt.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body,signal:AbortSignal.timeout(30000)});
-      const d=await r.json();
-      if(d.error){response='Error: '+(d.error.message||JSON.stringify(d.error));break;}
-      response=d.choices?.[0]?.message?.content||'No response';
-      break;
-    }catch(e){
-      if(attempt===attempts[attempts.length-1]) response='Connection error. Check your API key and try again.';
-    }
-  }
-
-  chatHistory.push({role:'assistant',content:response});
-  botDiv.textContent=response;
-  botDiv.innerHTML=botDiv.textContent; // escape any HTML
-  jcBody.scrollTop=jcBody.scrollHeight;
-}
-
-// ═══ INIT GLOBE ═══
-const script=document.createElement('script');
-script.src='https://unpkg.com/topojson-client@3';
-script.onload=()=>initGlobe();
-document.head.appendChild(script);
+- You are JARVIS — confident, precise, data-driven.`;chatHistory.push({role:'user',content:msg});if(chatHistory.length>20)chatHistory=chatHistory.slice(-16);const key=nimKeyInput.value||localStorage.getItem('jarvis_ai_key')||'';const provider=AI_PROVIDERS[aiProviderSelect.value]||AI_PROVIDERS.groq;if(!key){botDiv.innerHTML='<span style="color:var(--red)">API key required. Go to AGENTS tab and enter your Groq key to enable JARVIS chat.</span>';chatHistory.pop();return;}const body=JSON.stringify({model:provider.model,messages:[{role:'system',content:system},...chatHistory],temperature:0.4,max_tokens:1500});const attempts=provider.cors?[{url:provider.url}]:[{url:'https://corsproxy.io/?url='+encodeURIComponent(provider.url)},{url:provider.url}];let response='';for(const attempt of attempts){try{const r=await fetch(attempt.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body,signal:AbortSignal.timeout(30000)});const d=await r.json();if(d.error){response='Error: '+(d.error.message||JSON.stringify(d.error));break;}response=d.choices?.[0]?.message?.content||'No response';break;}catch(e){if(attempt===attempts[attempts.length-1])response='Connection error. Check your API key and try again.';}}chatHistory.push({role:'assistant',content:response});botDiv.textContent=response;botDiv.innerHTML=botDiv.textContent;jcBody.scrollTop=jcBody.scrollHeight;}
+const script=document.createElement('script');script.src='https://unpkg.com/topojson-client@3';script.onload=()=>initGlobe();document.head.appendChild(script);
 </script>
 </body>
 </html>
