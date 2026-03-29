@@ -673,7 +673,7 @@ function initGlobe() {
       const mat = globe.globeMaterial();
       mat.transparent = true;
       mat.opacity = 0.55;
-      mat.color.set('#1a2844');
+      if(mat.color) mat.color.set('#1a2844');
       mat.depthWrite = false; // Prevents z-fighting with polygons
       // Also fix the renderer
       const renderer = globe.renderer();
@@ -933,7 +933,6 @@ function initAgents(){
 
 async function callLLM(systemPrompt, userMsg){
   const msgs = [{role:'system',content:systemPrompt},{role:'user',content:userMsg}];
-  const body = JSON.stringify({model:'openai',messages:msgs,temperature:0.7,max_tokens:500});
 
   // Provider 1: User's own Groq key (fastest, most reliable)
   if(userGroqKey){
@@ -947,40 +946,40 @@ async function callLLM(systemPrompt, userMsg){
     }catch(e){console.log('Groq error:',e)}
   }
 
-  // Provider 2: gen.pollinations.ai gateway with NVIDIA key (CORS ✅, reliable)
-  for(let attempt=0;attempt<3;attempt++){
+  // Provider 2: NVIDIA NIM via corsproxy.io (CORS proxy, verified working from browser)
+  const nvModels = ['meta/llama-3.1-8b-instruct','meta/llama-3.1-70b-instruct'];
+  for(let attempt=0;attempt<2;attempt++){
     try{
-      const r = await fetch('https://gen.pollinations.ai/v1/chat/completions',{
+      const r = await fetch('https://corsproxy.io/?url=https://integrate.api.nvidia.com/v1/chat/completions',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+NV_KEY},
-        body:body
+        body:JSON.stringify({model:nvModels[attempt]||nvModels[0],messages:msgs,temperature:0.7,max_tokens:500})
       });
       if(!r.ok){
-        console.log('Gen.pollinations attempt '+(attempt+1)+': HTTP '+r.status);
-        if(attempt<2){await new Promise(ok=>setTimeout(ok,1500));continue;}
+        console.log('NVIDIA attempt '+(attempt+1)+': HTTP '+r.status);
+        if(attempt<1){await new Promise(ok=>setTimeout(ok,1000));continue;}
         throw new Error('HTTP '+r.status);
       }
       const d = await r.json();
       if(d.choices?.[0]?.message?.content) return d.choices[0].message.content;
     }catch(e){
-      console.log('Gen.pollinations attempt '+(attempt+1)+' error:',e);
-      if(attempt<2) await new Promise(ok=>setTimeout(ok,1500));
+      console.log('NVIDIA attempt '+(attempt+1)+' error:',e);
+      if(attempt<1) await new Promise(ok=>setTimeout(ok,1000));
     }
   }
 
-  // Provider 3: text.pollinations.ai legacy (free, no key)
-  for(let attempt=0;attempt<2;attempt++){
-    try{
-      const r = await fetch('https://text.pollinations.ai/',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({messages:msgs,model:'openai',jsonMode:false})
-      });
-      if(!r.ok){if(attempt<1){await new Promise(ok=>setTimeout(ok,2000));continue;}throw new Error('HTTP '+r.status);}
+  // Provider 3: Pollinations legacy fallback (free, no key, unreliable)
+  try{
+    const r = await fetch('https://text.pollinations.ai/',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:msgs,model:'openai',jsonMode:false})
+    });
+    if(r.ok){
       const text = await r.text();
       try{const j=JSON.parse(text);if(j.choices?.[0]?.message?.content)return j.choices[0].message.content;}catch(e){}
       if(text && text.length>2 && !text.includes('"error"')) return text;
-    }catch(e){console.log('Text.pollinations error:',e);if(attempt<1) await new Promise(ok=>setTimeout(ok,2000));}
-  }
+    }
+  }catch(e){console.log('Pollinations fallback error:',e);}
 
   return 'AI temporarily unavailable. Try again in a moment, or click ⚙ Settings to add a free Groq API key for guaranteed access.';
 }
