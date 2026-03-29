@@ -672,15 +672,21 @@ function initGlobe() {
     try {
       const mat = globe.globeMaterial();
       mat.transparent = true;
-      mat.opacity = 0.55;
-      if(mat.color) mat.color.set('#1a2844');
-      mat.depthWrite = false; // Prevents z-fighting with polygons
-      // Also fix the renderer
+      mat.opacity = 0.15;
+      mat.depthWrite = false;
+      // Access Three.js via the globe's scene to create proper Color
+      const scene = globe.scene();
+      const THREE = scene.constructor.__proto__.constructor.__proto__;
+      try { mat.color = new window.THREE.Color('#0a1628'); } catch(e2) {
+        // If THREE not global, try to get it from the globe's renderer
+        try { mat.color.setHex(0x0a1628); } catch(e3) {
+          try { mat.color = {r:0.04,g:0.09,b:0.16,isColor:true}; } catch(e4){}
+        }
+      }
       const renderer = globe.renderer();
       renderer.sortObjects = true;
-      renderer.logarithmicDepthBuffer = true;
     } catch(e){console.log('Globe material error:',e)}
-  },500);
+  },800);
 
   // Load country polygons
   loadPolygons();
@@ -705,10 +711,10 @@ async function loadPolygons() {
       const countries = topojson.feature(world, world.objects.countries).features
         .filter(c => c.id !== '010'); // Filter out Antarctica (causes z-fighting)
       globe.polygonsData(countries)
-        .polygonCapColor(()=>'rgba(10,20,40,0.06)')
-        .polygonSideColor(()=>'rgba(59,130,246,0.02)')
-        .polygonStrokeColor(()=>'rgba(59,130,246,0.08)')
-        .polygonAltitude(0.008);
+        .polygonCapColor(()=>'rgba(8,16,35,0.35)')
+        .polygonSideColor(()=>'rgba(59,130,246,0.05)')
+        .polygonStrokeColor(()=>'rgba(59,130,246,0.15)')
+        .polygonAltitude(0.006);
     };
   } catch(e){console.log('Polygons error:',e)}
 }
@@ -900,7 +906,9 @@ function renderMarkets(){
 
 /* ====== MARKET CONTEXT FOR AI ====== */
 function getMarketContext(){
-  let ctx = 'CURRENT REAL-TIME MARKET DATA:\n';
+  const now = new Date();
+  let ctx = `TODAY'S DATE: ${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})} (${now.toISOString().split('T')[0]})\n`;
+  ctx += 'CURRENT REAL-TIME MARKET DATA:\n';
   for(const [k,v] of Object.entries(allMarketData)){
     ctx+=`${k}: $${v.price}${v.change!==null?` (${v.change>=0?'+':''}${v.change.toFixed(2)}%)`:''}  \n`;
   }
@@ -908,16 +916,25 @@ function getMarketContext(){
   return ctx;
 }
 
+function getNewsContext(){
+  if(!newsItems.length) return 'No news loaded yet.';
+  return 'LATEST REAL-TIME NEWS HEADLINES (from today\'s feeds):\n' + newsItems.slice(0,10).map((n,i)=>`${i+1}. [${n.source||'NEWS'}] ${n.title}`).join('\n');
+}
+
+function getFullContext(){
+  return getMarketContext() + '\n' + getNewsContext();
+}
+
 /* ====== AGENTS ====== */
 const AGENTS = [
   {id:'geopolitical',name:'Geopolitical Analyst',desc:'Monitors global conflicts, alliances, and power dynamics.',prompts:['Ukraine war analysis','Taiwan strait risk','BRICS impact assessment'],
-   system:'You are a geopolitical intelligence analyst. Provide concise, factual analysis of global events. Use the market data provided. Be specific with numbers and dates. Max 150 words.'},
+   system:'You are a geopolitical intelligence analyst for a real-time intelligence terminal. CRITICAL: Check the date provided — you are responding in REAL-TIME. Use the news headlines and market data below as your primary source. Analyze current events based on this live data. Be specific, factual, actionable. Max 200 words.'},
   {id:'market',name:'Market Strategist',desc:'Analyzes financial markets, crypto, and commodities.',prompts:['BTC outlook','Gold vs USD analysis','NAS100 tech sector'],
-   system:'You are a financial market strategist. CRITICAL: Use ONLY the real-time market data provided below. Never guess prices. If data is missing, say so. Be specific. Max 150 words.'},
+   system:'You are a financial market strategist for a real-time intelligence terminal. CRITICAL: Use ONLY the real-time market data and news provided below. Quote actual prices from the data. Never invent numbers. Check the date — respond based on current conditions. Max 200 words.'},
   {id:'energy',name:'Energy Analyst',desc:'Tracks oil, gas, renewables, and OPEC dynamics.',prompts:['Oil supply analysis','LNG Europe outlook','OPEC+ strategy'],
-   system:'You are an energy sector analyst. Analyze oil, gas, and renewable energy markets. Use provided data. Be specific with numbers. Max 150 words.'},
+   system:'You are an energy sector analyst for a real-time intelligence terminal. CRITICAL: Check the date — analyze based on current conditions using the news and market data provided. Focus on oil prices from the data, OPEC dynamics, and energy geopolitics from the news. Max 200 words.'},
   {id:'risk',name:'Risk Assessor',desc:'Evaluates geopolitical and financial risk scenarios.',prompts:['Global risk heat map','Supply chain risks','Escalation scenarios'],
-   system:'You are a risk assessment specialist. Evaluate risks with probability estimates and impact ratings. Use provided market data for financial context. Max 150 words.'},
+   system:'You are a risk assessment specialist for a real-time intelligence terminal. CRITICAL: Check the date — evaluate current risks using the live news and market data provided. Assign probability estimates (%) and impact ratings (1-10). Base analysis on the actual headlines provided. Max 200 words.'},
 ];
 
 function initAgents(){
@@ -947,13 +964,13 @@ async function callLLM(systemPrompt, userMsg){
   }
 
   // Provider 2: NVIDIA NIM via corsproxy.io (CORS proxy, verified working from browser)
-  const nvModels = ['meta/llama-3.1-8b-instruct','meta/llama-3.1-70b-instruct'];
+  const nvModels = ['meta/llama-3.3-70b-instruct','meta/llama-3.1-8b-instruct'];
   for(let attempt=0;attempt<2;attempt++){
     try{
       const r = await fetch('https://corsproxy.io/?url=https://integrate.api.nvidia.com/v1/chat/completions',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+NV_KEY},
-        body:JSON.stringify({model:nvModels[attempt]||nvModels[0],messages:msgs,temperature:0.7,max_tokens:500})
+        body:JSON.stringify({model:nvModels[attempt]||nvModels[0],messages:msgs,temperature:0.7,max_tokens:800})
       });
       if(!r.ok){
         console.log('NVIDIA attempt '+(attempt+1)+': HTTP '+r.status);
@@ -990,7 +1007,7 @@ async function runAgent(id, prompt, btn){
   out.innerHTML='<span class="loading">ANALYZING...</span>';
   if(btn){btn.classList.add('running');btn.textContent='RUNNING...';}
   const agent = AGENTS.find(a=>a.id===id);
-  const ctx = getMarketContext();
+  const ctx = getFullContext();
   try{
     const reply = await callLLM(agent.system+'\n\n'+ctx, prompt);
     out.textContent = reply;
@@ -1009,10 +1026,9 @@ async function sendJarvisMsg(){
   body.innerHTML+=`<div class="jc-msg bot" id="jcLoading"><span class="loading">PROCESSING...</span></div>`;
   body.scrollTop=body.scrollHeight;
 
-  const ctx = getMarketContext();
-  const recentNews = newsItems.slice(0,5).map(n=>n.title).join('; ');
+  const ctx = getFullContext();
   try{
-    const sysPrompt = `You are JARVIS, an elite AI intelligence assistant. You have access to real-time data. Use the market data and news provided. Be precise, concise, and actionable. Never fabricate prices or data - if you don't have data, say so.\n\n${ctx}\n\nRECENT NEWS: ${recentNews||'No news loaded yet.'}`;
+    const sysPrompt = `You are JARVIS, an elite AI intelligence assistant powering a real-time global intelligence terminal. CRITICAL: Check the date in the data below — you are responding in REAL-TIME, not from training data. Use ONLY the market prices and news headlines provided below as your factual basis. Be precise, concise, and actionable. Never fabricate data. If asked about current events, reference the actual news headlines provided.\n\n${ctx}`;
     const reply = await callLLM(sysPrompt, msg);
     const loading = document.getElementById('jcLoading');
     if(loading){loading.id='';loading.innerHTML=reply;}
