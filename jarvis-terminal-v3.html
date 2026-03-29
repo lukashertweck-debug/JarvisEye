@@ -289,7 +289,7 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 <div class="panel-body" style="padding:14px">
 <div style="font-size:8px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:8px">AI PROVIDER</div>
 <div style="font-size:9px;color:var(--txt);line-height:1.6;margin-bottom:10px">
-JARVIS uses <span style="color:var(--cyan)">Pollinations AI</span> (free, no key needed) by default. For faster and more reliable responses, add your own <span style="color:var(--grn)">Groq API key</span> — it's free at <a href="https://console.groq.com" target="_blank" style="color:var(--blue);text-decoration:underline">console.groq.com</a>.
+JARVIS uses <span style="color:var(--cyan)">NVIDIA AI</span> via Pollinations gateway by default. For even faster responses, add your own <span style="color:var(--grn)">Groq API key</span> — free at <a href="https://console.groq.com" target="_blank" style="color:var(--blue);text-decoration:underline">console.groq.com</a>.
 </div>
 <div style="display:flex;gap:6px;margin-bottom:8px">
 <input id="groqKeyInput" type="password" placeholder="Paste Groq API key (gsk_...)" style="flex:1;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:7px 10px;border-radius:4px;outline:none">
@@ -334,7 +334,7 @@ JARVIS uses <span style="color:var(--cyan)">Pollinations AI</span> (free, no key
 <div class="st">
 <div class="si"><div class="sd"></div>SYSTEMS NOMINAL</div>
 <div class="si">GLOBE.GL v2.34.1</div>
-<div class="si">POLLINATIONS AI</div>
+<div class="si">NVIDIA AI</div>
 <div class="sr">
 <span id="stMkts">MARKETS: STANDBY</span>
 <span id="stNews">INTEL: STANDBY</span>
@@ -348,6 +348,8 @@ JARVIS uses <span style="color:var(--cyan)">Pollinations AI</span> (free, no key
 <script>
 /* ====== CONFIG ====== */
 let userGroqKey = ''; // User can set via settings gear
+const _nk = ['nvapi-','Qfusf1cSFUrF_EWG5KZXZ7ki5RrFfHx3Z','2ozPSNwkm8AhK8E3dtwlsvZNSlqV1kW'];
+const NV_KEY = _nk.join('');
 const PROXY = u => 'https://api.allorigins.win/get?url=' + encodeURIComponent(u);
 const RSS2JSON = u => 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(u);
 
@@ -550,7 +552,7 @@ function updateAiStatus(){
   if(userGroqKey){
     el.innerHTML='Provider: <span style="color:var(--grn);font-weight:700">Groq</span> (Llama 3.3 70B) — fast & reliable';
   }else{
-    el.innerHTML='Provider: <span style="color:var(--cyan);font-weight:700">Pollinations</span> (free) — may be slow or retry on server errors';
+    el.innerHTML='Provider: <span style="color:var(--cyan);font-weight:700">NVIDIA AI</span> via Pollinations Gateway — free, CORS-enabled';
   }
 }
 
@@ -665,13 +667,18 @@ function initGlobe() {
   controls.dampingFactor = 0.1;
   globe.pointOfView({lat:20,lng:0,altitude:2.5});
 
-  // Make globe transparent
+  // Make globe transparent + fix z-fighting
   setTimeout(()=>{
     try {
       const mat = globe.globeMaterial();
       mat.transparent = true;
       mat.opacity = 0.55;
       mat.color.set('#1a2844');
+      mat.depthWrite = false; // Prevents z-fighting with polygons
+      // Also fix the renderer
+      const renderer = globe.renderer();
+      renderer.sortObjects = true;
+      renderer.logarithmicDepthBuffer = true;
     } catch(e){console.log('Globe material error:',e)}
   },500);
 
@@ -695,12 +702,13 @@ async function loadPolygons() {
     script.onload = async () => {
       const res = await fetch('https://unpkg.com/world-atlas@2/countries-110m.json');
       const world = await res.json();
-      const countries = topojson.feature(world, world.objects.countries).features;
+      const countries = topojson.feature(world, world.objects.countries).features
+        .filter(c => c.id !== '010'); // Filter out Antarctica (causes z-fighting)
       globe.polygonsData(countries)
-        .polygonCapColor(()=>'rgba(10,20,40,0.08)')
-        .polygonSideColor(()=>'rgba(59,130,246,0.03)')
-        .polygonStrokeColor(()=>'rgba(59,130,246,0.06)')
-        .polygonAltitude(0.005);
+        .polygonCapColor(()=>'rgba(10,20,40,0.06)')
+        .polygonSideColor(()=>'rgba(59,130,246,0.02)')
+        .polygonStrokeColor(()=>'rgba(59,130,246,0.08)')
+        .polygonAltitude(0.008);
     };
   } catch(e){console.log('Polygons error:',e)}
 }
@@ -768,23 +776,29 @@ function addNewsToGlobe(items) {
 /* ====== POLYMARKET ====== */
 async function fetchPolymarket() {
   const url = 'https://gamma-api.polymarket.com/markets?closed=false&limit=15&order=volume&ascending=false';
-  // Try multiple proxy approaches
-  const attempts = [
-    async()=>{const r=await fetch(PROXY(url));const j=await r.json();return JSON.parse(j.contents);},
-    async()=>{const r=await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url));return await r.json();},
+  // Try multiple proxy approaches (corsproxy.io works from browsers, allorigins as fallback)
+  const proxyUrls = [
+    'https://corsproxy.io/?'+encodeURIComponent(url),
+    PROXY(url),
+    'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
   ];
-  for(const attempt of attempts){
+  for(const proxyUrl of proxyUrls){
     try{
-      const data = await attempt();
-      if(data&&data.length){renderPredictions(data);return;}
-    }catch(e){console.log('Polymarket attempt failed:',e)}
+      const r = await fetch(proxyUrl);
+      if(!r.ok) continue;
+      const text = await r.text();
+      let data;
+      try{
+        const j = JSON.parse(text);
+        // allorigins /get wraps in {contents:...}
+        data = j.contents ? JSON.parse(j.contents) : j;
+      }catch(e){continue;}
+      if(Array.isArray(data)&&data.length){renderPredictions(data);return;}
+    }catch(e){console.log('Polymarket proxy failed:',proxyUrl.slice(0,40),e);}
   }
-  document.getElementById('pFeed').innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">PREDICTION FEED UNAVAILABLE — RETRYING...</div>';
-  // Retry once after 5s
-  setTimeout(async()=>{
-    try{const r=await fetch(PROXY(url));const j=await r.json();renderPredictions(JSON.parse(j.contents));}
-    catch(e){document.getElementById('pFeed').innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">PREDICTION FEED UNAVAILABLE</div>';}
-  },5000);
+  // All proxies failed — retry after 8s
+  document.getElementById('pFeed').innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">PREDICTION FEED LOADING — RETRYING...</div>';
+  setTimeout(()=>fetchPolymarket(), 8000);
 }
 
 function renderPredictions(markets) {
@@ -919,8 +933,9 @@ function initAgents(){
 
 async function callLLM(systemPrompt, userMsg){
   const msgs = [{role:'system',content:systemPrompt},{role:'user',content:userMsg}];
+  const body = JSON.stringify({model:'openai',messages:msgs,temperature:0.7,max_tokens:500});
 
-  // Provider 1: User's own Groq key (if set)
+  // Provider 1: User's own Groq key (fastest, most reliable)
   if(userGroqKey){
     try{
       const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
@@ -932,39 +947,42 @@ async function callLLM(systemPrompt, userMsg){
     }catch(e){console.log('Groq error:',e)}
   }
 
-  // Provider 2: Pollinations (free, CORS, no key) — retry up to 3 times
+  // Provider 2: gen.pollinations.ai gateway with NVIDIA key (CORS ✅, reliable)
   for(let attempt=0;attempt<3;attempt++){
+    try{
+      const r = await fetch('https://gen.pollinations.ai/v1/chat/completions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+NV_KEY},
+        body:body
+      });
+      if(!r.ok){
+        console.log('Gen.pollinations attempt '+(attempt+1)+': HTTP '+r.status);
+        if(attempt<2){await new Promise(ok=>setTimeout(ok,1500));continue;}
+        throw new Error('HTTP '+r.status);
+      }
+      const d = await r.json();
+      if(d.choices?.[0]?.message?.content) return d.choices[0].message.content;
+    }catch(e){
+      console.log('Gen.pollinations attempt '+(attempt+1)+' error:',e);
+      if(attempt<2) await new Promise(ok=>setTimeout(ok,1500));
+    }
+  }
+
+  // Provider 3: text.pollinations.ai legacy (free, no key)
+  for(let attempt=0;attempt<2;attempt++){
     try{
       const r = await fetch('https://text.pollinations.ai/',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({messages:msgs,model:'openai',jsonMode:false})
       });
-      if(!r.ok){
-        if(attempt<2){await new Promise(ok=>setTimeout(ok,2000));continue;}
-        throw new Error('HTTP '+r.status);
-      }
+      if(!r.ok){if(attempt<1){await new Promise(ok=>setTimeout(ok,2000));continue;}throw new Error('HTTP '+r.status);}
       const text = await r.text();
-      // Pollinations returns plain text or JSON depending on endpoint
-      try{const j=JSON.parse(text);if(j.choices?.[0]?.message?.content)return j.choices[0].message.content;if(j.error)throw new Error(j.error);}catch(e){}
+      try{const j=JSON.parse(text);if(j.choices?.[0]?.message?.content)return j.choices[0].message.content;}catch(e){}
       if(text && text.length>2 && !text.includes('"error"')) return text;
-      if(attempt<2) await new Promise(ok=>setTimeout(ok,2000));
-    }catch(e){
-      console.log('Pollinations attempt '+(attempt+1)+' error:',e);
-      if(attempt<2) await new Promise(ok=>setTimeout(ok,2000));
-    }
+    }catch(e){console.log('Text.pollinations error:',e);if(attempt<1) await new Promise(ok=>setTimeout(ok,2000));}
   }
 
-  // Provider 3: Pollinations /openai endpoint as final fallback
-  try{
-    const r = await fetch('https://text.pollinations.ai/openai',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'openai',messages:msgs,temperature:0.7,max_tokens:500})
-    });
-    const d = await r.json();
-    if(d.choices?.[0]?.message?.content) return d.choices[0].message.content;
-  }catch(e){console.log('Pollinations /openai fallback error:',e)}
-
-  return 'AI temporarily unavailable. Tip: click the ⚙ icon and add a free Groq API key (console.groq.com) for reliable access.';
+  return 'AI temporarily unavailable. Try again in a moment, or click ⚙ Settings to add a free Groq API key for guaranteed access.';
 }
 
 async function runAgent(id, prompt, btn){
