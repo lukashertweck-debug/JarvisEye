@@ -14,7 +14,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 
 /* === FULL SCREEN LAYOUT === */
 .app{display:flex;flex-direction:column;height:100vh}
-.hd{height:0px;display:none;background:var(--bg);display:flex;align-items:center;padding:0 16px;gap:14px;border-bottom:1px solid var(--bdr);flex-shrink:0;z-index:50}
+.hd{height:0px;display:none;background:var(--bg);align-items:center;padding:0 16px;gap:14px;border-bottom:1px solid var(--bdr);flex-shrink:0;z-index:50}
 .logo{display:flex;align-items:center;gap:8px}
 .logo-r{width:20px;height:20px;border:1.5px solid var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center}
 .logo-r::before{content:'';width:5px;height:5px;background:var(--blue);border-radius:50%;animation:cp 2s ease-in-out infinite}
@@ -179,7 +179,8 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 <body>
 <div class="app">
 
-<!-- Header removed — shell provides this -->
+<!-- Header hidden — shell provides this -->
+<div class="hd" style="display:none!important">
 <div class="hd-r">
 <span class="live">LIVE</span>
 <span id="ck" style="color:#fff;font-weight:500;font-size:11px;letter-spacing:1px">--:--:--</span>
@@ -257,7 +258,8 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 </div>
 </div>
 
-<!-- JARVIS chat removed — shell provides this -->
+<!-- JARVIS chat hidden — shell provides this -->
+<div style="display:none">
 <div class="jc-input-row">
 <input class="jc-input" id="jcInput" placeholder="Ask JARVIS anything..." onkeydown="if(event.key==='Enter')sendJarvisMsg()">
 <button class="jc-send" onclick="sendJarvisMsg()">SEND</button>
@@ -303,7 +305,8 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 </div>
 </div>
 
-<!-- Status bar removed — shell provides this -->
+<!-- Status bar hidden — shell provides this -->
+<div style="display:none">
 <div class="si">GLOBE.GL v2.34.1</div>
 <div class="si">NVIDIA AI</div>
 <div class="sr">
@@ -643,16 +646,10 @@ function initGlobe() {
     try {
       const mat = globe.globeMaterial();
       mat.transparent = true;
-      mat.opacity = 0.15;
-      mat.depthWrite = false;
-      // Access Three.js via the globe's scene to create proper Color
-      const scene = globe.scene();
-      const THREE = scene.constructor.__proto__.constructor.__proto__;
-      try { mat.color = new window.THREE.Color('#0a1628'); } catch(e2) {
-        // If THREE not global, try to get it from the globe's renderer
-        try { mat.color.setHex(0x0a1628); } catch(e3) {
-          try { mat.color = {r:0.04,g:0.09,b:0.16,isColor:true}; } catch(e4){}
-        }
+      mat.opacity = 0.9;
+      mat.depthWrite = true;
+      if (mat.color && mat.color.setHex) {
+        mat.color.setHex(0x1a2a4a);
       }
       const renderer = globe.renderer();
       renderer.sortObjects = true;
@@ -682,9 +679,9 @@ async function loadPolygons() {
       const countries = topojson.feature(world, world.objects.countries).features
         .filter(c => c.id !== '010'); // Filter out Antarctica (causes z-fighting)
       globe.polygonsData(countries)
-        .polygonCapColor(()=>'rgba(8,16,35,0.35)')
-        .polygonSideColor(()=>'rgba(59,130,246,0.05)')
-        .polygonStrokeColor(()=>'rgba(59,130,246,0.15)')
+        .polygonCapColor(()=>'rgba(20,35,70,0.6)')
+        .polygonSideColor(()=>'rgba(59,130,246,0.15)')
+        .polygonStrokeColor(()=>'rgba(59,130,246,0.3)')
         .polygonAltitude(0.006);
     };
   } catch(e){console.log('Polygons error:',e)}
