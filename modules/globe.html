@@ -330,7 +330,7 @@ const RSS2JSON = u => 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeUR
 /* ====== STATE ====== */
 let globe, autoRotate = true, allMarketData = {}, newsItems = [];
 const activeLayers = {oil:true,mineral:true,coal:true,lng:true,trade:true,money:true,news:true};
-const panelState = {Intel:false,Pred:false,Markets:false,Jarvis:false,Agents:false,Settings:false};
+const panelState = {Intel:false,Pred:false,Markets:false,Agents:false};
 
 /* ====== CLOCK ====== */
 setInterval(()=>{
@@ -482,10 +482,12 @@ const GEO_KEYWORDS = {
 /* ====== TOGGLE FUNCTIONS ====== */
 function togglePanel(name) {
   const el = document.getElementById('panel' + name);
+  if (!el) return;
   const isOpen = el.classList.contains('show');
   // Close all panels first
   Object.keys(panelState).forEach(k => {
-    document.getElementById('panel' + k).classList.remove('show');
+    const p = document.getElementById('panel' + k);
+    if (p) p.classList.remove('show');
     panelState[k] = false;
   });
   // Toggle the requested one
@@ -497,7 +499,7 @@ function togglePanel(name) {
   document.querySelectorAll('.tb-btn').forEach(b => b.classList.remove('active'));
   if (!isOpen) {
     const btns = document.querySelectorAll('.tb-btn');
-    const idx = {Intel:0,Pred:1,Markets:2,Jarvis:3,Agents:4}[name];
+    const idx = {Intel:0,Pred:1,Markets:2,Agents:3}[name];
     if (idx !== undefined && btns[idx]) btns[idx].classList.add('active');
   }
 }
