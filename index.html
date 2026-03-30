@@ -67,8 +67,10 @@ border-bottom:1px solid var(--bdr);flex-shrink:0;z-index:50}
 display:flex;align-items:center;justify-content:center;transition:.2s;color:var(--t2);position:relative}
 .voice-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.06)}
 .voice-btn.listening{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.08);animation:vpulse 1s infinite}
+.voice-btn.wake-active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08);animation:wakePulse 3s ease-in-out infinite}
 .voice-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.5;fill:none}
 @keyframes vpulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+@keyframes wakePulse{0%,100%{box-shadow:0 0 0 0 rgba(6,182,212,.15)}50%{box-shadow:0 0 0 6px rgba(6,182,212,0)}}
 
 /* Voice feedback overlay */
 .voice-overlay{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(4,6,10,.95);
@@ -366,6 +368,10 @@ background:var(--bg);color:var(--t2)}
       <div class="settings-group">
         <div class="settings-label">VOICE</div>
         <div class="settings-toggle">
+          <span class="toggle-label">"Hey Jarvis" wake word</span>
+          <div class="toggle-switch" id="wakeWordToggle" onclick="toggleWakeWord(this)"></div>
+        </div>
+        <div class="settings-toggle">
           <span class="toggle-label">Text-to-speech responses</span>
           <div class="toggle-switch" id="ttsToggle" onclick="toggleTTS(this)"></div>
         </div>
@@ -373,6 +379,7 @@ background:var(--bg);color:var(--t2)}
           <span class="toggle-label">Auto-listen after response</span>
           <div class="toggle-switch" id="autoListenToggle" onclick="toggleAutoListen(this)"></div>
         </div>
+        <div class="settings-note" id="wakeWordStatus" style="color:var(--t2)"></div>
       </div>
       <!-- Notifications -->
       <div class="settings-group">
@@ -421,6 +428,7 @@ try {
     userGroqKey = s.groqKey || '';
     ttsEnabled = s.ttsEnabled || false;
     autoListen = s.autoListen || false;
+    wakeWordEnabled = s.wakeWordEnabled || false;
   }
   const savedChat = localStorage.getItem('jarvis.chat.history');
   if (savedChat) chatHistory = JSON.parse(savedChat);
@@ -570,7 +578,7 @@ async function handleChat(msg) {
     loader.remove(); // remove loader, addChatMsg already added the response
 
     // TTS if enabled
-    if (ttsEnabled && reply.length < 500) speak(reply);
+    if (ttsEnabled) speak(reply);
   } catch(e) {
     loader.id = '';
     loader.innerHTML = 'Error: ' + e.message;
@@ -676,20 +684,23 @@ async function callLLM(systemPrompt, userMsg) {
   return 'AI temporarily unavailable. Try again, or add a Groq API key in Settings for guaranteed access.';
 }
 
-// ===== VOICE =====
+// ===== VOICE — Wake Word + Speech-to-Text + TTS =====
+let wakeWordEnabled = false;
+let wakeRecognition = null;
+let isSpeaking = false;
+
 function initSpeechRecognition() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return null;
   const r = new SR();
   r.continuous = false;
   r.interimResults = true;
-  r.lang = 'en-US'; // Will also pick up German reasonably well
+  r.lang = 'en-US';
   r.onresult = e => {
     const transcript = Array.from(e.results).map(r=>r[0].transcript).join('');
     document.getElementById('voiceText').textContent = transcript;
     if (e.results[0].isFinal) {
       stopListening();
-      // Route to chat
       openChat();
       handleChat(transcript);
     }
@@ -701,11 +712,14 @@ function initSpeechRecognition() {
 
 function toggleVoice() {
   if (isListening) { stopListening(); return; }
+  // Pause wake word while active listening
+  if (wakeWordEnabled && wakeRecognition) try { wakeRecognition.abort(); } catch(e){}
   if (!recognition) recognition = initSpeechRecognition();
-  if (!recognition) { alert('Speech recognition not supported in this browser. Use Chrome.'); return; }
+  if (!recognition) { alert('Speech recognition not supported. Use Chrome.'); return; }
   isListening = true;
   recognition.start();
   document.getElementById('voiceBtn').classList.add('listening');
+  document.getElementById('voiceBtn').classList.remove('wake-active');
   document.getElementById('chatVoiceBtn').classList.add('listening');
   document.getElementById('voiceOverlay').classList.add('show');
   document.getElementById('voiceText').textContent = 'Listening...';
@@ -717,22 +731,151 @@ function stopListening() {
   document.getElementById('voiceBtn').classList.remove('listening');
   document.getElementById('chatVoiceBtn').classList.remove('listening');
   document.getElementById('voiceOverlay').classList.remove('show');
+  // Resume wake word after a brief pause
+  if (wakeWordEnabled) setTimeout(startWakeWord, 800);
 }
 
+// ----- "Hey Jarvis" Wake Word -----
+function initWakeWord() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.continuous = true;
+  r.interimResults = true;
+  r.lang = 'en-US';
+  r.onresult = e => {
+    // Scan all results for the wake phrase
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript.toLowerCase().trim();
+      if (t.includes('hey jarvis') || t.includes('hey travis') || t.includes('hey service') || t.includes('a jarvis') || t.includes('hey java')) {
+        // Wake word detected!
+        try { r.abort(); } catch(ex){}
+        onWakeWordDetected(e.results[i][0].transcript);
+        return;
+      }
+    }
+  };
+  r.onerror = e => {
+    if (e.error === 'no-speech' || e.error === 'aborted') {
+      // Normal — restart silently
+      if (wakeWordEnabled && !isListening && !isSpeaking) setTimeout(startWakeWord, 300);
+    } else {
+      console.log('Wake word error:', e.error);
+      if (wakeWordEnabled) setTimeout(startWakeWord, 2000);
+    }
+  };
+  r.onend = () => {
+    // Auto-restart if wake word is still enabled and not actively listening
+    if (wakeWordEnabled && !isListening && !isSpeaking) setTimeout(startWakeWord, 300);
+  };
+  return r;
+}
+
+function startWakeWord() {
+  if (!wakeWordEnabled || isListening || isSpeaking) return;
+  if (!wakeRecognition) wakeRecognition = initWakeWord();
+  if (!wakeRecognition) return;
+  try {
+    wakeRecognition.start();
+    document.getElementById('voiceBtn').classList.add('wake-active');
+    document.getElementById('wakeWordStatus').textContent = 'Listening for "Hey Jarvis"...';
+  } catch(e) {
+    // Already started — ignore
+  }
+}
+
+function stopWakeWord() {
+  if (wakeRecognition) try { wakeRecognition.abort(); } catch(e){}
+  document.getElementById('voiceBtn').classList.remove('wake-active');
+  document.getElementById('wakeWordStatus').textContent = '';
+}
+
+function onWakeWordDetected(rawTranscript) {
+  // Play activation chime sound
+  playActivationSound();
+  // Show visual feedback
+  document.getElementById('voiceOverlay').classList.add('show');
+  document.getElementById('voiceText').textContent = 'JARVIS activated — listening...';
+  // Remove the wake phrase from transcript if there's more after it
+  const afterWake = rawTranscript.toLowerCase().replace(/.*?(?:hey\s*jarvis|hey\s*travis|hey\s*service|hey\s*java|a\s*jarvis)/i, '').trim();
+  if (afterWake.length > 3) {
+    // User already said a command after "Hey Jarvis"
+    document.getElementById('voiceOverlay').classList.remove('show');
+    openChat();
+    handleChat(afterWake);
+  } else {
+    // Start active listening for the actual command
+    setTimeout(toggleVoice, 200);
+  }
+}
+
+function playActivationSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Two-tone chime: classic assistant activation
+    [440, 660].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, ctx.currentTime + i*0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.12 + 0.3);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + i*0.12);
+      osc.stop(ctx.currentTime + i*0.12 + 0.3);
+    });
+  } catch(e){}
+}
+
+function toggleWakeWord(el) {
+  wakeWordEnabled = el.classList.toggle('on');
+  saveSettings();
+  if (wakeWordEnabled) {
+    startWakeWord();
+  } else {
+    stopWakeWord();
+  }
+}
+
+// ----- TTS (Text-to-Speech) -----
 function speak(text) {
   if (!window.speechSynthesis) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 1.1;
-  u.pitch = 0.95;
-  // Prefer a good English voice
+  // Cancel any ongoing speech
+  speechSynthesis.cancel();
+  // Clean text for better speech (remove markdown, code blocks, etc.)
+  const clean = text.replace(/```[\s\S]*?```/g, 'code block omitted')
+                     .replace(/\*\*(.*?)\*\*/g, '$1')
+                     .replace(/\*(.*?)\*/g, '$1')
+                     .replace(/#{1,6}\s/g, '')
+                     .replace(/\[.*?\]\(.*?\)/g, '')
+                     .replace(/\n{2,}/g, '. ')
+                     .replace(/\n/g, ' ')
+                     .trim();
+  if (!clean) return;
+  isSpeaking = true;
+  // Pause wake word during speech
+  if (wakeWordEnabled && wakeRecognition) try { wakeRecognition.abort(); } catch(e){}
+  const u = new SpeechSynthesisUtterance(clean);
+  u.rate = 1.05;
+  u.pitch = 0.9;
+  // Voice preference: deep English male
   const voices = speechSynthesis.getVoices();
   const preferred = voices.find(v => v.name.includes('Google UK English Male')) ||
                     voices.find(v => v.name.includes('Daniel')) ||
+                    voices.find(v => v.name.includes('Aaron')) ||
+                    voices.find(v => v.lang === 'en-GB' && v.name.includes('Male')) ||
                     voices.find(v => v.lang === 'en-GB') ||
                     voices.find(v => v.lang.startsWith('en'));
   if (preferred) u.voice = preferred;
+  u.onend = () => {
+    isSpeaking = false;
+    // Resume wake word after speaking
+    if (wakeWordEnabled) setTimeout(startWakeWord, 500);
+    // Auto-listen for follow-up
+    if (autoListen) setTimeout(toggleVoice, 600);
+  };
+  u.onerror = () => { isSpeaking = false; if (wakeWordEnabled) setTimeout(startWakeWord, 500); };
   speechSynthesis.speak(u);
-  if (autoListen) u.onend = () => setTimeout(toggleVoice, 500);
 }
 
 // ===== QUICK CAPTURE =====
@@ -769,6 +912,7 @@ function toggleSettings() {
   document.getElementById('settingsModal').classList.toggle('show');
   updateAiStatus();
   // Restore toggle states
+  if (wakeWordEnabled) document.getElementById('wakeWordToggle').classList.add('on');
   if (ttsEnabled) document.getElementById('ttsToggle').classList.add('on');
   if (autoListen) document.getElementById('autoListenToggle').classList.add('on');
   if (userGroqKey) document.getElementById('groqKeyInput').value = '••••••••';
@@ -798,7 +942,7 @@ async function saveGroqKey() {
 
 function saveSettings() {
   try {
-    localStorage.setItem('jarvis.settings', JSON.stringify({groqKey:userGroqKey, ttsEnabled, autoListen}));
+    localStorage.setItem('jarvis.settings', JSON.stringify({groqKey:userGroqKey, ttsEnabled, autoListen, wakeWordEnabled}));
   } catch(e) {}
 }
 
@@ -850,9 +994,18 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     body.scrollTop = body.scrollHeight;
   }
-  // Init speech
+  // Init speech recognition
   if (window.SpeechRecognition || window.webkitSpeechRecognition) {
     recognition = initSpeechRecognition();
+  }
+  // Preload TTS voices
+  if (window.speechSynthesis) {
+    speechSynthesis.getVoices();
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  }
+  // Auto-start wake word if enabled
+  if (wakeWordEnabled) {
+    setTimeout(startWakeWord, 1500);
   }
   // Request notification permission for alerts
   if ('Notification' in window && Notification.permission === 'default') {
