@@ -444,10 +444,10 @@ setInterval(() => {
 // ===== MODULE LOADING =====
 const MODULE_CONFIG = {
   globe:     { label: 'GLOBE INTEL',   src: 'modules/globe.html?v=3',  placeholder: false },
-  trading:   { label: 'TRADING',       src: 'modules/trading.html',              placeholder: false },
+  trading:   { label: 'TRADING',       src: 'modules/trading.html?v=1',              placeholder: false },
   assistant: { label: 'ASSISTANT',     src: null,                     placeholder: true, desc: 'Email summaries, calendar integration, task management, and productivity tools.' },
   advisor:   { label: 'ADVISOR',       src: null,                     placeholder: true, desc: 'AI financial advisor — macro analysis, trade setups, risk assessment, portfolio recommendations.' },
-  journal:   { label: 'TRADE JOURNAL', src: 'modules/trading.html?tab=journal', placeholder: false },
+  journal:   { label: 'TRADE JOURNAL', src: 'modules/trading.html?v=1&tab=journal', placeholder: false },
 };
 
 function loadModule(name) {
@@ -492,12 +492,14 @@ function loadModule(name) {
     setTimeout(() => loader.classList.add('hide'), 300);
   } else {
     frame.removeAttribute('srcdoc');
-    frame.src = config.src;
+    // Set handler BEFORE src — prevents race condition with cached resources
     frame.onload = () => {
-      setTimeout(() => loader.classList.add('hide'), 200);
-      // Send shared data to module
-      frame.contentWindow.postMessage({type:'MARKET_DATA', data: sharedMarketData}, '*');
+      loader.classList.add('hide');
+      try { frame.contentWindow.postMessage({type:'MARKET_DATA', data: sharedMarketData}, '*'); } catch(e) {}
     };
+    frame.src = config.src;
+    // Hard fallback: hide loader after 3s regardless of onload
+    setTimeout(() => loader.classList.add('hide'), 3000);
   }
 }
 
