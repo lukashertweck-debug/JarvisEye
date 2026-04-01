@@ -387,6 +387,7 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 
 </div>
 
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 <script src="https://unpkg.com/globe.gl@2.34.1/dist/globe.gl.min.js"></script>
 <script>
 /* ====== CONFIG ====== */
@@ -1224,7 +1225,7 @@ function getVelocity(t) {
 }
 
 function initArtemis() {
-  if (!globe) return;
+  if (!globe || typeof THREE === 'undefined') { console.warn('Artemis init waiting...'); setTimeout(initArtemis, 500); return; }
   const scene = globe.scene();
 
   // === MOON ===
