@@ -491,7 +491,7 @@ function loadModule(name) {
     frame.srcdoc = html;
     setTimeout(() => loader.classList.add('hide'), 300);
   } else {
-    frame.srcdoc = '';
+    frame.removeAttribute('srcdoc');
     frame.src = config.src;
     frame.onload = () => {
       setTimeout(() => loader.classList.add('hide'), 200);
