@@ -174,6 +174,55 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 .gf-country{font-family:var(--f);font-size:7px;padding:2px 7px;background:transparent;border:1px solid var(--bdr);color:var(--t2);border-radius:3px;cursor:pointer;letter-spacing:.5px;transition:.15s}
 .gf-country:hover{border-color:rgba(59,130,246,.3);color:var(--txt)}
 .gf-country.on{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08)}
+
+/* ====== TRADING PANEL ====== */
+#panelTrading{width:740px;height:560px;top:60px;left:50%;transform:translateX(-50%)}
+.tr-tabs{display:flex;gap:3px;margin-left:8px;flex:1}
+.tr-tab{font-family:var(--f);font-size:7px;padding:3px 10px;background:transparent;border:1px solid var(--bdr);color:var(--t2);border-radius:3px;cursor:pointer;letter-spacing:1px;font-weight:600;transition:.15s}
+.tr-tab:hover{border-color:var(--blue);color:var(--blue)}
+.tr-tab.active{border-color:var(--grn);color:var(--grn);background:rgba(34,197,94,.08)}
+.tr-pane{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.tr-prices{display:flex;gap:16px;padding:8px 14px;border-bottom:1px solid var(--bdr);background:rgba(8,12,20,.5);flex-wrap:wrap;flex-shrink:0}
+.tr-price-item{display:flex;flex-direction:column;gap:1px}
+.tr-price-sym{font-size:6.5px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase}
+.tr-price-val{font-size:15px;font-weight:700;color:#fff;line-height:1.2}
+.tr-price-chg{font-size:8px;font-weight:700}
+.tr-sel{font-family:var(--f);font-size:8px;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:5px 8px;border-radius:3px;cursor:pointer;outline:none}
+.tr-sel:focus{border-color:var(--blue)}
+.tr-gen-btn{font-family:var(--f);font-size:8px;padding:6px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--grn);border-radius:4px;cursor:pointer;letter-spacing:1px;font-weight:700;transition:.15s;white-space:nowrap}
+.tr-gen-btn:hover{background:rgba(34,197,94,.2);color:#fff}
+.tr-brief-out{flex:1;padding:12px 14px;overflow-y:auto;font-size:9px;color:var(--txt);line-height:1.8;white-space:pre-wrap}
+.tr-brief-out::-webkit-scrollbar{width:3px}.tr-brief-out::-webkit-scrollbar-thumb{background:rgba(34,197,94,.15);border-radius:2px}
+.tr-form{padding:10px 14px;border-bottom:1px solid var(--bdr);background:rgba(8,12,20,.5);flex-shrink:0}
+.tr-form-row{display:flex;gap:5px;margin-bottom:5px;flex-wrap:wrap;align-items:center}
+.tr-inp{font-family:var(--f);font-size:8px;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:5px 8px;border-radius:3px;outline:none;flex:1;min-width:60px}
+.tr-inp:focus{border-color:var(--blue)}
+.tr-add-btn{font-family:var(--f);font-size:8px;padding:5px 12px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:var(--blue);border-radius:3px;cursor:pointer;letter-spacing:1px;font-weight:700;white-space:nowrap;transition:.15s}
+.tr-add-btn:hover{background:rgba(59,130,246,.2);color:#fff}
+.tr-stats{display:flex;gap:16px;padding:8px 14px;border-bottom:1px solid var(--bdr);background:rgba(8,12,20,.4);flex-shrink:0}
+.tr-stat{display:flex;flex-direction:column;gap:1px}
+.tr-stat-v{font-size:14px;font-weight:700;line-height:1}
+.tr-stat-l{font-size:6px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+.tr-journal-list{flex:1;overflow-y:auto;padding:4px 14px}
+.tr-journal-list::-webkit-scrollbar{width:3px}.tr-journal-list::-webkit-scrollbar-thumb{background:rgba(59,130,246,.1);border-radius:2px}
+.tj{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(59,130,246,.04);font-size:8px}
+.tj-dir{font-size:7px;font-weight:700;padding:2px 6px;border-radius:2px;letter-spacing:.5px;flex-shrink:0}
+.tj-dir.LONG{background:rgba(34,197,94,.12);color:var(--grn);border:1px solid rgba(34,197,94,.2)}
+.tj-dir.SHORT{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.tj-out{font-size:7px;font-weight:700;letter-spacing:.5px;flex-shrink:0}
+.tj-out.WIN{color:var(--grn)}.tj-out.LOSS{color:var(--red)}.tj-out.BE{color:var(--amb)}.tj-out.OPEN{color:var(--blue)}
+.tj-del{background:0;border:0;color:var(--t3);cursor:pointer;font-size:12px;padding:0 2px;line-height:1;flex-shrink:0}
+.tj-del:hover{color:var(--red)}
+.lv-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.lv-l{font-size:7.5px;color:var(--t2);letter-spacing:1px;width:55px;flex-shrink:0;text-transform:uppercase}
+.lv-inp{flex:1;font-size:10px}
+.tr-levels-out{flex:1;overflow-y:auto;padding:8px 14px}
+.tr-levels-out::-webkit-scrollbar{width:3px}.tr-levels-out::-webkit-scrollbar-thumb{background:rgba(245,158,11,.1);border-radius:2px}
+.lv-block{background:rgba(8,12,20,.6);border:1px solid var(--bdr);border-radius:5px;padding:10px;margin-bottom:8px}
+.lv-block-title{font-size:7.5px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bdr)}
+.lv-line{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.lv-line-name{font-size:8px;color:var(--t2)}.lv-line-val{font-size:10px;font-weight:700;color:#fff}
+.lv-line-val.bull{color:var(--grn)}.lv-line-val.bear{color:var(--red)}.lv-line-val.key{color:var(--amb)}
 </style>
 </head>
 <body>
@@ -316,6 +365,70 @@ JARVIS uses <span style="color:var(--cyan)">NVIDIA AI</span> via Pollinations ga
 <div class="popup-body" id="popupCountryBody"></div>
 </div>
 
+<!-- TRADING DESK -->
+<div class="panel" id="panelTrading">
+<div class="panel-hd"><span class="panel-dot" style="background:var(--grn)"></span><span class="panel-title">Trading Desk</span>
+<div class="tr-tabs">
+<button class="tr-tab active" onclick="switchTradingTab('brief',this)">BRIEF</button>
+<button class="tr-tab" onclick="switchTradingTab('journal',this)">JOURNAL</button>
+<button class="tr-tab" onclick="switchTradingTab('levels',this)">LEVELS</button>
+</div>
+<button class="panel-close" onclick="togglePanel('Trading')">&times;</button></div>
+<div class="panel-body" style="padding:0;overflow:hidden">
+<!-- BRIEF TAB -->
+<div class="tr-pane" id="trBrief">
+<div class="tr-prices" id="trPrices"></div>
+<div style="padding:8px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:6px;flex-shrink:0;background:rgba(8,12,20,.3)">
+<select class="tr-sel" id="trInstrument"><option value="both">NAS100 + GER40</option><option value="nas">NAS100 Only</option><option value="ger">GER40 Only</option></select>
+<select class="tr-sel" id="trSession"><option value="London">London Open</option><option value="NY">New York Open</option><option value="Asia">Asia Session</option></select>
+<button class="tr-gen-btn" onclick="generateBrief()">&#9889; GENERATE PRE-SESSION BRIEF</button>
+</div>
+<div class="tr-brief-out" id="trBriefOut"><div style="color:var(--t2);text-align:center;padding:40px 20px;font-size:9px;letter-spacing:2px">SELECT SESSION &amp; HIT GENERATE<br><br><span style="color:var(--t3)">AI analyzes live market data &amp; creates<br>a SMC/ICT pre-session brief</span></div></div>
+</div>
+<!-- JOURNAL TAB -->
+<div class="tr-pane" id="trJournal" style="display:none">
+<div class="tr-form">
+<div class="tr-form-row">
+<select class="tr-sel" id="tjInstr" style="flex:0 0 auto"><option>NAS100</option><option>GER40</option><option>BTC/USD</option><option>EUR/USD</option><option>GOLD</option></select>
+<select class="tr-sel" id="tjDir" style="flex:0 0 auto"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
+<input class="tr-inp" id="tjEntry" placeholder="Entry" type="number" step="0.1">
+<input class="tr-inp" id="tjSL" placeholder="SL" type="number" step="0.1">
+<input class="tr-inp" id="tjTP" placeholder="TP" type="number" step="0.1">
+<select class="tr-sel" id="tjOutcome" style="flex:0 0 auto"><option value="">Outcome...</option><option value="WIN">WIN</option><option value="LOSS">LOSS</option><option value="BE">BREAK EVEN</option><option value="OPEN">OPEN</option></select>
+</div>
+<div class="tr-form-row">
+<input class="tr-inp" style="flex:2" id="tjNotes" placeholder="Setup notes: OB, FVG, CHoCH, displacement, confluences..." maxlength="300">
+<button class="tr-add-btn" onclick="addTrade()">+ LOG TRADE</button>
+</div>
+</div>
+<div class="tr-stats" id="trStats"></div>
+<div class="tr-journal-list" id="trJournalList"></div>
+</div>
+<!-- LEVELS TAB -->
+<div class="tr-pane" id="trLevels" style="display:none">
+<div style="padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:16px;border-bottom:1px solid var(--bdr);flex-shrink:0;background:rgba(8,12,20,.4)">
+<div>
+<div style="font-size:7.5px;color:var(--blue);letter-spacing:2px;font-weight:700;margin-bottom:8px">NAS100</div>
+<div class="lv-row"><span class="lv-l">PDH</span><input class="tr-inp lv-inp" id="nasPDH" placeholder="Prev Day High" type="number"></div>
+<div class="lv-row"><span class="lv-l">PDL</span><input class="tr-inp lv-inp" id="nasPDL" placeholder="Prev Day Low" type="number"></div>
+<div class="lv-row"><span class="lv-l">Current</span><input class="tr-inp lv-inp" id="nasCur" placeholder="Auto-fills" type="number"></div>
+</div>
+<div>
+<div style="font-size:7.5px;color:var(--cyan);letter-spacing:2px;font-weight:700;margin-bottom:8px">GER40</div>
+<div class="lv-row"><span class="lv-l">PDH</span><input class="tr-inp lv-inp" id="gerPDH" placeholder="Prev Day High" type="number"></div>
+<div class="lv-row"><span class="lv-l">PDL</span><input class="tr-inp lv-inp" id="gerPDL" placeholder="Prev Day Low" type="number"></div>
+<div class="lv-row"><span class="lv-l">Current</span><input class="tr-inp lv-inp" id="gerCur" placeholder="Auto-fills" type="number"></div>
+</div>
+</div>
+<div style="padding:8px 14px;border-bottom:1px solid var(--bdr);display:flex;gap:6px;flex-shrink:0">
+<button class="tr-gen-btn" onclick="calcLevels()" style="flex:1">&#9658; CALCULATE KEY LEVELS</button>
+<button class="tr-gen-btn" onclick="autoFillLevels()" style="background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--cyan)">&#8635; AUTO-FILL LIVE PRICES</button>
+</div>
+<div class="tr-levels-out" id="trLevelsOut"><div style="color:var(--t2);text-align:center;padding:30px;font-size:9px;letter-spacing:2px">ENTER PDH / PDL THEN CALCULATE</div></div>
+</div>
+</div>
+</div>
+
 <!-- TOOLBAR -->
 <div class="toolbar">
 <button class="tb-btn" onclick="togglePanel('Intel')"><span class="dot" style="background:var(--blue)"></span>INTEL</button>
@@ -323,6 +436,7 @@ JARVIS uses <span style="color:var(--cyan)">NVIDIA AI</span> via Pollinations ga
 <button class="tb-btn" onclick="togglePanel('Markets')"><span class="dot" style="background:var(--grn)"></span>MARKETS</button>
 <button class="tb-btn" onclick="togglePanel('Jarvis')"><span class="dot" style="background:var(--cyan)"></span>JARVIS</button>
 <button class="tb-btn" onclick="togglePanel('Agents')"><span class="dot" style="background:#a78bfa"></span>AGENTS</button>
+<button class="tb-btn" onclick="openTradingPanel()"><span class="dot" style="background:var(--grn)"></span>TRADING</button>
 <div class="tb-sep"></div>
 <button class="tb-btn" id="rotateBtn" onclick="toggleRotation()">&#x21BB; AUTO-ROTATE</button>
 <div class="tb-sep"></div>
@@ -356,7 +470,7 @@ const RSS2JSON = u => 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeUR
 /* ====== STATE ====== */
 let globe, autoRotate = true, allMarketData = {}, newsItems = [];
 const activeLayers = {oil:true,mineral:true,coal:true,lng:true,trade:true,money:true,news:true};
-const panelState = {Intel:false,Pred:false,Markets:false,Jarvis:false,Agents:false,Settings:false};
+const panelState = {Intel:false,Pred:false,Markets:false,Jarvis:false,Agents:false,Settings:false,Trading:false};
 
 /* ====== CLOCK ====== */
 setInterval(()=>{
@@ -505,6 +619,25 @@ const GEO_KEYWORDS = {
   'climate':{lat:48.9,lng:2.3},'ai ':{lat:37.4,lng:-122.1},'nvidia':{lat:37.4,lng:-122.1}
 };
 
+/* ====== SECURITY HELPERS ====== */
+// Escapes HTML in any string — prevents XSS when inserting external data into innerHTML
+function sanitizeText(str){
+  if(!str)return'';
+  const d=document.createElement('div');
+  d.textContent=String(str);
+  return d.innerHTML;
+}
+// Validates URL is http/https only — prevents javascript: URI injection
+function safeUrl(url){
+  try{const u=new URL(url);return(u.protocol==='http:'||u.protocol==='https:')?url:'#';}catch{return'#';}
+}
+// Sanitizes AI/external text for innerHTML display — escapes tags, preserves line breaks
+function sanitizeAI(text){
+  const d=document.createElement('div');
+  d.textContent=String(text||'');
+  return d.innerHTML.replace(/\n/g,'<br>');
+}
+
 /* ====== TOGGLE FUNCTIONS ====== */
 function togglePanel(name) {
   const el = document.getElementById('panel' + name);
@@ -523,7 +656,7 @@ function togglePanel(name) {
   document.querySelectorAll('.tb-btn').forEach(b => b.classList.remove('active'));
   if (!isOpen) {
     const btns = document.querySelectorAll('.tb-btn');
-    const idx = {Intel:0,Pred:1,Markets:2,Jarvis:3,Agents:4}[name];
+    const idx = {Intel:0,Pred:1,Markets:2,Jarvis:3,Agents:4,Trading:5}[name];
     if (idx !== undefined && btns[idx]) btns[idx].classList.add('active');
   }
 }
@@ -760,11 +893,14 @@ async function fetchNews() {
 function renderNews(items) {
   const cont = document.getElementById('nFeed');
   if(!items.length){cont.innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">NO INTEL AVAILABLE</div>';return;}
-  cont.innerHTML = items.map(n=>`
-    <div class="ni" onclick="window.open('${n.link}','_blank')">
-      <div class="nm"><span class="ns">${n.src}</span><span class="nse ${n.sentiment}">${n.sentiment==='bu'?'BULLISH':n.sentiment==='be'?'BEARISH':'NEUTRAL'}</span><span class="nt">${n.time}</span></div>
-      <div class="ntxt">${n.title}</div>
-    </div>`).join('');
+  cont.innerHTML = items.map(n=>{
+    const url = safeUrl(n.link).replace(/'/g,'%27');
+    const sentLabel = n.sentiment==='bu'?'BULLISH':n.sentiment==='be'?'BEARISH':'NEUTRAL';
+    return `<div class="ni" onclick="window.open('${url}','_blank')">
+      <div class="nm"><span class="ns">${sanitizeText(n.src)}</span><span class="nse ${n.sentiment}">${sentLabel}</span><span class="nt">${sanitizeText(n.time)}</span></div>
+      <div class="ntxt">${sanitizeText(n.title)}</div>
+    </div>`;
+  }).join('');
   document.getElementById('nCnt').textContent = items.length;
 }
 
@@ -823,8 +959,9 @@ function renderPredictions(markets) {
       }
     }catch(e){}
     const color = pct>65?'var(--grn)':pct>40?'var(--amb)':'var(--red)';
-    return `<div class="pred-item" onclick="window.open('${url}','_blank')">
-      <div class="pred-q">${m.question||'Unknown'}</div>
+    const safeMarketUrl = safeUrl(url).replace(/'/g,'%27');
+    return `<div class="pred-item" onclick="window.open('${safeMarketUrl}','_blank')">
+      <div class="pred-q">${sanitizeText(m.question||'Unknown')}</div>
       <div class="pred-bar"><div class="pred-fill" style="width:${pct}%;background:${color}">${pct}%</div></div>
       <div class="pred-stats"><span>Vol: ${vol}</span><span>YES ${pct}% / NO ${100-pct}%</span></div>
     </div>`;
@@ -1022,8 +1159,8 @@ async function sendJarvisMsg(){
   if(!msg)return;
   input.value='';
   const body = document.getElementById('jcBody');
-  body.innerHTML+=`<div class="jc-msg user">${msg}</div>`;
-  body.innerHTML+=`<div class="jc-msg bot" id="jcLoading"><span class="loading">PROCESSING...</span></div>`;
+  const uDiv=document.createElement('div');uDiv.className='jc-msg user';uDiv.textContent=msg;body.appendChild(uDiv);
+  const lDiv=document.createElement('div');lDiv.className='jc-msg bot';lDiv.id='jcLoading';lDiv.innerHTML='<span class="loading">PROCESSING...</span>';body.appendChild(lDiv);
   body.scrollTop=body.scrollHeight;
 
   const ctx = getFullContext();
@@ -1031,12 +1168,202 @@ async function sendJarvisMsg(){
     const sysPrompt = `You are JARVIS, an elite AI intelligence assistant powering a real-time global intelligence terminal. CRITICAL: Check the date in the data below — you are responding in REAL-TIME, not from training data. Use ONLY the market prices and news headlines provided below as your factual basis. Be precise, concise, and actionable. Never fabricate data. If asked about current events, reference the actual news headlines provided.\n\n${ctx}`;
     const reply = await callLLM(sysPrompt, msg);
     const loading = document.getElementById('jcLoading');
-    if(loading){loading.id='';loading.innerHTML=reply;}
+    if(loading){loading.id='';loading.innerHTML=sanitizeAI(reply);}
   }catch(e){
     const loading = document.getElementById('jcLoading');
     if(loading){loading.id='';loading.innerHTML='Connection error: '+e.message;}
   }
   body.scrollTop=body.scrollHeight;
+}
+
+/* ====== TRADING MODULE ====== */
+function openTradingPanel(){
+  togglePanel('Trading');
+  if(panelState.Trading){renderTradingPrices();renderJournal();}
+}
+
+function switchTradingTab(tab,btn){
+  document.querySelectorAll('.tr-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tr-pane').forEach(p=>p.style.display='none');
+  btn.classList.add('active');
+  const paneMap={brief:'trBrief',journal:'trJournal',levels:'trLevels'};
+  document.getElementById(paneMap[tab]).style.display='flex';
+  if(tab==='brief')renderTradingPrices();
+  if(tab==='journal')renderJournal();
+  if(tab==='levels')autoFillLevels();
+}
+
+function renderTradingPrices(){
+  const items=[
+    {key:'NAS100',sym:'NAS100',color:'var(--blue)'},
+    {key:'GER40',sym:'GER40',color:'var(--cyan)'},
+    {key:'GOLD',sym:'GOLD',color:'var(--amb)'},
+    {key:'BTC',sym:'BTC',color:'#f97316'},
+    {key:'EURUSD',sym:'EUR/USD',color:'var(--grn)'},
+  ];
+  const cont=document.getElementById('trPrices');
+  if(!cont)return;
+  cont.innerHTML=items.map(item=>{
+    const m=allMarketData[item.key];
+    if(!m)return`<div class="tr-price-item"><span class="tr-price-sym" style="color:${item.color}">${item.sym}</span><span class="tr-price-val" style="color:var(--t2)">---</span></div>`;
+    const chg=m.change!==null?m.change:0;
+    const chgColor=chg>=0?'var(--grn)':'var(--red)';
+    const price=typeof m.price==='number'?(m.price>999?m.price.toLocaleString('en-US',{maximumFractionDigits:0}):m.price.toFixed(4)):m.price;
+    return`<div class="tr-price-item">
+      <span class="tr-price-sym" style="color:${item.color}">${item.sym}</span>
+      <span class="tr-price-val">${m.price>999?'$':''}${price}</span>
+      <span class="tr-price-chg" style="color:${chgColor}">${chg>=0?'+':''}${chg.toFixed(2)}%</span>
+    </div>`;
+  }).join('');
+}
+
+async function generateBrief(){
+  const instrument=document.getElementById('trInstrument').value;
+  const session=document.getElementById('trSession').value;
+  const out=document.getElementById('trBriefOut');
+  out.innerHTML='<span class="loading">GENERATING PRE-SESSION BRIEF...</span>';
+  const ctx=getFullContext();
+  const instrLabel=instrument==='both'?'NAS100 and GER40':instrument==='nas'?'NAS100 (NASDAQ 100)':'GER40 (DAX 40)';
+  const now=new Date();
+  const systemPrompt=`You are JARVIS, a trading intelligence system for an intraday scalper using SMC/ICT methodology. Generate a concise pre-session brief. Use ONLY the real-time market data provided. Format EXACTLY as:
+
+BIAS: [BULLISH/BEARISH/NEUTRAL] — [1 sentence reason]
+
+KEY LEVELS (${instrLabel}):
+• Current: [from live data]
+• Watch above: [resistance/liquidity level]
+• Watch below: [support/liquidity level]
+
+LIQUIDITY TARGETS:
+• Bull sweep: [level above to raid equal highs/PDH]
+• Bear sweep: [level below to raid equal lows/PDL]
+
+SMC SETUPS TO WATCH:
+• [1-2 specific setups: OB retest, FVG fill, CHoCH, BOS, displacement entry]
+
+MACRO CONTEXT:
+• [1-2 bullet points from the news headlines]
+
+RISK NOTE: [1 sentence on key risk for this session]
+
+Keep it tight and actionable. No filler. Max 200 words.`;
+  try{
+    const reply=await callLLM(systemPrompt+'\n\n'+ctx,`Generate pre-session brief for ${session} session, focusing on ${instrLabel}. Date: ${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}`);
+    out.textContent=reply;
+  }catch(e){out.textContent='Brief generation failed. Check AI connection in Settings.';}
+}
+
+/* --- TRADE JOURNAL --- */
+const JOURNAL_KEY='jarvis.trading.journal';
+function getJournal(){try{return JSON.parse(localStorage.getItem(JOURNAL_KEY))||[];}catch{return[];}}
+function saveJournal(entries){localStorage.setItem(JOURNAL_KEY,JSON.stringify(entries));}
+
+function addTrade(){
+  const entry=parseFloat(document.getElementById('tjEntry').value);
+  const sl=parseFloat(document.getElementById('tjSL').value);
+  const tp=parseFloat(document.getElementById('tjTP').value);
+  if(!entry||!sl||!tp){alert('Entry, SL, and TP are required.');return;}
+  const rr=Math.abs((tp-entry)/(sl-entry));
+  const trade={
+    id:Date.now(),
+    date:new Date().toISOString(),
+    instr:document.getElementById('tjInstr').value,
+    dir:document.getElementById('tjDir').value,
+    entry,sl,tp,
+    rr:rr.toFixed(2),
+    outcome:document.getElementById('tjOutcome').value||'OPEN',
+    notes:document.getElementById('tjNotes').value.trim().slice(0,300)
+  };
+  const journal=getJournal();
+  journal.unshift(trade);
+  saveJournal(journal);
+  ['tjEntry','tjSL','tjTP','tjNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('tjOutcome').value='';
+  renderJournal();
+}
+
+function deleteTrade(id){
+  saveJournal(getJournal().filter(t=>t.id!==id));
+  renderJournal();
+}
+
+function renderJournal(){
+  const journal=getJournal();
+  const stats=document.getElementById('trStats');
+  const list=document.getElementById('trJournalList');
+  if(!stats||!list)return;
+  const closed=journal.filter(t=>t.outcome==='WIN'||t.outcome==='LOSS'||t.outcome==='BE');
+  const wins=journal.filter(t=>t.outcome==='WIN').length;
+  const losses=journal.filter(t=>t.outcome==='LOSS').length;
+  const winRate=closed.length?Math.round(wins/closed.length*100):0;
+  const avgRR=closed.length?(closed.reduce((a,t)=>a+parseFloat(t.rr),0)/closed.length).toFixed(2):'---';
+  const wrColor=winRate>=50?'var(--grn)':'var(--red)';
+  stats.innerHTML=`
+    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--blue)">${journal.length}</span><span class="tr-stat-l">Trades</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--grn)">${wins}</span><span class="tr-stat-l">Wins</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--red)">${losses}</span><span class="tr-stat-l">Losses</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:${wrColor}">${winRate}%</span><span class="tr-stat-l">Win Rate</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--amb)">${avgRR}</span><span class="tr-stat-l">Avg R:R</span></div>`;
+  if(!journal.length){
+    list.innerHTML='<div style="color:var(--t2);text-align:center;padding:30px;font-size:9px;letter-spacing:2px">NO TRADES LOGGED YET</div>';
+    return;
+  }
+  list.innerHTML=journal.map(t=>{
+    const d=new Date(t.date);
+    const dateStr=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    const notesHtml=t.notes?`<span style="color:var(--t2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${sanitizeText(t.notes)}">${sanitizeText(t.notes)}</span>`:'<span style="flex:1"></span>';
+    return`<div class="tj">
+      <span style="color:var(--t2);font-size:7px;flex-shrink:0;min-width:82px">${dateStr}</span>
+      <span style="font-weight:600;color:#fff;flex-shrink:0;min-width:58px">${sanitizeText(t.instr)}</span>
+      <span class="tj-dir ${t.dir}">${t.dir}</span>
+      <span style="color:var(--t2);flex-shrink:0">E:${t.entry}</span>
+      <span style="color:var(--t2);flex-shrink:0">RR:${t.rr}</span>
+      <span class="tj-out ${t.outcome}">${t.outcome}</span>
+      ${notesHtml}
+      <button class="tj-del" onclick="deleteTrade(${t.id})">&times;</button>
+    </div>`;
+  }).join('');
+}
+
+/* --- KEY LEVELS CALCULATOR --- */
+function autoFillLevels(){
+  if(allMarketData.NAS100?.price)document.getElementById('nasCur').value=Math.round(allMarketData.NAS100.price);
+  if(allMarketData.GER40?.price)document.getElementById('gerCur').value=Math.round(allMarketData.GER40.price);
+}
+
+function calcLevels(){
+  const out=document.getElementById('trLevelsOut');
+  const instruments=[
+    {name:'NAS100',color:'var(--blue)',pdh:parseFloat(document.getElementById('nasPDH').value),pdl:parseFloat(document.getElementById('nasPDL').value),cur:parseFloat(document.getElementById('nasCur').value)},
+    {name:'GER40',color:'var(--cyan)',pdh:parseFloat(document.getElementById('gerPDH').value),pdl:parseFloat(document.getElementById('gerPDL').value),cur:parseFloat(document.getElementById('gerCur').value)},
+  ].filter(i=>i.pdh&&i.pdl&&i.pdh>i.pdl);
+  if(!instruments.length){
+    out.innerHTML='<div style="color:var(--t2);text-align:center;padding:20px;font-size:9px">ENTER PDH AND PDL (PDH must be above PDL)</div>';
+    return;
+  }
+  out.innerHTML=instruments.map(inst=>{
+    const range=inst.pdh-inst.pdl;
+    const eq=inst.pdl+range/2;
+    const fvgBull=inst.pdh-range*0.25;
+    const fvgBear=inst.pdl+range*0.25;
+    const eqHigh=inst.pdh+range*0.15;
+    const eqLow=inst.pdl-range*0.15;
+    const hasCur=!isNaN(inst.cur)&&inst.cur>0;
+    const bias=hasCur?(inst.cur>eq?'BULLISH (price above EQ)':'BEARISH (price below EQ)'):'—';
+    const biasClass=hasCur?(inst.cur>eq?'bull':'bear'):'';
+    return`<div class="lv-block">
+      <div class="lv-block-title" style="color:${inst.color}">${inst.name} — Range: ${range.toFixed(0)} pts</div>
+      <div class="lv-line"><span class="lv-line-name">Equal Highs Target (BSL)</span><span class="lv-line-val bear">${eqHigh.toFixed(0)}</span></div>
+      <div class="lv-line"><span class="lv-line-name">PDH — Liquidity Above</span><span class="lv-line-val bear">${inst.pdh.toLocaleString()}</span></div>
+      <div class="lv-line"><span class="lv-line-name">FVG / OB Bear Zone (~75%)</span><span class="lv-line-val" style="color:#a78bfa">${fvgBull.toFixed(0)} – ${inst.pdh.toFixed(0)}</span></div>
+      <div class="lv-line" style="border-top:1px solid rgba(245,158,11,.2);border-bottom:1px solid rgba(245,158,11,.2);padding:4px 0;margin:2px 0"><span class="lv-line-name" style="color:var(--amb)">Equilibrium (50%) ★</span><span class="lv-line-val key">${eq.toFixed(0)}</span></div>
+      <div class="lv-line"><span class="lv-line-name">FVG / OB Bull Zone (~25%)</span><span class="lv-line-val" style="color:#a78bfa">${inst.pdl.toFixed(0)} – ${fvgBear.toFixed(0)}</span></div>
+      <div class="lv-line"><span class="lv-line-name">PDL — Liquidity Below</span><span class="lv-line-val bull">${inst.pdl.toLocaleString()}</span></div>
+      <div class="lv-line"><span class="lv-line-name">Equal Lows Target (SSL)</span><span class="lv-line-val bull">${eqLow.toFixed(0)}</span></div>
+      ${hasCur?`<div class="lv-line" style="border-top:1px solid var(--bdr);margin-top:4px"><span class="lv-line-name">Current Price</span><span class="lv-line-val">${inst.cur.toLocaleString()}</span></div>
+      <div class="lv-line"><span class="lv-line-name">Session Bias</span><span class="lv-line-val ${biasClass}">${bias}</span></div>`:''}
+    </div>`;
+  }).join('');
 }
 
 /* ====== INIT ====== */
