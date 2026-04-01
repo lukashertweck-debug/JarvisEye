@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Journal — JARVIS</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#04060a;--bg2:#080c14;--bg3:#0c1018;--bdr:rgba(59,130,246,0.08);
+--txt:#c8d0dc;--t2:#5a6a80;--t3:#2e3a4a;--blue:#3b82f6;--grn:#22c55e;--red:#ef4444;--amb:#f59e0b;--cyan:#06b6d4;
+--f:'JetBrains Mono',monospace}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f);font-size:11px;overflow:hidden}
+.app{display:flex;flex-direction:column;height:100vh}
+
+/* HEADER */
+.jnl-hd{display:flex;align-items:center;padding:7px 14px;border-bottom:1px solid var(--bdr);background:rgba(8,12,20,.6);flex-shrink:0;gap:10px}
+.jnl-title{font-size:9px;font-weight:700;letter-spacing:2px;color:#fff}
+.jnl-sub{font-size:6.5px;color:var(--t2);letter-spacing:1px;margin-top:1px}
+.jnl-hd-right{margin-left:auto;display:flex;gap:5px;align-items:center}
+.jnl-flt{font-family:var(--f);font-size:7px;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:3px 7px;border-radius:3px;cursor:pointer;outline:none}
+
+/* STATS BAR */
+.tr-stats{display:flex;padding:6px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0;background:rgba(8,12,20,.4);overflow-x:auto}
+.tr-stat{display:flex;flex-direction:column;align-items:center;padding:0 14px;border-right:1px solid var(--bdr);flex-shrink:0}
+.tr-stat:first-child{padding-left:0}
+.tr-stat:last-child{border-right:none}
+.tr-stat-v{font-size:15px;font-weight:700;line-height:1.2}
+.tr-stat-l{font-size:6px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+
+/* FORM */
+.jnl-form{padding:8px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0;display:flex;flex-direction:column;gap:5px;background:rgba(8,12,20,.3)}
+.form-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.tr-inp{font-family:var(--f);font-size:8px;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:5px 8px;border-radius:3px;outline:none;flex:1;min-width:0}
+.tr-inp:focus{border-color:var(--blue)}
+.tr-inp::placeholder{color:var(--t3)}
+.tr-sel{font-family:var(--f);font-size:8px;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:5px 7px;border-radius:3px;cursor:pointer;outline:none;flex-shrink:0}
+.tr-sel:focus{border-color:var(--blue)}
+.form-lbl{font-size:6.5px;color:var(--t2);letter-spacing:1px;white-space:nowrap;flex-shrink:0}
+
+/* SMC CONFIRMATION TOGGLES */
+.conf-row{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:1px 0}
+.conf-lbl{font-size:6px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;flex-shrink:0;margin-right:3px}
+.conf-tog{font-family:var(--f);font-size:6px;padding:3px 7px;background:transparent;border:1px solid var(--t3);color:var(--t2);border-radius:2px;cursor:pointer;letter-spacing:.5px;font-weight:600;transition:.1s;user-select:none;white-space:nowrap}
+.conf-tog:hover{border-color:var(--blue);color:var(--blue)}
+.conf-tog.on{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.1)}
+
+/* IMAGE UPLOAD */
+.img-row{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.img-btn{font-family:var(--f);font-size:7px;padding:5px 10px;background:transparent;border:1px solid var(--bdr);color:var(--t2);border-radius:3px;cursor:pointer;letter-spacing:.5px;transition:.1s;white-space:nowrap;flex-shrink:0}
+.img-btn:hover{border-color:var(--blue);color:var(--blue)}
+.img-fname{font-size:6.5px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}
+.img-prev-sm{width:34px;height:26px;object-fit:cover;border-radius:2px;border:1px solid var(--bdr);cursor:pointer;flex-shrink:0}
+
+/* ADD BUTTON */
+.tr-add-btn{font-family:var(--f);font-size:8px;padding:7px 18px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--grn);border-radius:4px;cursor:pointer;letter-spacing:1px;font-weight:700;transition:.15s;white-space:nowrap;flex-shrink:0}
+.tr-add-btn:hover{background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.5)}
+
+/* JOURNAL LIST */
+.jnl-list{flex:1;overflow-y:auto;padding:4px 0}
+.jnl-list::-webkit-scrollbar{width:3px}.jnl-list::-webkit-scrollbar-thumb{background:rgba(59,130,246,.1);border-radius:2px}
+.jnl-empty{color:var(--t2);text-align:center;padding:40px;font-size:9px;letter-spacing:2px}
+
+/* TRADE ROW */
+.tj-wrap{border-bottom:1px solid rgba(59,130,246,.04)}
+.tj{display:flex;align-items:center;gap:6px;padding:5px 14px;cursor:pointer;transition:.1s}
+.tj:hover{background:rgba(59,130,246,.04)}
+.tj-dir{font-size:7px;font-weight:700;padding:2px 6px;border-radius:2px;flex-shrink:0;letter-spacing:.5px}
+.tj-dir.LONG{background:rgba(34,197,94,.12);color:var(--grn);border:1px solid rgba(34,197,94,.2)}
+.tj-dir.SHORT{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.tj-out{font-size:6.5px;font-weight:700;padding:2px 6px;border-radius:2px;flex-shrink:0;letter-spacing:.5px}
+.tj-out.WIN{background:rgba(34,197,94,.12);color:var(--grn)}
+.tj-out.LOSS{background:rgba(239,68,68,.12);color:var(--red)}
+.tj-out.BE{background:rgba(245,158,11,.1);color:var(--amb)}
+.tj-out.OPEN{background:rgba(59,130,246,.1);color:var(--blue)}
+.tj-arrow{font-size:8px;color:var(--t2);transition:transform .15s;flex-shrink:0}
+.tj-arrow.open{transform:rotate(90deg)}
+.tj-del{font-family:var(--f);font-size:10px;background:none;border:none;color:var(--t3);cursor:pointer;padding:0 3px;line-height:1;flex-shrink:0}
+.tj-del:hover{color:var(--red)}
+
+/* EXPANDED TRADE */
+.tj-expand{display:none;padding:10px 14px 12px;background:rgba(8,12,20,.5);border-top:1px solid rgba(59,130,246,.04)}
+.tj-expand.open{display:flex;gap:12px;align-items:flex-start}
+.tj-exp-img{width:130px;height:97px;object-fit:cover;border-radius:3px;border:1px solid var(--bdr);flex-shrink:0;cursor:zoom-in;transition:.1s}
+.tj-exp-img:hover{border-color:var(--blue)}
+.tj-exp-nopic{width:130px;height:97px;background:rgba(59,130,246,.03);border:1px solid var(--bdr);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:7px;color:var(--t3);flex-shrink:0;letter-spacing:1px}
+.tj-exp-detail{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
+.tj-exp-meta{display:flex;gap:10px;flex-wrap:wrap}
+.tj-exp-kv{font-size:7px;color:var(--t2);white-space:nowrap}
+.tj-exp-kv span{color:var(--txt)}
+.tj-exp-setup{font-size:7.5px;color:var(--amb);padding:1px 0}
+.tj-exp-conf{display:flex;flex-wrap:wrap;gap:3px}
+.tj-exp-badge{font-size:5.5px;padding:2px 5px;border-radius:2px;border:1px solid rgba(6,182,212,.25);color:var(--cyan);background:rgba(6,182,212,.08);letter-spacing:.5px;font-weight:600}
+.tj-exp-notes{font-size:8px;color:var(--txt);line-height:1.7;padding:2px 0;opacity:.85}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="jnl-hd">
+  <div>
+    <div class="jnl-title">TRADE JOURNAL</div>
+    <div class="jnl-sub">SMC / ICT — LOG · REVIEW · IMPROVE</div>
+  </div>
+  <div class="jnl-hd-right">
+    <select class="jnl-flt" id="fltOutcome" onchange="renderJournal()">
+      <option value="">All outcomes</option>
+      <option value="WIN">WIN</option>
+      <option value="LOSS">LOSS</option>
+      <option value="BE">BREAK EVEN</option>
+      <option value="OPEN">OPEN</option>
+    </select>
+    <select class="jnl-flt" id="fltInstr" onchange="renderJournal()">
+      <option value="">All instruments</option>
+      <option>NAS100</option><option>GER40</option><option>BTC/USD</option>
+      <option>ETH/USD</option><option>EUR/USD</option><option>GBP/USD</option>
+      <option>USD/JPY</option><option>GOLD</option><option>OIL</option>
+    </select>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="tr-stats" id="trStats"></div>
+
+<!-- LOG FORM -->
+<div class="jnl-form">
+  <!-- Row 1: Instrument / Direction / Session / Timeframe / Setup -->
+  <div class="form-row">
+    <select class="tr-sel" id="tjInstr">
+      <option>NAS100</option><option>GER40</option><option>BTC/USD</option>
+      <option>ETH/USD</option><option>EUR/USD</option><option>GBP/USD</option>
+      <option>USD/JPY</option><option>GOLD</option><option>OIL</option><option>OTHER</option>
+    </select>
+    <select class="tr-sel" id="tjDir">
+      <option value="LONG">LONG</option><option value="SHORT">SHORT</option>
+    </select>
+    <select class="tr-sel" id="tjSession">
+      <option value="ASIA">ASIA</option>
+      <option value="LONDON">LONDON</option>
+      <option value="NY" selected>NEW YORK</option>
+      <option value="LONDON CLOSE">LONDON CLOSE</option>
+    </select>
+    <select class="tr-sel" id="tjTF">
+      <option value="1M">1M</option><option value="5M">5M</option>
+      <option value="15M" selected>15M</option><option value="30M">30M</option>
+      <option value="1H">1H</option><option value="4H">4H</option><option value="D">D</option>
+    </select>
+    <select class="tr-sel" id="tjSetup" style="flex:1;min-width:160px">
+      <option value="">Setup type...</option>
+      <option>AMD (Accum / Manip / Distrib)</option>
+      <option>ICT Midnight Open</option>
+      <option>ICT Silver Bullet</option>
+      <option>London Open Kill Zone</option>
+      <option>NY Open Kill Zone</option>
+      <option>OB Retest</option>
+      <option>FVG Fill</option>
+      <option>Liquidity Sweep + Reversal</option>
+      <option>CHoCH + Retest</option>
+      <option>BOS Continuation</option>
+      <option>NWOG / NDOG Fill</option>
+      <option>Displacement Entry</option>
+      <option>Other</option>
+    </select>
+  </div>
+  <!-- Row 2: Prices / Risk / Outcome -->
+  <div class="form-row">
+    <span class="form-lbl">ENTRY</span>
+    <input class="tr-inp" id="tjEntry" placeholder="0.00" type="number" step="0.01" style="max-width:78px">
+    <span class="form-lbl">SL</span>
+    <input class="tr-inp" id="tjSL" placeholder="0.00" type="number" step="0.01" style="max-width:78px">
+    <span class="form-lbl">TP</span>
+    <input class="tr-inp" id="tjTP" placeholder="0.00" type="number" step="0.01" style="max-width:78px">
+    <span class="form-lbl">RISK %</span>
+    <input class="tr-inp" id="tjRisk" placeholder="1.0" type="number" step="0.1" min="0.1" max="10" style="max-width:58px">
+    <select class="tr-sel" id="tjOutcome">
+      <option value="">Outcome...</option>
+      <option value="WIN">WIN</option>
+      <option value="LOSS">LOSS</option>
+      <option value="BE">BREAK EVEN</option>
+      <option value="OPEN">OPEN</option>
+    </select>
+  </div>
+  <!-- Row 3: SMC/ICT Confirmations -->
+  <div class="conf-row">
+    <span class="conf-lbl">CONFIRMATIONS:</span>
+    <button class="conf-tog" data-c="CHoCH" onclick="toggleConf(this)" title="Change of Character">CHoCH</button>
+    <button class="conf-tog" data-c="BOS" onclick="toggleConf(this)" title="Break of Structure">BOS</button>
+    <button class="conf-tog" data-c="OB" onclick="toggleConf(this)" title="Order Block">OB</button>
+    <button class="conf-tog" data-c="FVG" onclick="toggleConf(this)" title="Fair Value Gap">FVG</button>
+    <button class="conf-tog" data-c="SWEEP" onclick="toggleConf(this)" title="Liquidity Sweep">SWEEP</button>
+    <button class="conf-tog" data-c="DISP" onclick="toggleConf(this)" title="Displacement">DISP</button>
+    <button class="conf-tog" data-c="IFVG" onclick="toggleConf(this)" title="Inverse Fair Value Gap">IFVG</button>
+    <button class="conf-tog" data-c="BREAKER" onclick="toggleConf(this)" title="Breaker Block">BREAKER</button>
+    <button class="conf-tog" data-c="MITIG" onclick="toggleConf(this)" title="Mitigation Block">MITIG</button>
+    <button class="conf-tog" data-c="EQ" onclick="toggleConf(this)" title="Equilibrium Hit">EQ</button>
+    <button class="conf-tog" data-c="PDH" onclick="toggleConf(this)" title="Previous Day High">PDH</button>
+    <button class="conf-tog" data-c="PDL" onclick="toggleConf(this)" title="Previous Day Low">PDL</button>
+    <button class="conf-tog" data-c="W-FORM" onclick="toggleConf(this)" title="W Formation (Double Bottom)">W-FORM</button>
+    <button class="conf-tog" data-c="M-FORM" onclick="toggleConf(this)" title="M Formation (Double Top)">M-FORM</button>
+  </div>
+  <!-- Row 4: Notes + Image + Log Button -->
+  <div class="form-row">
+    <input class="tr-inp" id="tjNotes" placeholder="Notes: narrative, confluences, missed criteria, execution quality..." maxlength="500">
+    <div class="img-row">
+      <button class="img-btn" onclick="document.getElementById('tjImgFile').click()">&#128247; CHART</button>
+      <input type="file" id="tjImgFile" accept="image/*" style="display:none" onchange="handleImg(this)">
+      <span class="img-fname" id="tjImgName">No image</span>
+      <img id="tjImgPreview" class="img-prev-sm" style="display:none" onclick="document.getElementById('tjImgFile').click()" title="Click to change">
+    </div>
+    <button class="tr-add-btn" onclick="addTrade()">+ LOG TRADE</button>
+  </div>
+</div>
+
+<!-- JOURNAL LIST -->
+<div class="jnl-list" id="trJournalList"></div>
+
+<input type="hidden" id="tjImgData" value="">
+
+</div>
+<script>
+const JOURNAL_KEY='jarvis.trading.journal';
+let expandedId=null;
+
+function sanitizeText(s){const d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML;}
+
+function getJournal(){try{return JSON.parse(localStorage.getItem(JOURNAL_KEY))||[];}catch{return[];}}
+function saveJournal(e){localStorage.setItem(JOURNAL_KEY,JSON.stringify(e));}
+
+function toggleConf(btn){btn.classList.toggle('on');}
+
+function getActiveConfs(){
+  return [...document.querySelectorAll('.conf-tog.on')].map(b=>b.dataset.c);
+}
+
+function handleImg(input){
+  const file=input.files[0];
+  if(!file)return;
+  document.getElementById('tjImgName').textContent=file.name.length>22?file.name.slice(0,19)+'...':file.name;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const max=600;
+      let w=img.width,h=img.height;
+      if(w>max||h>max){const r=Math.min(max/w,max/h);w=Math.round(w*r);h=Math.round(h*r);}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const data=canvas.toDataURL('image/jpeg',0.65);
+      document.getElementById('tjImgData').value=data;
+      const prev=document.getElementById('tjImgPreview');
+      prev.src=data;prev.style.display='block';
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function addTrade(){
+  const entry=parseFloat(document.getElementById('tjEntry').value);
+  const sl=parseFloat(document.getElementById('tjSL').value);
+  const tp=parseFloat(document.getElementById('tjTP').value);
+  if(!entry||!sl||!tp){alert('Entry, SL, and TP are required.');return;}
+  const dir=document.getElementById('tjDir').value;
+  const rr=Math.abs((tp-entry)/(sl-entry));
+  const risk=parseFloat(document.getElementById('tjRisk').value)||1.0;
+  const trade={
+    id:Date.now(),
+    date:new Date().toISOString(),
+    instr:document.getElementById('tjInstr').value,
+    dir,
+    session:document.getElementById('tjSession').value,
+    tf:document.getElementById('tjTF').value,
+    setup:document.getElementById('tjSetup').value||'',
+    entry,sl,tp,
+    rr:rr.toFixed(2),
+    risk:risk.toFixed(1),
+    outcome:document.getElementById('tjOutcome').value||'OPEN',
+    confs:getActiveConfs(),
+    notes:document.getElementById('tjNotes').value.trim().slice(0,500),
+    img:document.getElementById('tjImgData').value||''
+  };
+  const journal=getJournal();
+  journal.unshift(trade);
+  saveJournal(journal);
+  ['tjEntry','tjSL','tjTP','tjRisk','tjNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('tjOutcome').value='';
+  document.getElementById('tjImgData').value='';
+  document.getElementById('tjImgName').textContent='No image';
+  document.getElementById('tjImgPreview').style.display='none';
+  document.getElementById('tjImgFile').value='';
+  document.querySelectorAll('.conf-tog.on').forEach(b=>b.classList.remove('on'));
+  expandedId=null;
+  renderJournal();
+}
+
+function deleteTrade(id){
+  if(!confirm('Delete this trade entry?'))return;
+  saveJournal(getJournal().filter(t=>t.id!==id));
+  if(expandedId===id)expandedId=null;
+  renderJournal();
+}
+
+function toggleExpand(id){
+  expandedId=(expandedId===id)?null:id;
+  renderJournal();
+}
+
+function viewImg(src){
+  if(!src)return;
+  window.open(src,'_blank');
+}
+
+function renderJournal(){
+  const all=getJournal();
+  const fltOut=document.getElementById('fltOutcome').value;
+  const fltInstr=document.getElementById('fltInstr').value;
+  const journal=all.filter(t=>{
+    if(fltOut&&t.outcome!==fltOut)return false;
+    if(fltInstr&&t.instr!==fltInstr)return false;
+    return true;
+  });
+
+  const stats=document.getElementById('trStats');
+  const list=document.getElementById('trJournalList');
+  if(!stats||!list)return;
+
+  // Stats computed from ALL trades (not filtered)
+  const wins=all.filter(t=>t.outcome==='WIN').length;
+  const losses=all.filter(t=>t.outcome==='LOSS').length;
+  const be=all.filter(t=>t.outcome==='BE').length;
+  const closed=all.filter(t=>t.outcome==='WIN'||t.outcome==='LOSS');
+  const winRate=closed.length?Math.round(wins/closed.length*100):0;
+  const wrColor=winRate>=55?'var(--grn)':winRate>=40?'var(--amb)':closed.length?'var(--red)':'var(--t2)';
+  const avgRR=closed.length?(closed.reduce((a,t)=>a+parseFloat(t.rr||0),0)/closed.length).toFixed(2):'---';
+  const totalR=closed.reduce((s,t)=>t.outcome==='WIN'?s+parseFloat(t.rr||0):s-1,0).toFixed(1);
+  const totalRColor=parseFloat(totalR)>0?'var(--grn)':parseFloat(totalR)<0?'var(--red)':'var(--t2)';
+
+  stats.innerHTML=`
+    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--blue)">${all.length}</span><span class="tr-stat-l">Total</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--grn)">${wins}</span><span class="tr-stat-l">Wins</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--red)">${losses}</span><span class="tr-stat-l">Losses</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--amb)">${be}</span><span class="tr-stat-l">B/E</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:${wrColor}">${winRate}%</span><span class="tr-stat-l">Win Rate</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--amb)">${avgRR}</span><span class="tr-stat-l">Avg RR</span></div>
+    <div class="tr-stat"><span class="tr-stat-v" style="color:${totalRColor}">${totalR}R</span><span class="tr-stat-l">Total R</span></div>`;
+
+  if(!journal.length){
+    list.innerHTML=`<div class="jnl-empty">${all.length?'NO TRADES MATCH FILTER':'NO TRADES LOGGED YET'}</div>`;
+    return;
+  }
+
+  list.innerHTML=journal.map(t=>{
+    const d=new Date(t.date);
+    const dateStr=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    const confs=Array.isArray(t.confs)?t.confs:[];
+    const isExp=expandedId===t.id;
+    const imgSrc=t.img||'';
+
+    const expandHtml=isExp?`<div class="tj-expand open">
+      ${imgSrc
+        ?`<img class="tj-exp-img" src="${imgSrc}" alt="chart" onclick="viewImg(this.src)" loading="lazy">`
+        :`<div class="tj-exp-nopic">NO CHART</div>`}
+      <div class="tj-exp-detail">
+        <div class="tj-exp-meta">
+          <span class="tj-exp-kv">SESSION: <span>${sanitizeText(t.session||'—')}</span></span>
+          <span class="tj-exp-kv">TF: <span>${sanitizeText(t.tf||'—')}</span></span>
+          <span class="tj-exp-kv">RISK: <span>${sanitizeText(t.risk||'—')}%</span></span>
+          <span class="tj-exp-kv">R:R: <span>1:${sanitizeText(t.rr||'—')}</span></span>
+          <span class="tj-exp-kv">E: <span>${sanitizeText(String(t.entry))}</span></span>
+          <span class="tj-exp-kv">SL: <span>${sanitizeText(String(t.sl))}</span></span>
+          <span class="tj-exp-kv">TP: <span>${sanitizeText(String(t.tp))}</span></span>
+        </div>
+        ${t.setup?`<div class="tj-exp-setup">${sanitizeText(t.setup)}</div>`:''}
+        ${confs.length?`<div class="tj-exp-conf">${confs.map(c=>`<span class="tj-exp-badge">${sanitizeText(c)}</span>`).join('')}</div>`
+          :'<div style="font-size:7px;color:var(--t3)">No confirmations tagged</div>'}
+        <div class="tj-exp-notes">${t.notes?sanitizeText(t.notes):'<span style="color:var(--t3)">No notes</span>'}</div>
+      </div>
+    </div>`:'';
+
+    return`<div class="tj-wrap">
+      <div class="tj" onclick="toggleExpand(${t.id})">
+        <span style="color:var(--t2);font-size:7px;flex-shrink:0;min-width:112px">${dateStr}</span>
+        <span style="font-weight:600;color:#fff;flex-shrink:0;min-width:64px">${sanitizeText(t.instr)}</span>
+        <span class="tj-dir ${t.dir}">${t.dir}</span>
+        <span class="tj-out ${t.outcome}">${t.outcome}</span>
+        <span style="color:var(--t2);font-size:7px;flex-shrink:0;min-width:36px">1:${sanitizeText(t.rr||'?')}</span>
+        ${t.tf?`<span style="font-size:6.5px;color:var(--t3);flex-shrink:0">${sanitizeText(t.tf)}</span>`:''}
+        ${confs.length
+          ?`<span style="font-size:6.5px;color:var(--cyan);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${confs.slice(0,4).map(c=>sanitizeText(c)).join(' · ')}${confs.length>4?' +'+String(confs.length-4):''}</span>`
+          :'<span style="flex:1"></span>'}
+        ${imgSrc?'<span style="font-size:8px;color:var(--t2);flex-shrink:0" title="Has chart">&#128247;</span>':''}
+        <span class="tj-arrow${isExp?' open':''}">&#9658;</span>
+        <button class="tj-del" onclick="event.stopPropagation();deleteTrade(${t.id})">&times;</button>
+      </div>
+      ${expandHtml}
+    </div>`;
+  }).join('');
+}
+
+window.addEventListener('DOMContentLoaded',()=>renderJournal());
+window.addEventListener('message',e=>{
+  if(e.data&&e.data.type==='MARKET_DATA'){/* future: pre-fill live prices */}
+});
+</script>
+</body>
+</html>

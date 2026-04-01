@@ -11,55 +11,48 @@
 --txt:#c8d0dc;--t2:#5a6a80;--t3:#2e3a4a;--blue:#3b82f6;--grn:#22c55e;--red:#ef4444;--amb:#f59e0b;--cyan:#06b6d4;
 --f:'JetBrains Mono',monospace}
 html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f);font-size:11px;overflow:hidden}
-
 .app{display:flex;flex-direction:column;height:100vh}
 
-/* ---- TAB BAR ---- */
+/* TAB BAR */
 .tab-bar{display:flex;align-items:center;gap:3px;padding:8px 14px;border-bottom:1px solid var(--bdr);background:rgba(8,12,20,.6);flex-shrink:0}
+.tab-title{font-size:9px;font-weight:700;letter-spacing:2px;color:#fff;margin-right:8px}
 .tr-tab{font-family:var(--f);font-size:7px;padding:4px 12px;background:transparent;border:1px solid var(--bdr);color:var(--t2);border-radius:3px;cursor:pointer;letter-spacing:1px;font-weight:600;transition:.15s}
 .tr-tab:hover{border-color:var(--blue);color:var(--blue)}
 .tr-tab.active{border-color:var(--grn);color:var(--grn);background:rgba(34,197,94,.08)}
-.tab-title{font-size:9px;font-weight:700;letter-spacing:2px;color:#fff;margin-right:8px}
 
-/* ---- PANES ---- */
+/* OVERVIEW TAB */
+#trOverview{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.mkt-grid{display:grid;grid-template-columns:repeat(4,1fr);background:rgba(59,130,246,.06);gap:1px;flex-shrink:0}
+.mkt-sec{background:var(--bg);padding:7px 10px}
+.mkt-sec-hd{font-size:6px;color:var(--t2);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid var(--bdr)}
+.mkt-row{display:grid;grid-template-columns:1fr auto auto auto;align-items:center;column-gap:4px;padding:3px 0;border-bottom:1px solid rgba(59,130,246,.03)}
+.mkt-row:last-child{border-bottom:none}
+.mkt-sym{font-size:7.5px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mkt-price{font-size:8px;color:var(--txt);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mkt-chg{font-size:7.5px;font-weight:700;white-space:nowrap;text-align:right;min-width:44px}
+.bias-badge{font-size:5px;font-weight:700;padding:1px 4px;border-radius:2px;letter-spacing:.5px;text-align:center;min-width:26px;flex-shrink:0}
+.bias-badge.bull{background:rgba(34,197,94,.12);color:var(--grn);border:1px solid rgba(34,197,94,.2)}
+.bias-badge.bear{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.bias-badge.neut{background:rgba(245,158,11,.08);color:var(--amb);border:1px solid rgba(245,158,11,.15)}
+.mkt-status{display:flex;align-items:center;padding:4px 14px;font-size:7px;color:var(--t3);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);gap:8px;flex-shrink:0;background:rgba(8,12,20,.3)}
+.mkt-upd{flex:1}
+.mkt-rfsh{font-family:var(--f);font-size:6.5px;padding:2px 7px;background:transparent;border:1px solid var(--bdr);color:var(--t2);border-radius:2px;cursor:pointer;letter-spacing:.5px;transition:.1s}
+.mkt-rfsh:hover{border-color:var(--blue);color:var(--blue)}
+.brief-wrap{flex:1;display:flex;flex-direction:column;min-height:0}
+.brief-actions{padding:7px 14px;display:flex;align-items:center;gap:6px;flex-shrink:0;border-bottom:1px solid var(--bdr);background:rgba(8,12,20,.3)}
+.brief-out{flex:1;padding:10px 14px;overflow-y:auto;font-size:9px;color:var(--txt);line-height:1.8;white-space:pre-wrap}
+.brief-out::-webkit-scrollbar{width:3px}.brief-out::-webkit-scrollbar-thumb{background:rgba(34,197,94,.15);border-radius:2px}
+
+/* SHARED */
 .tr-pane{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-
-/* ---- BRIEF TAB ---- */
-.tr-prices{display:flex;gap:16px;padding:8px 14px;border-bottom:1px solid var(--bdr);background:rgba(8,12,20,.5);flex-wrap:wrap;flex-shrink:0}
-.tr-price-item{display:flex;flex-direction:column;gap:1px}
-.tr-price-sym{font-size:6.5px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase}
-.tr-price-val{font-size:15px;font-weight:700;color:#fff;line-height:1.2}
-.tr-price-chg{font-size:8px;font-weight:700}
 .tr-sel{font-family:var(--f);font-size:8px;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:5px 8px;border-radius:3px;cursor:pointer;outline:none}
 .tr-sel:focus{border-color:var(--blue)}
 .tr-gen-btn{font-family:var(--f);font-size:8px;padding:6px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--grn);border-radius:4px;cursor:pointer;letter-spacing:1px;font-weight:700;transition:.15s;white-space:nowrap}
 .tr-gen-btn:hover{background:rgba(34,197,94,.2);color:#fff}
-.tr-brief-out{flex:1;padding:12px 14px;overflow-y:auto;font-size:9px;color:var(--txt);line-height:1.8;white-space:pre-wrap}
-.tr-brief-out::-webkit-scrollbar{width:3px}.tr-brief-out::-webkit-scrollbar-thumb{background:rgba(34,197,94,.15);border-radius:2px}
-
-/* ---- JOURNAL TAB ---- */
-.tr-form{padding:10px 14px;border-bottom:1px solid var(--bdr);background:rgba(8,12,20,.5);flex-shrink:0}
-.tr-form-row{display:flex;gap:5px;margin-bottom:5px;flex-wrap:wrap;align-items:center}
 .tr-inp{font-family:var(--f);font-size:8px;background:var(--bg);border:1px solid var(--bdr);color:var(--txt);padding:5px 8px;border-radius:3px;outline:none;flex:1;min-width:60px}
 .tr-inp:focus{border-color:var(--blue)}
-.tr-add-btn{font-family:var(--f);font-size:8px;padding:5px 12px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:var(--blue);border-radius:3px;cursor:pointer;letter-spacing:1px;font-weight:700;white-space:nowrap;transition:.15s}
-.tr-add-btn:hover{background:rgba(59,130,246,.2);color:#fff}
-.tr-stats{display:flex;gap:16px;padding:8px 14px;border-bottom:1px solid var(--bdr);background:rgba(8,12,20,.4);flex-shrink:0}
-.tr-stat{display:flex;flex-direction:column;gap:1px}
-.tr-stat-v{font-size:14px;font-weight:700;line-height:1}
-.tr-stat-l{font-size:6px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
-.tr-journal-list{flex:1;overflow-y:auto;padding:4px 14px}
-.tr-journal-list::-webkit-scrollbar{width:3px}.tr-journal-list::-webkit-scrollbar-thumb{background:rgba(59,130,246,.1);border-radius:2px}
-.tj{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(59,130,246,.04);font-size:8px}
-.tj-dir{font-size:7px;font-weight:700;padding:2px 6px;border-radius:2px;letter-spacing:.5px;flex-shrink:0}
-.tj-dir.LONG{background:rgba(34,197,94,.12);color:var(--grn);border:1px solid rgba(34,197,94,.2)}
-.tj-dir.SHORT{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
-.tj-out{font-size:7px;font-weight:700;letter-spacing:.5px;flex-shrink:0}
-.tj-out.WIN{color:var(--grn)}.tj-out.LOSS{color:var(--red)}.tj-out.BE{color:var(--amb)}.tj-out.OPEN{color:var(--blue)}
-.tj-del{background:0;border:0;color:var(--t3);cursor:pointer;font-size:12px;padding:0 2px;line-height:1;flex-shrink:0}
-.tj-del:hover{color:var(--red)}
 
-/* ---- LEVELS TAB ---- */
+/* LEVELS TAB */
 .lv-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .lv-l{font-size:7.5px;color:var(--t2);letter-spacing:1px;width:55px;flex-shrink:0;text-transform:uppercase}
 .lv-inp{flex:1;font-size:10px}
@@ -71,7 +64,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 .lv-line-name{font-size:8px;color:var(--t2)}.lv-line-val{font-size:10px;font-weight:700;color:#fff}
 .lv-line-val.bull{color:var(--grn)}.lv-line-val.bear{color:var(--red)}.lv-line-val.key{color:var(--amb)}
 
-/* ---- MISC ---- */
+/* MISC */
 .loading{color:var(--blue);animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
@@ -79,43 +72,48 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 <body>
 <div class="app">
 
-  <!-- TAB BAR -->
   <div class="tab-bar">
     <span class="tab-title">TRADING DESK</span>
-    <button class="tr-tab active" id="tab-brief" onclick="switchTab('brief',this)">BRIEF</button>
-    <button class="tr-tab" id="tab-journal" onclick="switchTab('journal',this)">JOURNAL</button>
+    <button class="tr-tab active" id="tab-overview" onclick="switchTab('overview',this)">OVERVIEW</button>
     <button class="tr-tab" id="tab-levels" onclick="switchTab('levels',this)">LEVELS</button>
   </div>
 
-  <!-- BRIEF TAB -->
-  <div class="tr-pane" id="trBrief">
-    <div class="tr-prices" id="trPrices"></div>
-    <div style="padding:8px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:6px;flex-shrink:0;background:rgba(8,12,20,.3)">
-      <select class="tr-sel" id="trInstrument"><option value="both">NAS100 + GER40</option><option value="nas">NAS100 Only</option><option value="ger">GER40 Only</option></select>
-      <select class="tr-sel" id="trSession"><option value="London">London Open</option><option value="NY">New York Open</option><option value="Asia">Asia Session</option></select>
-      <button class="tr-gen-btn" onclick="generateBrief()">&#9889; GENERATE PRE-SESSION BRIEF</button>
-    </div>
-    <div class="tr-brief-out" id="trBriefOut"><div style="color:var(--t2);text-align:center;padding:40px 20px;font-size:9px;letter-spacing:2px">SELECT SESSION &amp; HIT GENERATE<br><br><span style="color:var(--t3)">AI analyzes live market data &amp; creates<br>a SMC/ICT pre-session brief</span></div></div>
-  </div>
-
-  <!-- JOURNAL TAB -->
-  <div class="tr-pane" id="trJournal" style="display:none">
-    <div class="tr-form">
-      <div class="tr-form-row">
-        <select class="tr-sel" id="tjInstr" style="flex:0 0 auto"><option>NAS100</option><option>GER40</option><option>BTC/USD</option><option>EUR/USD</option><option>GOLD</option></select>
-        <select class="tr-sel" id="tjDir" style="flex:0 0 auto"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
-        <input class="tr-inp" id="tjEntry" placeholder="Entry" type="number" step="0.1">
-        <input class="tr-inp" id="tjSL" placeholder="SL" type="number" step="0.1">
-        <input class="tr-inp" id="tjTP" placeholder="TP" type="number" step="0.1">
-        <select class="tr-sel" id="tjOutcome" style="flex:0 0 auto"><option value="">Outcome...</option><option value="WIN">WIN</option><option value="LOSS">LOSS</option><option value="BE">BREAK EVEN</option><option value="OPEN">OPEN</option></select>
+  <!-- OVERVIEW TAB -->
+  <div id="trOverview">
+    <div class="mkt-grid">
+      <div class="mkt-sec">
+        <div class="mkt-sec-hd">▪ INDICES / FUTURES</div>
+        <div id="sec-indices"></div>
       </div>
-      <div class="tr-form-row">
-        <input class="tr-inp" style="flex:2" id="tjNotes" placeholder="Setup notes: OB, FVG, CHoCH, displacement, confluences..." maxlength="300">
-        <button class="tr-add-btn" onclick="addTrade()">+ LOG TRADE</button>
+      <div class="mkt-sec">
+        <div class="mkt-sec-hd">▪ CRYPTO</div>
+        <div id="sec-crypto"></div>
+      </div>
+      <div class="mkt-sec">
+        <div class="mkt-sec-hd">▪ FOREX</div>
+        <div id="sec-forex"></div>
+      </div>
+      <div class="mkt-sec">
+        <div class="mkt-sec-hd">▪ COMMODITIES</div>
+        <div id="sec-commodities"></div>
       </div>
     </div>
-    <div class="tr-stats" id="trStats"></div>
-    <div class="tr-journal-list" id="trJournalList"></div>
+    <div class="mkt-status">
+      <span class="mkt-upd" id="mktUpdated">FETCHING MARKET DATA...</span>
+      <button class="mkt-rfsh" onclick="fetchMarkets()">&#8635; REFRESH</button>
+    </div>
+    <div class="brief-wrap">
+      <div class="brief-actions">
+        <select class="tr-sel" id="trSession">
+          <option value="overall">Daily Overview</option>
+          <option value="London">London Open</option>
+          <option value="NY">New York Open</option>
+          <option value="Asia">Asia Session</option>
+        </select>
+        <button class="tr-gen-btn" onclick="generateBrief()">&#9889; GENERATE AI MARKET BRIEF</button>
+      </div>
+      <div class="brief-out" id="trBriefOut"><div style="color:var(--t2);text-align:center;padding:24px 20px;font-size:9px;letter-spacing:2px">SELECT SESSION &amp; HIT GENERATE<br><br><span style="color:var(--t3)">AI produces technical + fundamental daily outlook<br>across all asset classes using live market data</span></div></div>
+    </div>
   </div>
 
   <!-- LEVELS TAB -->
@@ -144,124 +142,173 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)
 </div>
 <script>
 /* ====== CONFIG ====== */
-const _nk = ['nvapi-','Qfusf1cSFUrF_EWG5KZXZ7ki5RrFfHx3Z','2ozPSNwkm8AhK8E3dtwlsvZNSlqV1kW'];
-const NV_KEY = _nk.join('');
-const PROXY = u => 'https://api.allorigins.win/get?url=' + encodeURIComponent(u);
+const _nk=['nvapi-','Qfusf1cSFUrF_EWG5KZXZ7ki5RrFfHx3Z','2ozPSNwkm8AhK8E3dtwlsvZNSlqV1kW'];
+const NV_KEY=_nk.join('');
+const PROXY=u=>'https://api.allorigins.win/get?url='+encodeURIComponent(u);
 
-let userGroqKey = localStorage.getItem('jarvis.groq.key') || '';
-let allMarketData = {};
+let userGroqKey=localStorage.getItem('jarvis.groq.key')||'';
+let allMarketData={};
 
 /* ====== SECURITY HELPERS ====== */
-function sanitizeText(str){
-  if(!str)return'';
-  const d=document.createElement('div');
-  d.textContent=String(str);
-  return d.innerHTML;
+function sanitizeText(str){if(!str)return'';const d=document.createElement('div');d.textContent=String(str);return d.innerHTML;}
+
+/* ====== MARKET DEFINITIONS ====== */
+const MARKET_DEFS={
+  indices:[
+    {sym:'NAS100',key:'NAS100',yf:'^NDX'},
+    {sym:'S&P 500',key:'SP500',yf:'^GSPC'},
+    {sym:'GER40',key:'GER40',yf:'^GDAXI'},
+    {sym:'NIKKEI',key:'N225',yf:'^N225'},
+    {sym:'FTSE 100',key:'FTSE',yf:'^FTSE'},
+  ],
+  crypto:[
+    {sym:'BTC/USD',key:'BTC'},
+    {sym:'ETH/USD',key:'ETH'},
+    {sym:'SOL/USD',key:'SOL'},
+    {sym:'BNB/USD',key:'BNB'},
+  ],
+  forex:[
+    {sym:'EUR/USD',key:'EURUSD'},
+    {sym:'GBP/USD',key:'GBPUSD'},
+    {sym:'USD/JPY',key:'USDJPY'},
+    {sym:'AUD/USD',key:'AUDUSD'},
+  ],
+  commodities:[
+    {sym:'GOLD',key:'GOLD',yf:'GC=F'},
+    {sym:'SILVER',key:'SILVER',yf:'SI=F'},
+    {sym:'OIL (WTI)',key:'OIL',yf:'CL=F'},
+  ]
+};
+
+/* ====== BIAS ====== */
+function getBias(chg){
+  const c=parseFloat(chg);
+  if(isNaN(c))return'neut';
+  return c>0.3?'bull':c<-0.3?'bear':'neut';
 }
-function sanitizeAI(text){
-  const d=document.createElement('div');
-  d.textContent=String(text||'');
-  return d.innerHTML.replace(/\n/g,'<br>');
+function getBiasLabel(chg){const b=getBias(chg);return b==='bull'?'BULL':b==='bear'?'BEAR':'NEUT';}
+
+function fmtPrice(price,key){
+  if(typeof price==='string')return price;
+  const p=Number(price);
+  if(['NAS100','SP500','GER40','N225','FTSE','GOLD'].includes(key))return p.toLocaleString('en-US',{maximumFractionDigits:0});
+  if(key==='BTC')return '$'+p.toLocaleString('en-US',{maximumFractionDigits:0});
+  if(['ETH','BNB'].includes(key))return '$'+p.toFixed(0);
+  if(key==='SOL')return '$'+p.toFixed(2);
+  if(['SILVER','OIL'].includes(key))return p.toFixed(2);
+  return String(price);
 }
 
-/* ====== TAB SWITCHING ====== */
-function switchTab(tab, btn){
-  document.querySelectorAll('.tr-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tr-pane').forEach(p=>p.style.display='none');
-  if(btn) btn.classList.add('active');
-  else document.getElementById('tab-'+tab).classList.add('active');
-  const paneMap={brief:'trBrief',journal:'trJournal',levels:'trLevels'};
-  document.getElementById(paneMap[tab]).style.display='flex';
-  if(tab==='brief') renderTradingPrices();
-  if(tab==='journal') renderJournal();
-  if(tab==='levels') autoFillLevels();
+/* ====== RENDER GRID ====== */
+function renderMktRow(sym,key){
+  const m=allMarketData[key];
+  if(!m)return`<div class="mkt-row"><span class="mkt-sym">${sym}</span><span class="mkt-price" style="color:var(--t3)">---</span><span class="mkt-chg" style="color:var(--t3)">---</span><span class="bias-badge neut">···</span></div>`;
+  const bias=getBias(m.change);
+  const c=parseFloat(m.change);
+  const chgStr=!isNaN(c)?`${c>=0?'+':''}${c.toFixed(2)}%`:'--';
+  const chgColor=c>0?'var(--grn)':c<0?'var(--red)':'var(--t2)';
+  return`<div class="mkt-row">
+    <span class="mkt-sym">${sym}</span>
+    <span class="mkt-price">${fmtPrice(m.price,key)}</span>
+    <span class="mkt-chg" style="color:${chgColor}">${chgStr}</span>
+    <span class="bias-badge ${bias}">${getBiasLabel(m.change)}</span>
+  </div>`;
 }
 
-/* ====== MARKET DATA ====== */
-async function fetchMarkets(){
-  try{
-    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true');
-    const d=await r.json();
-    if(d.bitcoin) allMarketData.BTC={price:d.bitcoin.usd,change:d.bitcoin.usd_24h_change};
-    if(d.ethereum) allMarketData.ETH={price:d.ethereum.usd,change:d.ethereum.usd_24h_change};
-  }catch(e){}
+function renderMarkets(){
+  Object.keys(MARKET_DEFS).forEach(cat=>{
+    const el=document.getElementById('sec-'+cat);
+    if(el) el.innerHTML=MARKET_DEFS[cat].map(m=>renderMktRow(m.sym,m.key)).join('');
+  });
+  document.getElementById('mktUpdated').textContent=
+    'Updated: '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+
+    ' — auto-refreshes every 60s';
+}
 
-  try{
-    const r=await fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=EUR,GBP,JPY');
-    const d=await r.json();
-    if(d.rates){
-      allMarketData.EURUSD={price:(1/d.rates.EUR).toFixed(4),change:null};
-      allMarketData.GBPUSD={price:(1/d.rates.GBP).toFixed(4),change:null};
-    }
-  }catch(e){}
-
-  const yahooSymbols=[{s:'^NDX',key:'NAS100'},{s:'^GDAXI',key:'GER40'},{s:'GC=F',key:'GOLD'}];
-  for(const sym of yahooSymbols){
+/* ====== FETCH MARKET DATA ====== */
+async function fetchIndicesAndCommodities(){
+  const syms=[...MARKET_DEFS.indices,...MARKET_DEFS.commodities];
+  await Promise.allSettled(syms.map(async m=>{
     try{
-      const url=`https://query1.finance.yahoo.com/v8/finance/chart/${sym.s}?interval=1d&range=2d`;
+      const url=`https://query1.finance.yahoo.com/v8/finance/chart/${m.yf}?interval=1d&range=2d`;
       const r=await fetch(PROXY(url));
       const j=await r.json();
       const raw=JSON.parse(j.contents);
       const meta=raw?.chart?.result?.[0]?.meta;
-      if(meta) allMarketData[sym.key]={price:meta.regularMarketPrice,change:((meta.regularMarketPrice-meta.previousClose)/meta.previousClose*100)};
+      if(meta) allMarketData[m.key]={
+        price:meta.regularMarketPrice,
+        change:((meta.regularMarketPrice-meta.previousClose)/meta.previousClose*100)
+      };
     }catch(e){}
-  }
-  renderTradingPrices();
+  }));
 }
 
-function renderTradingPrices(){
-  const items=[
-    {key:'NAS100',sym:'NAS100',color:'var(--blue)'},
-    {key:'GER40',sym:'GER40',color:'var(--cyan)'},
-    {key:'GOLD',sym:'GOLD',color:'var(--amb)'},
-    {key:'BTC',sym:'BTC',color:'#f97316'},
-    {key:'EURUSD',sym:'EUR/USD',color:'var(--grn)'},
-  ];
-  const cont=document.getElementById('trPrices');
-  if(!cont)return;
-  cont.innerHTML=items.map(item=>{
-    const m=allMarketData[item.key];
-    if(!m)return`<div class="tr-price-item"><span class="tr-price-sym" style="color:${item.color}">${item.sym}</span><span class="tr-price-val" style="color:var(--t2)">---</span></div>`;
-    const chg=m.change!==null?m.change:0;
-    const chgColor=chg>=0?'var(--grn)':'var(--red)';
-    const price=typeof m.price==='number'?(m.price>999?m.price.toLocaleString('en-US',{maximumFractionDigits:0}):m.price):m.price;
-    return`<div class="tr-price-item">
-      <span class="tr-price-sym" style="color:${item.color}">${item.sym}</span>
-      <span class="tr-price-val">${m.price>999?'$':''}${price}</span>
-      <span class="tr-price-chg" style="color:${chgColor}">${chg>=0?'+':''}${typeof chg==='number'?chg.toFixed(2):chg}%</span>
-    </div>`;
-  }).join('');
+async function fetchCrypto(){
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin&vs_currencies=usd&include_24hr_change=true');
+    const d=await r.json();
+    const map={bitcoin:'BTC',ethereum:'ETH',solana:'SOL',binancecoin:'BNB'};
+    for(const [id,key] of Object.entries(map)){
+      if(d[id]) allMarketData[key]={price:d[id].usd,change:d[id].usd_24h_change};
+    }
+  }catch(e){}
+}
+
+async function fetchForex(){
+  try{
+    const yest=new Date();yest.setDate(yest.getDate()-1);
+    const yStr=yest.toISOString().split('T')[0];
+    const [todR,yesR]=await Promise.allSettled([
+      fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=EUR,GBP,JPY,AUD'),
+      fetch(`https://api.frankfurter.dev/v1/${yStr}?base=USD&symbols=EUR,GBP,JPY,AUD`)
+    ]);
+    if(todR.status!=='fulfilled'||yesR.status!=='fulfilled')return;
+    const tod=await todR.value.json();
+    const yes=await yesR.value.json();
+    if(!tod.rates||!yes.rates)return;
+    const e=1/tod.rates.EUR,ey=1/yes.rates.EUR;
+    const g=1/tod.rates.GBP,gy=1/yes.rates.GBP;
+    const j=tod.rates.JPY,jy=yes.rates.JPY;
+    const a=1/tod.rates.AUD,ay=1/yes.rates.AUD;
+    allMarketData.EURUSD={price:e.toFixed(4),change:(e-ey)/ey*100};
+    allMarketData.GBPUSD={price:g.toFixed(4),change:(g-gy)/gy*100};
+    allMarketData.USDJPY={price:j.toFixed(2),change:(j-jy)/jy*100};
+    allMarketData.AUDUSD={price:a.toFixed(4),change:(a-ay)/ay*100};
+  }catch(e){}
+}
+
+async function fetchMarkets(){
+  document.getElementById('mktUpdated').textContent='FETCHING MARKET DATA...';
+  await Promise.allSettled([fetchIndicesAndCommodities(),fetchCrypto(),fetchForex()]);
+  renderMarkets();
 }
 
 /* ====== LLM ====== */
-async function callLLM(systemPrompt, userMsg){
+async function callLLM(systemPrompt,userMsg){
   const msgs=[{role:'system',content:systemPrompt},{role:'user',content:userMsg}];
-
   if(userGroqKey){
     try{
       const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
         method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+userGroqKey},
-        body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,temperature:0.7,max_tokens:500})
+        body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,temperature:0.7,max_tokens:700})
       });
       const d=await r.json();
-      if(d.choices?.[0]?.message?.content) return d.choices[0].message.content;
+      if(d.choices?.[0]?.message?.content)return d.choices[0].message.content;
     }catch(e){}
   }
-
   const nvModels=['meta/llama-3.3-70b-instruct','meta/llama-3.1-8b-instruct'];
-  for(let attempt=0;attempt<2;attempt++){
+  for(let i=0;i<2;i++){
     try{
       const r=await fetch('https://corsproxy.io/?url=https://integrate.api.nvidia.com/v1/chat/completions',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+NV_KEY},
-        body:JSON.stringify({model:nvModels[attempt]||nvModels[0],messages:msgs,temperature:0.7,max_tokens:800})
+        body:JSON.stringify({model:nvModels[i],messages:msgs,temperature:0.7,max_tokens:800})
       });
-      if(!r.ok){if(attempt<1){await new Promise(ok=>setTimeout(ok,1000));continue;}throw new Error('HTTP '+r.status);}
+      if(!r.ok){if(i<1){await new Promise(ok=>setTimeout(ok,1000));continue;}throw new Error('HTTP '+r.status);}
       const d=await r.json();
-      if(d.choices?.[0]?.message?.content) return d.choices[0].message.content;
-    }catch(e){if(attempt<1) await new Promise(ok=>setTimeout(ok,1000));}
+      if(d.choices?.[0]?.message?.content)return d.choices[0].message.content;
+    }catch(e){if(i<1)await new Promise(ok=>setTimeout(ok,1000));}
   }
-
   try{
     const r=await fetch('https://text.pollinations.ai/',{
       method:'POST',headers:{'Content-Type':'application/json'},
@@ -270,131 +317,85 @@ async function callLLM(systemPrompt, userMsg){
     if(r.ok){
       const text=await r.text();
       try{const j=JSON.parse(text);if(j.choices?.[0]?.message?.content)return j.choices[0].message.content;}catch(e){}
-      if(text&&text.length>2&&!text.includes('"error"')) return text;
+      if(text&&text.length>2&&!text.includes('"error"'))return text;
     }
   }catch(e){}
-
   return 'AI temporarily unavailable. Add a free Groq API key at console.groq.com for guaranteed access.';
 }
 
-/* ====== BRIEF ====== */
+/* ====== AI MARKET BRIEF ====== */
 async function generateBrief(){
-  const instrument=document.getElementById('trInstrument').value;
   const session=document.getElementById('trSession').value;
   const out=document.getElementById('trBriefOut');
-  out.innerHTML='<span class="loading">GENERATING PRE-SESSION BRIEF...</span>';
-  const instrLabel=instrument==='both'?'NAS100 and GER40':instrument==='nas'?'NAS100 (NASDAQ 100)':'GER40 (DAX 40)';
+  out.innerHTML='<span class="loading">ANALYZING MARKETS...</span>';
   const now=new Date();
-  let ctx=`TODAY'S DATE: ${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}\n`;
-  ctx+='CURRENT MARKET DATA:\n';
-  for(const [k,v] of Object.entries(allMarketData)){
-    ctx+=`${k}: ${v.price}${v.change!==null&&v.change!==undefined?` (${v.change>=0?'+':''}${typeof v.change==='number'?v.change.toFixed(2):v.change}%)`:''}  \n`;
-  }
-  if(!Object.keys(allMarketData).length) ctx+='Market data still loading...\n';
-  const systemPrompt=`You are JARVIS, a trading intelligence system for an intraday scalper using SMC/ICT methodology. Generate a concise pre-session brief. Use ONLY the real-time market data provided. Format EXACTLY as:
+  let ctx=`DATE: ${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}\nSESSION FOCUS: ${session}\n\nREAL-TIME MARKET DATA:\n`;
+  Object.entries(MARKET_DEFS).forEach(([cat,mkts])=>{
+    ctx+=`\n${cat.toUpperCase()}:\n`;
+    mkts.forEach(m=>{
+      const d=allMarketData[m.key];
+      if(d){
+        const c=parseFloat(d.change);
+        const chgStr=!isNaN(c)?`${c>=0?'+':''}${c.toFixed(2)}%`:'N/A';
+        ctx+=`  ${m.sym}: ${fmtPrice(d.price,m.key)} (${chgStr}) — ${getBiasLabel(d.change)}\n`;
+      }else{
+        ctx+=`  ${m.sym}: data unavailable\n`;
+      }
+    });
+  });
+  const sysPrompt=`You are JARVIS, an elite trading intelligence system. The user is an intraday scalper trading NAS100 and GER40 using SMC/ICT methodology.
 
-BIAS: [BULLISH/BEARISH/NEUTRAL] — [1 sentence reason]
+Analyze the live market data and produce a concise daily market brief. Use EXACTLY this format:
 
-KEY LEVELS (${instrLabel}):
-• Current: [from live data]
-• Watch above: [resistance/liquidity level]
-• Watch below: [support/liquidity level]
+MARKET SENTIMENT: [RISK-ON / RISK-OFF / MIXED]
+[1 sentence overall reading based on indices + crypto + USD correlation]
 
-LIQUIDITY TARGETS:
-• Bull sweep: [level above to raid equal highs/PDH]
-• Bear sweep: [level below to raid equal lows/PDL]
+INDICES:
+• NAS100: [BULL/BEAR/NEUT] — [price context, momentum, key psychological level to watch]
+• GER40: [BULL/BEAR/NEUT] — [price context, momentum, key level to watch]
+• S&P500: [brief reading — confirms or diverges from NAS100]
 
-SMC SETUPS TO WATCH:
-• [1-2 specific setups: OB retest, FVG fill, CHoCH, BOS, displacement entry]
+CRYPTO: [BTC/ETH bias — risk-on/risk-off signal for equities, leading/lagging indicator reading]
 
-MACRO CONTEXT:
-• [1-2 bullet points relevant to session]
+FOREX (USD): [Dollar strength/weakness — direct implication for NAS100 and GER40 direction]
 
-RISK NOTE: [1 sentence on key risk for this session]
+COMMODITIES:
+• Gold: [BULL/BEAR/NEUT] — [safe-haven signal interpretation]
+• Oil: [BULL/BEAR/NEUT] — [inflation/growth implication]
 
-Keep it tight and actionable. No filler. Max 200 words.`;
+INTER-MARKET SIGNALS:
+• [Key correlation or divergence e.g. equities up + crypto down = selective risk appetite]
+• [USD impact: strong/weak dollar effect on indices]
+
+TECHNICAL BIAS:
+• NAS100: [LONG / SHORT / WAIT] — [specific reason with approximate price level or structure]
+• GER40: [LONG / SHORT / WAIT] — [specific reason with approximate price level or structure]
+
+FUNDAMENTAL FACTORS:
+• [Key macro theme #1 driving price action today]
+• [Key macro theme #2 or event risk to watch]
+
+Keep it under 280 words. Be concise, specific, and directly actionable.`;
   try{
-    const reply=await callLLM(systemPrompt+'\n\n'+ctx,`Generate pre-session brief for ${session} session, focusing on ${instrLabel}. Date: ${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}`);
+    const reply=await callLLM(sysPrompt+'\n\n'+ctx,'Generate the daily market brief now based on the data above.');
     out.textContent=reply;
   }catch(e){out.textContent='Brief generation failed. Check AI connection.';}
 }
 
-/* ====== JOURNAL ====== */
-const JOURNAL_KEY='jarvis.trading.journal';
-function getJournal(){try{return JSON.parse(localStorage.getItem(JOURNAL_KEY))||[];}catch{return[];}}
-function saveJournal(entries){localStorage.setItem(JOURNAL_KEY,JSON.stringify(entries));}
-
-function addTrade(){
-  const entry=parseFloat(document.getElementById('tjEntry').value);
-  const sl=parseFloat(document.getElementById('tjSL').value);
-  const tp=parseFloat(document.getElementById('tjTP').value);
-  if(!entry||!sl||!tp){alert('Entry, SL, and TP are required.');return;}
-  const rr=Math.abs((tp-entry)/(sl-entry));
-  const trade={
-    id:Date.now(),
-    date:new Date().toISOString(),
-    instr:document.getElementById('tjInstr').value,
-    dir:document.getElementById('tjDir').value,
-    entry,sl,tp,
-    rr:rr.toFixed(2),
-    outcome:document.getElementById('tjOutcome').value||'OPEN',
-    notes:document.getElementById('tjNotes').value.trim().slice(0,300)
-  };
-  const journal=getJournal();
-  journal.unshift(trade);
-  saveJournal(journal);
-  ['tjEntry','tjSL','tjTP','tjNotes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('tjOutcome').value='';
-  renderJournal();
+/* ====== TAB SWITCHING ====== */
+function switchTab(tab,btn){
+  document.querySelectorAll('.tr-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('trOverview').style.display=tab==='overview'?'flex':'none';
+  document.getElementById('trLevels').style.display=tab==='levels'?'flex':'none';
+  if(tab==='levels')autoFillLevels();
 }
 
-function deleteTrade(id){
-  saveJournal(getJournal().filter(t=>t.id!==id));
-  renderJournal();
-}
-
-function renderJournal(){
-  const journal=getJournal();
-  const stats=document.getElementById('trStats');
-  const list=document.getElementById('trJournalList');
-  if(!stats||!list)return;
-  const closed=journal.filter(t=>t.outcome==='WIN'||t.outcome==='LOSS'||t.outcome==='BE');
-  const wins=journal.filter(t=>t.outcome==='WIN').length;
-  const losses=journal.filter(t=>t.outcome==='LOSS').length;
-  const winRate=closed.length?Math.round(wins/closed.length*100):0;
-  const avgRR=closed.length?(closed.reduce((a,t)=>a+parseFloat(t.rr),0)/closed.length).toFixed(2):'---';
-  const wrColor=winRate>=50?'var(--grn)':'var(--red)';
-  stats.innerHTML=`
-    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--blue)">${journal.length}</span><span class="tr-stat-l">Trades</span></div>
-    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--grn)">${wins}</span><span class="tr-stat-l">Wins</span></div>
-    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--red)">${losses}</span><span class="tr-stat-l">Losses</span></div>
-    <div class="tr-stat"><span class="tr-stat-v" style="color:${wrColor}">${winRate}%</span><span class="tr-stat-l">Win Rate</span></div>
-    <div class="tr-stat"><span class="tr-stat-v" style="color:var(--amb)">${avgRR}</span><span class="tr-stat-l">Avg R:R</span></div>`;
-  if(!journal.length){
-    list.innerHTML='<div style="color:var(--t2);text-align:center;padding:30px;font-size:9px;letter-spacing:2px">NO TRADES LOGGED YET</div>';
-    return;
-  }
-  list.innerHTML=journal.map(t=>{
-    const d=new Date(t.date);
-    const dateStr=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-    const notesHtml=t.notes?`<span style="color:var(--t2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${sanitizeText(t.notes)}">${sanitizeText(t.notes)}</span>`:'<span style="flex:1"></span>';
-    return`<div class="tj">
-      <span style="color:var(--t2);font-size:7px;flex-shrink:0;min-width:82px">${dateStr}</span>
-      <span style="font-weight:600;color:#fff;flex-shrink:0;min-width:58px">${sanitizeText(t.instr)}</span>
-      <span class="tj-dir ${t.dir}">${t.dir}</span>
-      <span style="color:var(--t2);flex-shrink:0">E:${t.entry}</span>
-      <span style="color:var(--t2);flex-shrink:0">RR:${t.rr}</span>
-      <span class="tj-out ${t.outcome}">${t.outcome}</span>
-      ${notesHtml}
-      <button class="tj-del" onclick="deleteTrade(${t.id})">&times;</button>
-    </div>`;
-  }).join('');
-}
-
-/* ====== KEY LEVELS ====== */
+/* ====== KEY LEVELS (unchanged) ====== */
 function autoFillLevels(){
-  if(allMarketData.NAS100?.price) document.getElementById('nasCur').value=Math.round(allMarketData.NAS100.price);
-  if(allMarketData.GER40?.price) document.getElementById('gerCur').value=Math.round(allMarketData.GER40.price);
+  if(allMarketData.NAS100?.price)document.getElementById('nasCur').value=Math.round(allMarketData.NAS100.price);
+  if(allMarketData.GER40?.price)document.getElementById('gerCur').value=Math.round(allMarketData.GER40.price);
 }
 
 function calcLevels(){
@@ -432,28 +433,18 @@ function calcLevels(){
   }).join('');
 }
 
-/* ====== POSTMESSAGE (receive market data from parent shell) ====== */
-window.addEventListener('message', e => {
-  if(e.data?.type === 'MARKET_DATA') {
-    allMarketData = {...allMarketData, ...e.data.data};
-    renderTradingPrices();
-  }
-  if(e.data?.type === 'GROQ_KEY' && e.data.key) {
-    userGroqKey = e.data.key;
-  }
+/* ====== POSTMESSAGE ====== */
+window.addEventListener('message',e=>{
+  if(e.data?.type==='MARKET_DATA'){allMarketData={...allMarketData,...e.data.data};renderMarkets();}
+  if(e.data?.type==='GROQ_KEY'&&e.data.key)userGroqKey=e.data.key;
 });
 
 /* ====== INIT ====== */
-(function init(){
-  // Check URL param for default tab
-  const tab = new URLSearchParams(location.search).get('tab');
-  if(tab && ['brief','journal','levels'].includes(tab)){
-    switchTab(tab);
-  } else {
-    renderTradingPrices();
-    renderJournal();
-  }
+(function(){
+  const tab=new URLSearchParams(location.search).get('tab');
+  switchTab(['overview','levels'].includes(tab)?tab:'overview');
   fetchMarkets();
+  setInterval(fetchMarkets,60000);
 })();
 </script>
 </body>
