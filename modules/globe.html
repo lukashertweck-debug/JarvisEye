@@ -159,6 +159,38 @@ background:rgba(4,6,10,.8);padding:6px 8px;border-radius:4px;border:1px solid va
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
+/* Artemis Mission Panel */
+#missionPanel{position:absolute;bottom:60px;right:16px;width:320px;z-index:35;background:rgba(4,6,10,.95);
+backdrop-filter:blur(16px);border:1px solid rgba(6,182,212,.2);border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);
+display:none;overflow:hidden;font-family:var(--f)}
+#missionPanel.show{display:block;animation:panelIn .2s}
+.mp-hd{padding:8px 12px;border-bottom:1px solid rgba(6,182,212,.12);display:flex;align-items:center;gap:8px;background:rgba(6,182,212,.04)}
+.mp-logo{width:22px;height:22px;border:1.5px solid var(--cyan);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--cyan);font-weight:700}
+.mp-title{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cyan);flex:1}
+.mp-close{background:0;border:0;color:var(--t2);cursor:pointer;font-family:var(--f);font-size:14px;padding:0 4px}
+.mp-close:hover{color:#fff}
+.mp-body{padding:10px 12px}
+.mp-crew{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.mp-crew-tag{font-size:7px;padding:2px 6px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);border-radius:3px;color:var(--cyan);letter-spacing:.5px}
+.mp-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.mp-stat{background:rgba(8,12,20,.6);border:1px solid var(--bdr);border-radius:4px;padding:6px 8px}
+.mp-stat-v{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
+.mp-stat-l{font-size:6px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+.mp-timeline{margin-bottom:8px}
+.mp-tl-bar{position:relative;height:6px;background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:3px;overflow:visible;margin:8px 0}
+.mp-tl-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:3px;transition:width .5s;position:relative}
+.mp-tl-dot{position:absolute;right:-4px;top:-3px;width:12px;height:12px;background:var(--cyan);border-radius:50%;
+box-shadow:0 0 8px rgba(6,182,212,.6);border:2px solid #fff}
+.mp-tl-labels{display:flex;justify-content:space-between;font-size:6px;color:var(--t2);letter-spacing:.5px}
+.mp-controls{display:flex;align-items:center;gap:6px;justify-content:center}
+.mp-ctrl-btn{font-family:var(--f);font-size:8px;padding:4px 10px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);
+color:var(--cyan);border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:.15s}
+.mp-ctrl-btn:hover{background:rgba(6,182,212,.2);color:#fff}
+.mp-ctrl-btn.active{border-color:var(--cyan);background:rgba(6,182,212,.15)}
+.mp-time{font-size:9px;color:#fff;font-weight:600;letter-spacing:.5px;flex:1;text-align:center}
+.mp-phase{font-size:8px;color:var(--amb);font-weight:600;letter-spacing:1px;text-align:center;margin-top:6px;
+padding:4px 8px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.12);border-radius:4px}
+
 /* Globe scanline effect */
 .globe-area::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
 background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,130,246,.005) 2px,rgba(59,130,246,.005) 4px);z-index:1}
@@ -291,6 +323,42 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 <div class="popup-body" id="popupCountryBody"></div>
 </div>
 
+<!-- ARTEMIS 2 MISSION PANEL -->
+<div id="missionPanel">
+<div class="mp-hd">
+<div class="mp-logo">A2</div>
+<span class="mp-title">ARTEMIS II — LUNAR FLYBY</span>
+<button class="mp-close" onclick="toggleMissionPanel()">&times;</button>
+</div>
+<div class="mp-body">
+<div class="mp-crew">
+<span class="mp-crew-tag">CDR Wiseman</span>
+<span class="mp-crew-tag">PLT Glover</span>
+<span class="mp-crew-tag">MS1 Koch</span>
+<span class="mp-crew-tag">MS2 Hansen</span>
+</div>
+<div class="mp-stats">
+<div class="mp-stat"><span class="mp-stat-v" id="mpDist">—</span><span class="mp-stat-l">DISTANCE FROM EARTH</span></div>
+<div class="mp-stat"><span class="mp-stat-v" id="mpSpeed">—</span><span class="mp-stat-l">VELOCITY (KM/S)</span></div>
+<div class="mp-stat"><span class="mp-stat-v" id="mpMET">—</span><span class="mp-stat-l">MISSION ELAPSED TIME</span></div>
+<div class="mp-stat"><span class="mp-stat-v" id="mpPhaseLabel">—</span><span class="mp-stat-l">CURRENT PHASE</span></div>
+</div>
+<div class="mp-timeline">
+<div class="mp-tl-labels"><span>LAUNCH</span><span>TLI</span><span>TRANSIT</span><span>FLYBY</span><span>RETURN</span><span>SPLASH</span></div>
+<div class="mp-tl-bar"><div class="mp-tl-fill" id="mpFill" style="width:0%"><div class="mp-tl-dot"></div></div></div>
+<div class="mp-tl-labels"><span>APR 1</span><span></span><span></span><span>APR 6</span><span></span><span>APR 10</span></div>
+</div>
+<div class="mp-controls">
+<button class="mp-ctrl-btn" onclick="artemisTimeShift(-3600)" title="Rewind 1h">⏪ 1H</button>
+<button class="mp-ctrl-btn" onclick="artemisTimeShift(-21600)">⏪ 6H</button>
+<button class="mp-ctrl-btn active" onclick="artemisResetLive()" id="mpLiveBtn">● LIVE</button>
+<button class="mp-ctrl-btn" onclick="artemisTimeShift(21600)">6H ⏩</button>
+<button class="mp-ctrl-btn" onclick="artemisTimeShift(3600)" title="Forward 1h">1H ⏩</button>
+</div>
+<div class="mp-phase" id="mpPhaseBar">MISSION ACTIVE — DAY 2 OF 10</div>
+</div>
+</div>
+
 <!-- TOOLBAR -->
 <div class="toolbar">
 <button class="tb-btn" onclick="togglePanel('Intel')"><span class="dot" style="background:var(--blue)"></span>INTEL</button>
@@ -298,6 +366,7 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 <button class="tb-btn" onclick="togglePanel('Markets')"><span class="dot" style="background:var(--grn)"></span>MARKETS</button>
 <!-- JARVIS button removed -->
 <button class="tb-btn" onclick="togglePanel('Agents')"><span class="dot" style="background:#a78bfa"></span>AGENTS</button>
+<button class="tb-btn" onclick="toggleMissionPanel()" id="artemisBtn"><span class="dot" style="background:var(--cyan)"></span>ARTEMIS II</button>
 <div class="tb-sep"></div>
 <button class="tb-btn" id="rotateBtn" onclick="toggleRotation()">&#x21BB; AUTO-ROTATE</button>
 <div class="tb-sep"></div>
@@ -1047,9 +1116,333 @@ function sendJarvisMsg() {
   notifyShell('JARVIS_QUERY', msg);
 }
 
+/* ====== ARTEMIS 2 + MOON ====== */
+const ARTEMIS_LAUNCH = new Date('2026-04-01T22:35:00Z'); // 6:35pm EDT = 22:35 UTC
+const ARTEMIS_SPLASH = new Date('2026-04-10T22:00:00Z');
+const MISSION_DURATION = ARTEMIS_SPLASH - ARTEMIS_LAUNCH; // ~9 days in ms
+const EARTH_RADIUS_GL = 100; // globe.gl internal earth radius
+const MOON_DISTANCE_REAL = 384400; // km
+const EARTH_RADIUS_REAL = 6371; // km
+const MOON_RADIUS_REAL = 1737; // km
+
+// Visual scaling — Moon at ~30 Earth-radii away (compressed for visibility)
+const MOON_DIST_SCALED = EARTH_RADIUS_GL * 18;
+const MOON_RADIUS_SCALED = EARTH_RADIUS_GL * 0.273; // true ratio
+
+let moonMesh = null, orionMesh = null, trajectoryLine = null, orionGlow = null;
+let artemisTimeOffset = 0; // seconds offset from live
+let artemisAnimFrame = null;
+
+// Mission phases with approximate timing (fraction of total mission)
+const PHASES = [
+  { name: 'LAUNCH & ORBIT', start: 0, end: 0.01, distStart: 0, distEnd: 400 },
+  { name: 'TLI BURN', start: 0.01, end: 0.03, distStart: 400, distEnd: 5000 },
+  { name: 'OUTBOUND TRANSIT', start: 0.03, end: 0.50, distStart: 5000, distEnd: 370000 },
+  { name: 'LUNAR FLYBY', start: 0.50, end: 0.58, distStart: 370000, distEnd: 384400 },
+  { name: 'RETURN TRANSIT', start: 0.58, end: 0.95, distStart: 384400, distEnd: 10000 },
+  { name: 'REENTRY & SPLASHDOWN', start: 0.95, end: 1.0, distStart: 10000, distEnd: 0 },
+];
+
+// Generate free-return trajectory points (simplified elliptical path)
+function generateTrajectoryPoints(numPoints) {
+  const points = [];
+  const THREE = window.THREE || globe.scene().constructor.__proto__.constructor;
+
+  for (let i = 0; i <= numPoints; i++) {
+    const t = i / numPoints;
+    // Free-return trajectory: outbound arc curving to Moon, then slingshot return
+    // Using parametric equations for a figure-8-like free return path
+    let x, y, z;
+
+    if (t < 0.52) {
+      // Outbound: spiral out from Earth toward Moon
+      const p = t / 0.52; // 0→1 for outbound
+      const angle = p * Math.PI * 0.85; // Arc ~150 degrees
+      const dist = MOON_DIST_SCALED * Math.pow(p, 0.7); // Non-linear distance growth
+      const tilt = Math.sin(p * Math.PI) * EARTH_RADIUS_GL * 2; // Slight out-of-plane
+      x = Math.cos(angle) * dist;
+      y = tilt;
+      z = -Math.sin(angle) * dist;
+    } else if (t < 0.60) {
+      // Lunar flyby: tight curve around Moon position
+      const p = (t - 0.52) / 0.08;
+      const moonAngle = Math.PI * 0.85;
+      const moonX = Math.cos(moonAngle) * MOON_DIST_SCALED;
+      const moonZ = -Math.sin(moonAngle) * MOON_DIST_SCALED;
+      const flybyRadius = MOON_RADIUS_SCALED * 3.5; // ~6000 miles from surface
+      const flybyAngle = (p - 0.5) * Math.PI * 1.2;
+      x = moonX + Math.cos(flybyAngle + moonAngle + Math.PI/2) * flybyRadius;
+      y = Math.sin(flybyAngle) * flybyRadius * 0.4;
+      z = moonZ + Math.sin(flybyAngle + moonAngle + Math.PI/2) * flybyRadius;
+    } else {
+      // Return: arc back to Earth from different angle
+      const p = (t - 0.60) / 0.40; // 0→1 for return
+      const moonAngle = Math.PI * 0.85;
+      const moonX = Math.cos(moonAngle) * MOON_DIST_SCALED;
+      const moonZ = -Math.sin(moonAngle) * MOON_DIST_SCALED;
+      const returnAngle = moonAngle + Math.PI * 0.4 + p * Math.PI * 0.8;
+      const dist = MOON_DIST_SCALED * (1 - Math.pow(p, 0.6));
+      const tilt = -Math.sin(p * Math.PI * 0.8) * EARTH_RADIUS_GL * 3;
+      x = Math.cos(returnAngle) * dist * 0.6;
+      y = tilt;
+      z = -Math.sin(returnAngle) * dist * 0.5;
+    }
+    points.push({x, y, z});
+  }
+  return points;
+}
+
+function getArtemisProgress() {
+  const now = new Date(Date.now() + artemisTimeOffset * 1000);
+  const elapsed = now - ARTEMIS_LAUNCH;
+  let t = elapsed / MISSION_DURATION;
+  t = Math.max(0, Math.min(1, t));
+  return { t, now, elapsed };
+}
+
+function getCurrentPhase(t) {
+  for (const p of PHASES) {
+    if (t >= p.start && t <= p.end) return p;
+  }
+  return PHASES[PHASES.length - 1];
+}
+
+function getDistanceFromEarth(t) {
+  const phase = getCurrentPhase(t);
+  const phaseProgress = (t - phase.start) / (phase.end - phase.start);
+  return phase.distStart + (phase.distEnd - phase.distStart) * phaseProgress;
+}
+
+function getVelocity(t) {
+  // Approximate velocity profile (km/s)
+  if (t < 0.01) return 7.8; // LEO
+  if (t < 0.03) return 10.8; // TLI
+  if (t < 0.50) return 1.0 + (1 - (t - 0.03)/0.47) * 3; // Slowing outbound
+  if (t < 0.58) return 1.5 + Math.sin(((t-0.50)/0.08) * Math.PI) * 1.5; // Flyby acceleration
+  if (t < 0.95) return 1.0 + ((t - 0.58)/0.37) * 5; // Accelerating return
+  return 11.0; // Reentry
+}
+
+function initArtemis() {
+  if (!globe) return;
+  const scene = globe.scene();
+
+  // === MOON ===
+  const moonGeo = new THREE.SphereGeometry(MOON_RADIUS_SCALED, 32, 32);
+  const moonTex = new THREE.TextureLoader().load('https://unpkg.com/three-globe/example/img/lunar_surface.jpg',
+    () => { if(moonMesh) moonMesh.material.needsUpdate = true; });
+  const moonMat = new THREE.MeshPhongMaterial({
+    map: moonTex,
+    color: 0xcccccc,
+    emissive: 0x222222,
+    emissiveIntensity: 0.3,
+    shininess: 5
+  });
+  moonMesh = new THREE.Mesh(moonGeo, moonMat);
+  // Position Moon at a fixed angle
+  const moonAngle = Math.PI * 0.85;
+  moonMesh.position.set(
+    Math.cos(moonAngle) * MOON_DIST_SCALED,
+    0,
+    -Math.sin(moonAngle) * MOON_DIST_SCALED
+  );
+  scene.add(moonMesh);
+
+  // Moon glow
+  const glowGeo = new THREE.SphereGeometry(MOON_RADIUS_SCALED * 1.15, 32, 32);
+  const glowMat = new THREE.MeshBasicMaterial({
+    color: 0x8899bb,
+    transparent: true,
+    opacity: 0.08,
+    side: THREE.BackSide
+  });
+  const moonGlow = new THREE.Mesh(glowGeo, glowMat);
+  moonGlow.position.copy(moonMesh.position);
+  scene.add(moonGlow);
+
+  // Moon label sprite
+  const canvas = document.createElement('canvas');
+  canvas.width = 256; canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  ctx.font = 'bold 28px JetBrains Mono, monospace';
+  ctx.fillStyle = '#8899bb';
+  ctx.textAlign = 'center';
+  ctx.fillText('MOON', 128, 36);
+  const tex = new THREE.CanvasTexture(canvas);
+  const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.7 });
+  const sprite = new THREE.Sprite(spriteMat);
+  sprite.scale.set(MOON_RADIUS_SCALED * 3, MOON_RADIUS_SCALED * 0.75, 1);
+  sprite.position.copy(moonMesh.position);
+  sprite.position.y += MOON_RADIUS_SCALED * 1.8;
+  scene.add(sprite);
+
+  // === TRAJECTORY LINE ===
+  const trajPoints = generateTrajectoryPoints(300);
+  const lineGeo = new THREE.BufferGeometry();
+  const positions = new Float32Array(trajPoints.length * 3);
+  const colors = new Float32Array(trajPoints.length * 3);
+  for (let i = 0; i < trajPoints.length; i++) {
+    positions[i*3] = trajPoints[i].x;
+    positions[i*3+1] = trajPoints[i].y;
+    positions[i*3+2] = trajPoints[i].z;
+    // Gradient: cyan near Earth → blue mid → cyan near Moon
+    const tt = i / trajPoints.length;
+    const r = 0.02 + 0.2 * Math.sin(tt * Math.PI);
+    const g = 0.7 + 0.3 * Math.sin(tt * Math.PI);
+    const b = 0.83;
+    colors[i*3] = r; colors[i*3+1] = g; colors[i*3+2] = b;
+  }
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  lineGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  const lineMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.5, linewidth: 1 });
+  trajectoryLine = new THREE.Line(lineGeo, lineMat);
+  scene.add(trajectoryLine);
+
+  // === ORION SPACECRAFT MARKER ===
+  const orionGeo = new THREE.SphereGeometry(EARTH_RADIUS_GL * 0.04, 16, 16);
+  const orionMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+  orionMesh = new THREE.Mesh(orionGeo, orionMat);
+  scene.add(orionMesh);
+
+  // Orion glow effect
+  const oGlowGeo = new THREE.SphereGeometry(EARTH_RADIUS_GL * 0.08, 16, 16);
+  const oGlowMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.25 });
+  orionGlow = new THREE.Mesh(oGlowGeo, oGlowMat);
+  scene.add(orionGlow);
+
+  // Orion label
+  const oCanvas = document.createElement('canvas');
+  oCanvas.width = 512; oCanvas.height = 64;
+  const oCtx = oCanvas.getContext('2d');
+  oCtx.font = 'bold 24px JetBrains Mono, monospace';
+  oCtx.fillStyle = '#06b6d4';
+  oCtx.textAlign = 'center';
+  oCtx.fillText('ORION — ARTEMIS II', 256, 36);
+  const oTex = new THREE.CanvasTexture(oCanvas);
+  const oSpriteMat = new THREE.SpriteMaterial({ map: oTex, transparent: true, opacity: 0.85 });
+  const oSprite = new THREE.Sprite(oSpriteMat);
+  oSprite.scale.set(EARTH_RADIUS_GL * 0.6, EARTH_RADIUS_GL * 0.075, 1);
+  orionMesh.add(oSprite);
+  oSprite.position.set(0, EARTH_RADIUS_GL * 0.12, 0);
+
+  // Store trajectory points for position lookup
+  window._trajPoints = trajPoints;
+
+  // Start animation loop
+  updateArtemisPosition();
+  setInterval(updateArtemisUI, 1000);
+  updateArtemisUI();
+
+  // Auto-show the mission panel
+  document.getElementById('missionPanel').classList.add('show');
+  document.getElementById('artemisBtn').classList.add('active');
+}
+
+function updateArtemisPosition() {
+  if (!orionMesh || !window._trajPoints) { requestAnimationFrame(updateArtemisPosition); return; }
+  const { t } = getArtemisProgress();
+  const pts = window._trajPoints;
+  const idx = Math.min(Math.floor(t * (pts.length - 1)), pts.length - 2);
+  const frac = (t * (pts.length - 1)) - idx;
+
+  // Interpolate position
+  const p = pts[idx];
+  const pn = pts[idx + 1] || p;
+  const x = p.x + (pn.x - p.x) * frac;
+  const y = p.y + (pn.y - p.y) * frac;
+  const z = p.z + (pn.z - p.z) * frac;
+
+  orionMesh.position.set(x, y, z);
+  if (orionGlow) orionGlow.position.set(x, y, z);
+
+  // Pulse effect
+  const pulse = 1 + Math.sin(Date.now() * 0.005) * 0.3;
+  if (orionGlow) orionGlow.scale.setScalar(pulse);
+
+  // Slowly rotate Moon
+  if (moonMesh) moonMesh.rotation.y += 0.0003;
+
+  artemisAnimFrame = requestAnimationFrame(updateArtemisPosition);
+}
+
+function updateArtemisUI() {
+  const { t, now, elapsed } = getArtemisProgress();
+  const phase = getCurrentPhase(t);
+  const dist = getDistanceFromEarth(t);
+  const vel = getVelocity(t);
+
+  // Distance
+  const distEl = document.getElementById('mpDist');
+  if (distEl) distEl.textContent = dist > 1000 ? (dist/1000).toFixed(1) + 'K km' : Math.round(dist) + ' km';
+
+  // Velocity
+  const velEl = document.getElementById('mpSpeed');
+  if (velEl) velEl.textContent = vel.toFixed(1) + ' km/s';
+
+  // MET
+  const metEl = document.getElementById('mpMET');
+  if (metEl) {
+    const metSec = Math.max(0, elapsed / 1000);
+    const d = Math.floor(metSec / 86400);
+    const h = Math.floor((metSec % 86400) / 3600);
+    const m = Math.floor((metSec % 3600) / 60);
+    metEl.textContent = `T+${d}d ${h}h ${m}m`;
+  }
+
+  // Phase
+  const phaseEl = document.getElementById('mpPhaseLabel');
+  if (phaseEl) phaseEl.textContent = phase.name;
+
+  // Timeline fill
+  const fillEl = document.getElementById('mpFill');
+  if (fillEl) fillEl.style.width = (t * 100).toFixed(1) + '%';
+
+  // Phase bar
+  const barEl = document.getElementById('mpPhaseBar');
+  if (barEl) {
+    const day = Math.floor(elapsed / 86400000) + 1;
+    if (t <= 0) barEl.textContent = 'AWAITING LAUNCH';
+    else if (t >= 1) barEl.textContent = 'MISSION COMPLETE — SPLASHDOWN';
+    else barEl.textContent = `MISSION ACTIVE — DAY ${day} OF 10 — ${phase.name}`;
+  }
+
+  // Live button state
+  const liveBtn = document.getElementById('mpLiveBtn');
+  if (liveBtn) {
+    if (artemisTimeOffset === 0) {
+      liveBtn.classList.add('active');
+      liveBtn.textContent = '● LIVE';
+    } else {
+      liveBtn.classList.remove('active');
+      const sign = artemisTimeOffset > 0 ? '+' : '';
+      const hrs = (artemisTimeOffset / 3600).toFixed(1);
+      liveBtn.textContent = `${sign}${hrs}h`;
+    }
+  }
+}
+
+function toggleMissionPanel() {
+  const panel = document.getElementById('missionPanel');
+  const btn = document.getElementById('artemisBtn');
+  panel.classList.toggle('show');
+  if (btn) btn.classList.toggle('active', panel.classList.contains('show'));
+}
+
+function artemisTimeShift(seconds) {
+  artemisTimeOffset += seconds;
+  updateArtemisUI();
+}
+
+function artemisResetLive() {
+  artemisTimeOffset = 0;
+  updateArtemisUI();
+}
+
 /* ====== INIT ====== */
 window.addEventListener('DOMContentLoaded',()=>{
   initGlobe();
+  // Init Artemis after globe loads (needs Three.js scene)
+  setTimeout(initArtemis, 1500);
   initAgents();
   updateAiStatus();
   fetchNews();
