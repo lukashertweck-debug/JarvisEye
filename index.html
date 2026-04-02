@@ -573,7 +573,7 @@ setInterval(() => {
 
 // ===== MODULE LOADING =====
 const MODULE_CONFIG = {
-  globe:     { label: 'GLOBE INTEL',   src: 'modules/globe.html?v=6',  placeholder: false },
+  globe:     { label: 'GLOBE INTEL',   src: 'modules/globe.html?v=7',  placeholder: false },
   trading:   { label: 'TRADING',       src: 'modules/trading.html?v=2',              placeholder: false },
   assistant: { label: 'ASSISTANT',     src: null,                     placeholder: true, desc: 'Email summaries, calendar integration, task management, and productivity tools.' },
   advisor:   { label: 'ADVISOR',       src: null,                     placeholder: true, desc: 'AI financial advisor — macro analysis, trade setups, risk assessment, portfolio recommendations.' },
@@ -688,8 +688,10 @@ async function sendChat() {
 async function handleChat(msg) {
   addChatMsg('user', msg);
 
-  // Try computer action first
-  if (tryComputerAction(msg)) return;
+  // Try computer action first (wrapped in try/catch to prevent breaking chat)
+  try {
+    if (tryComputerAction(msg)) return;
+  } catch(e) { console.warn('Computer action error:', e); }
 
   // Add loading indicator
   const body = document.getElementById('chatBody');
@@ -856,7 +858,18 @@ function initSpeechRecognition() {
       handleChat(transcript);
     }
   };
-  r.onerror = e => { console.log('Speech error:', e.error); stopListening(); };
+  r.onerror = e => {
+    console.log('Speech error:', e.error);
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      document.getElementById('voiceText').textContent = 'Microphone blocked — allow mic access';
+      setTimeout(stopListening, 2000);
+    } else if (e.error === 'no-speech') {
+      document.getElementById('voiceText').textContent = 'No speech detected — try again';
+      setTimeout(stopListening, 1500);
+    } else {
+      stopListening();
+    }
+  };
   r.onend = () => { if (isListening) stopListening(); };
   return r;
 }
@@ -865,10 +878,20 @@ function toggleVoice() {
   if (isListening) { stopListening(); return; }
   // Pause wake word while active listening
   if (wakeWordEnabled && wakeRecognition) try { wakeRecognition.abort(); } catch(e){}
-  if (!recognition) recognition = initSpeechRecognition();
+  // Create fresh recognition each time to avoid stale state
+  recognition = initSpeechRecognition();
   if (!recognition) { alert('Speech recognition not supported. Use Chrome.'); return; }
   isListening = true;
-  recognition.start();
+  try {
+    recognition.start();
+  } catch(e) {
+    console.warn('Speech start error:', e);
+    isListening = false;
+    document.getElementById('voiceText').textContent = 'Mic error — check permissions';
+    document.getElementById('voiceOverlay').classList.add('show');
+    setTimeout(() => document.getElementById('voiceOverlay').classList.remove('show'), 2000);
+    return;
+  }
   document.getElementById('voiceBtn').classList.add('listening');
   document.getElementById('voiceBtn').classList.remove('wake-active');
   document.getElementById('chatVoiceBtn').classList.add('listening');
@@ -1114,7 +1137,7 @@ let jarvisPrefs = {
   tone: 'jarvis', verbosity: 'concise', language: 'en',
   expertise: ['markets','geopolitics','crypto','school'],
   customInstructions: '',
-  computerActions: false,
+  computerActions: true,
   tradeStyle: 'smc', instruments: 'NAS100, GER40, BTC, ETH', timeframe: 'intraday'
 };
 
@@ -1314,10 +1337,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     body.scrollTop = body.scrollHeight;
   }
-  // Init speech recognition
-  if (window.SpeechRecognition || window.webkitSpeechRecognition) {
-    recognition = initSpeechRecognition();
-  }
+  // Speech recognition initialized on first use (needs user gesture for mic permission)
   // Preload TTS voices
   if (window.speechSynthesis) {
     speechSynthesis.getVoices();
