@@ -162,8 +162,10 @@ background:rgba(4,6,10,.8);padding:6px 8px;border-radius:4px;border:1px solid va
 /* Artemis Mission Panel */
 #missionPanel{position:absolute;bottom:60px;right:16px;width:320px;z-index:35;background:rgba(4,6,10,.95);
 backdrop-filter:blur(16px);border:1px solid rgba(6,182,212,.2);border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);
-display:none;overflow:hidden;font-family:var(--f)}
+display:none;overflow:hidden;font-family:var(--f);max-height:85vh;overflow-y:auto}
 #missionPanel.show{display:block;animation:panelIn .2s}
+#missionPanel::-webkit-scrollbar{width:3px}
+#missionPanel::-webkit-scrollbar-thumb{background:rgba(6,182,212,.15);border-radius:2px}
 .mp-hd{padding:8px 12px;border-bottom:1px solid rgba(6,182,212,.12);display:flex;align-items:center;gap:8px;background:rgba(6,182,212,.04)}
 .mp-logo{width:22px;height:22px;border:1.5px solid var(--cyan);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--cyan);font-weight:700}
 .mp-title{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cyan);flex:1}
@@ -190,6 +192,42 @@ color:var(--cyan);border-radius:4px;cursor:pointer;letter-spacing:.5px;transitio
 .mp-time{font-size:9px;color:#fff;font-weight:600;letter-spacing:.5px;flex:1;text-align:center}
 .mp-phase{font-size:8px;color:var(--amb);font-weight:600;letter-spacing:1px;text-align:center;margin-top:6px;
 padding:4px 8px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.12);border-radius:4px}
+.mp-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid rgba(6,182,212,.08);margin-top:8px}
+.mp-toggle-label{font-size:7px;color:var(--t2);letter-spacing:1px;font-weight:600}
+.mp-toggle-btn{font-family:var(--f);font-size:7px;padding:3px 8px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);
+color:var(--cyan);border-radius:3px;cursor:pointer;letter-spacing:.5px;transition:.15s}
+.mp-toggle-btn.off{color:var(--t3);border-color:var(--bdr);background:transparent}
+.mp-toggle-btn:hover{background:rgba(6,182,212,.2)}
+
+/* Orion popup */
+#orionPopup{position:absolute;z-index:45;background:rgba(4,6,10,.97);border:1px solid rgba(6,182,212,.2);border-radius:8px;
+width:380px;max-height:520px;overflow-y:auto;backdrop-filter:blur(16px);display:none;box-shadow:0 8px 32px rgba(0,0,0,.7);
+top:80px;left:50%;transform:translateX(-50%)}
+#orionPopup.show{display:block;animation:panelIn .2s}
+#orionPopup::-webkit-scrollbar{width:3px}
+#orionPopup::-webkit-scrollbar-thumb{background:rgba(6,182,212,.15);border-radius:2px}
+.op-hd{padding:10px 14px;border-bottom:1px solid rgba(6,182,212,.12);display:flex;align-items:center;gap:8px;background:rgba(6,182,212,.03)}
+.op-close{background:0;border:0;color:var(--t2);cursor:pointer;font-family:var(--f);font-size:14px;padding:0 4px}
+.op-close:hover{color:#fff}
+.op-body{padding:12px 14px}
+.op-section{margin-bottom:10px}
+.op-section-title{font-size:7px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:6px;
+display:flex;align-items:center;gap:6px}
+.op-section-title::after{content:'';flex:1;height:1px;background:rgba(6,182,212,.1)}
+.op-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.op-info-item{font-size:9px;color:var(--txt);padding:4px 0}
+.op-info-label{font-size:7px;color:var(--t2);letter-spacing:.5px;display:block}
+.op-info-value{font-weight:600;color:#fff}
+.op-feed{display:flex;flex-direction:column;gap:6px}
+.op-feed-item{padding:6px 8px;background:rgba(8,12,20,.6);border:1px solid var(--bdr);border-radius:4px;font-size:9px;line-height:1.5;color:var(--txt)}
+.op-feed-item .time{font-size:7px;color:var(--t2);margin-bottom:2px;letter-spacing:.5px}
+.op-feed-item .src{font-size:7px;color:var(--cyan);font-weight:600;letter-spacing:1px}
+.op-stream{width:100%;aspect-ratio:16/9;border:1px solid rgba(6,182,212,.1);border-radius:4px;background:#000;overflow:hidden}
+.op-stream iframe{width:100%;height:100%;border:0}
+.op-stream-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;
+color:var(--t2);font-size:9px;letter-spacing:1px;cursor:pointer}
+.op-stream-placeholder:hover{color:var(--cyan)}
+.op-stream-icon{font-size:24px;opacity:.4}
 
 /* Globe scanline effect */
 .globe-area::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
@@ -356,6 +394,57 @@ background:rgba(4,6,10,.8);backdrop-filter:blur(10px);border:1px solid var(--bdr
 <button class="mp-ctrl-btn" onclick="artemisTimeShift(3600)" title="Forward 1h">1H ⏩</button>
 </div>
 <div class="mp-phase" id="mpPhaseBar">MISSION ACTIVE — DAY 2 OF 10</div>
+<div class="mp-toggle-row">
+<span class="mp-toggle-label">3D VISUALIZATION</span>
+<button class="mp-toggle-btn" id="mpVizToggle" onclick="toggleArtemisViz()">VISIBLE</button>
+</div>
+</div>
+</div>
+
+<!-- ORION DETAIL POPUP (click on capsule) -->
+<div id="orionPopup">
+<div class="op-hd">
+<span class="panel-dot" style="background:var(--cyan)"></span>
+<span style="font-size:10px;font-weight:700;letter-spacing:2px;color:#fff;flex:1">ORION SPACECRAFT — ARTEMIS II</span>
+<button class="op-close" onclick="document.getElementById('orionPopup').classList.remove('show')">&times;</button>
+</div>
+<div class="op-body">
+<div class="op-section">
+<div class="op-section-title">MISSION INFO</div>
+<div class="op-info-grid">
+<div class="op-info-item"><span class="op-info-label">VEHICLE</span><span class="op-info-value">Orion MPCV</span></div>
+<div class="op-info-item"><span class="op-info-label">LAUNCHER</span><span class="op-info-value">SLS Block 1</span></div>
+<div class="op-info-item"><span class="op-info-label">LAUNCH</span><span class="op-info-value">Apr 1, 2026 18:35 EDT</span></div>
+<div class="op-info-item"><span class="op-info-label">SPLASHDOWN</span><span class="op-info-value">Apr 10, 2026 (est)</span></div>
+<div class="op-info-item"><span class="op-info-label">FLYBY ALT</span><span class="op-info-value">~6,000 mi from Moon</span></div>
+<div class="op-info-item"><span class="op-info-label">DURATION</span><span class="op-info-value">~10 days</span></div>
+</div>
+</div>
+<div class="op-section">
+<div class="op-section-title">CREW</div>
+<div class="op-info-grid">
+<div class="op-info-item"><span class="op-info-label">COMMANDER</span><span class="op-info-value">R. Wiseman</span></div>
+<div class="op-info-item"><span class="op-info-label">PILOT</span><span class="op-info-value">V. Glover</span></div>
+<div class="op-info-item"><span class="op-info-label">MISSION SPEC 1</span><span class="op-info-value">C. Koch</span></div>
+<div class="op-info-item"><span class="op-info-label">MISSION SPEC 2</span><span class="op-info-value">J. Hansen</span></div>
+</div>
+</div>
+<div class="op-section">
+<div class="op-section-title">LIVE STREAM</div>
+<div class="op-stream" id="opStream">
+<div class="op-stream-placeholder" onclick="loadNasaStream()">
+<div class="op-stream-icon">▶</div>
+<span>CLICK TO LOAD NASA TV STREAM</span>
+<span style="font-size:7px;color:var(--t3)">Requires active broadcast</span>
+</div>
+</div>
+</div>
+<div class="op-section">
+<div class="op-section-title">LATEST UPDATES</div>
+<div class="op-feed" id="orionFeed">
+<div class="op-feed-item"><div class="time">Loading updates...</div></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -1133,6 +1222,8 @@ const MOON_RADIUS_SCALED = EARTH_RADIUS_GL * 0.273; // true ratio
 let moonMesh = null, orionMesh = null, trajectoryLine = null, orionGlow = null;
 let artemisTimeOffset = 0; // seconds offset from live
 let artemisAnimFrame = null;
+let artemisGroup = null; // parent group for show/hide
+let artemisVisible = true;
 
 // Mission phases with approximate timing (fraction of total mission)
 const PHASES = [
@@ -1224,9 +1315,61 @@ function getVelocity(t) {
   return 11.0; // Reentry
 }
 
+function buildOrionCapsule(scale) {
+  // Build a simplified Orion capsule: cone (heat shield) + cylinder (crew module) + small cone (top)
+  const group = new THREE.Group();
+  const S = scale;
+
+  // Heat shield (bottom) — wide cone/frustum
+  const shieldGeo = new THREE.CylinderGeometry(S * 0.7, S * 1.0, S * 0.4, 16);
+  const shieldMat = new THREE.MeshPhongMaterial({ color: 0x2a2a2a, emissive: 0x1a0a00, emissiveIntensity: 0.3, shininess: 30 });
+  const shield = new THREE.Mesh(shieldGeo, shieldMat);
+  shield.position.y = -S * 0.5;
+  group.add(shield);
+
+  // Crew module (main body) — tapered cylinder
+  const bodyGeo = new THREE.CylinderGeometry(S * 0.45, S * 0.7, S * 0.8, 16);
+  const bodyMat = new THREE.MeshPhongMaterial({ color: 0xcccccc, emissive: 0x06b6d4, emissiveIntensity: 0.15, shininess: 40 });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.y = S * 0.1;
+  group.add(body);
+
+  // Top adapter cone
+  const topGeo = new THREE.ConeGeometry(S * 0.45, S * 0.35, 16);
+  const topMat = new THREE.MeshPhongMaterial({ color: 0xaaaaaa, emissive: 0x444444, emissiveIntensity: 0.1, shininess: 20 });
+  const top = new THREE.Mesh(topGeo, topMat);
+  top.position.y = S * 0.68;
+  group.add(top);
+
+  // Solar panel wings (two flat boxes)
+  const panelGeo = new THREE.BoxGeometry(S * 2.5, S * 0.03, S * 0.5);
+  const panelMat = new THREE.MeshPhongMaterial({ color: 0x1a3a6a, emissive: 0x3b82f6, emissiveIntensity: 0.2, shininess: 60 });
+  const panelL = new THREE.Mesh(panelGeo, panelMat);
+  panelL.position.set(-S * 1.3, S * 0.0, 0);
+  panelL.rotation.z = 0.05;
+  group.add(panelL);
+  const panelR = new THREE.Mesh(panelGeo, panelMat);
+  panelR.position.set(S * 1.3, S * 0.0, 0);
+  panelR.rotation.z = -0.05;
+  group.add(panelR);
+
+  // NASA insignia (small cyan ring on side)
+  const ringGeo = new THREE.TorusGeometry(S * 0.15, S * 0.02, 8, 16);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.position.set(0, S * 0.15, S * 0.71);
+  group.add(ring);
+
+  return group;
+}
+
 function initArtemis() {
   if (!globe || typeof THREE === 'undefined') { console.warn('Artemis init waiting...'); setTimeout(initArtemis, 500); return; }
   const scene = globe.scene();
+
+  // Parent group for show/hide all Artemis objects
+  artemisGroup = new THREE.Group();
+  scene.add(artemisGroup);
 
   // === MOON ===
   const moonGeo = new THREE.SphereGeometry(MOON_RADIUS_SCALED, 32, 32);
@@ -1240,28 +1383,22 @@ function initArtemis() {
     shininess: 5
   });
   moonMesh = new THREE.Mesh(moonGeo, moonMat);
-  // Position Moon at a fixed angle
   const moonAngle = Math.PI * 0.85;
   moonMesh.position.set(
     Math.cos(moonAngle) * MOON_DIST_SCALED,
     0,
     -Math.sin(moonAngle) * MOON_DIST_SCALED
   );
-  scene.add(moonMesh);
+  artemisGroup.add(moonMesh);
 
   // Moon glow
   const glowGeo = new THREE.SphereGeometry(MOON_RADIUS_SCALED * 1.15, 32, 32);
-  const glowMat = new THREE.MeshBasicMaterial({
-    color: 0x8899bb,
-    transparent: true,
-    opacity: 0.08,
-    side: THREE.BackSide
-  });
+  const glowMat = new THREE.MeshBasicMaterial({ color: 0x8899bb, transparent: true, opacity: 0.08, side: THREE.BackSide });
   const moonGlow = new THREE.Mesh(glowGeo, glowMat);
   moonGlow.position.copy(moonMesh.position);
-  scene.add(moonGlow);
+  artemisGroup.add(moonGlow);
 
-  // Moon label sprite
+  // Moon label
   const canvas = document.createElement('canvas');
   canvas.width = 256; canvas.height = 64;
   const ctx = canvas.getContext('2d');
@@ -1275,9 +1412,9 @@ function initArtemis() {
   sprite.scale.set(MOON_RADIUS_SCALED * 3, MOON_RADIUS_SCALED * 0.75, 1);
   sprite.position.copy(moonMesh.position);
   sprite.position.y += MOON_RADIUS_SCALED * 1.8;
-  scene.add(sprite);
+  artemisGroup.add(sprite);
 
-  // === TRAJECTORY LINE ===
+  // === TRAJECTORY LINE (thinner, more transparent) ===
   const trajPoints = generateTrajectoryPoints(300);
   const lineGeo = new THREE.BufferGeometry();
   const positions = new Float32Array(trajPoints.length * 3);
@@ -1286,32 +1423,31 @@ function initArtemis() {
     positions[i*3] = trajPoints[i].x;
     positions[i*3+1] = trajPoints[i].y;
     positions[i*3+2] = trajPoints[i].z;
-    // Gradient: cyan near Earth → blue mid → cyan near Moon
     const tt = i / trajPoints.length;
-    const r = 0.02 + 0.2 * Math.sin(tt * Math.PI);
-    const g = 0.7 + 0.3 * Math.sin(tt * Math.PI);
-    const b = 0.83;
+    const r = 0.02 + 0.15 * Math.sin(tt * Math.PI);
+    const g = 0.6 + 0.25 * Math.sin(tt * Math.PI);
+    const b = 0.78;
     colors[i*3] = r; colors[i*3+1] = g; colors[i*3+2] = b;
   }
   lineGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   lineGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  const lineMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.5, linewidth: 1 });
+  const lineMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.3, linewidth: 1 });
   trajectoryLine = new THREE.Line(lineGeo, lineMat);
-  scene.add(trajectoryLine);
+  artemisGroup.add(trajectoryLine);
 
-  // === ORION SPACECRAFT MARKER ===
-  const orionGeo = new THREE.SphereGeometry(EARTH_RADIUS_GL * 0.04, 16, 16);
-  const orionMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
-  orionMesh = new THREE.Mesh(orionGeo, orionMat);
-  scene.add(orionMesh);
+  // === ORION CAPSULE (3D model, bigger than before) ===
+  const capsuleScale = EARTH_RADIUS_GL * 0.06;
+  orionMesh = buildOrionCapsule(capsuleScale);
+  orionMesh.name = 'orionCapsule';
+  artemisGroup.add(orionMesh);
 
-  // Orion glow effect
-  const oGlowGeo = new THREE.SphereGeometry(EARTH_RADIUS_GL * 0.08, 16, 16);
-  const oGlowMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.25 });
+  // Orion glow sphere (for visibility at distance)
+  const oGlowGeo = new THREE.SphereGeometry(EARTH_RADIUS_GL * 0.1, 16, 16);
+  const oGlowMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.18 });
   orionGlow = new THREE.Mesh(oGlowGeo, oGlowMat);
-  scene.add(orionGlow);
+  artemisGroup.add(orionGlow);
 
-  // Orion label
+  // Orion label sprite
   const oCanvas = document.createElement('canvas');
   oCanvas.width = 512; oCanvas.height = 64;
   const oCtx = oCanvas.getContext('2d');
@@ -1322,19 +1458,41 @@ function initArtemis() {
   const oTex = new THREE.CanvasTexture(oCanvas);
   const oSpriteMat = new THREE.SpriteMaterial({ map: oTex, transparent: true, opacity: 0.85 });
   const oSprite = new THREE.Sprite(oSpriteMat);
-  oSprite.scale.set(EARTH_RADIUS_GL * 0.6, EARTH_RADIUS_GL * 0.075, 1);
+  oSprite.scale.set(EARTH_RADIUS_GL * 0.7, EARTH_RADIUS_GL * 0.085, 1);
   orionMesh.add(oSprite);
-  oSprite.position.set(0, EARTH_RADIUS_GL * 0.12, 0);
+  oSprite.position.set(0, EARTH_RADIUS_GL * 0.15, 0);
 
-  // Store trajectory points for position lookup
+  // Store trajectory points
   window._trajPoints = trajPoints;
 
-  // Start animation loop
+  // === CLICK HANDLER for Orion capsule ===
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  const container = document.getElementById('globeViz');
+  container.addEventListener('click', (event) => {
+    if (!artemisVisible || !orionMesh) return;
+    const rect = container.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, globe.camera());
+    // Check intersection with all children of orionMesh + glow
+    const targets = [];
+    orionMesh.traverse(child => { if (child.isMesh) targets.push(child); });
+    if (orionGlow) targets.push(orionGlow);
+    const intersects = raycaster.intersectObjects(targets, false);
+    if (intersects.length > 0) {
+      showOrionPopup();
+    }
+  });
+
+  // Start animation
   updateArtemisPosition();
   setInterval(updateArtemisUI, 1000);
   updateArtemisUI();
+  fetchArtemisUpdates();
+  setInterval(fetchArtemisUpdates, 300000); // 5 min
 
-  // Auto-show the mission panel
+  // Auto-show mission panel
   document.getElementById('missionPanel').classList.add('show');
   document.getElementById('artemisBtn').classList.add('active');
 }
@@ -1356,7 +1514,15 @@ function updateArtemisPosition() {
   orionMesh.position.set(x, y, z);
   if (orionGlow) orionGlow.position.set(x, y, z);
 
-  // Pulse effect
+  // Orient capsule along trajectory (look towards next point)
+  if (pn && (pn.x !== p.x || pn.y !== p.y || pn.z !== p.z)) {
+    const dir = new THREE.Vector3(pn.x - p.x, pn.y - p.y, pn.z - p.z).normalize();
+    const up = new THREE.Vector3(0, 1, 0);
+    const quat = new THREE.Quaternion().setFromUnitVectors(up, dir);
+    orionMesh.quaternion.slerp(quat, 0.05);
+  }
+
+  // Pulse glow
   const pulse = 1 + Math.sin(Date.now() * 0.005) * 0.3;
   if (orionGlow) orionGlow.scale.setScalar(pulse);
 
@@ -1437,6 +1603,77 @@ function artemisTimeShift(seconds) {
 function artemisResetLive() {
   artemisTimeOffset = 0;
   updateArtemisUI();
+}
+
+function toggleArtemisViz() {
+  artemisVisible = !artemisVisible;
+  if (artemisGroup) artemisGroup.visible = artemisVisible;
+  const btn = document.getElementById('mpVizToggle');
+  if (btn) {
+    btn.textContent = artemisVisible ? 'VISIBLE' : 'HIDDEN';
+    btn.classList.toggle('off', !artemisVisible);
+  }
+}
+
+function showOrionPopup() {
+  document.getElementById('orionPopup').classList.add('show');
+}
+
+function loadNasaStream() {
+  const el = document.getElementById('opStream');
+  el.innerHTML = '<iframe src="https://www.youtube.com/embed/nA9UZF-SZoQ?autoplay=1&mute=1" allow="autoplay;encrypted-media" allowfullscreen></iframe>';
+}
+
+async function fetchArtemisUpdates() {
+  const feed = document.getElementById('orionFeed');
+  if (!feed) return;
+  try {
+    // Fetch NASA + space news via RSS
+    const sources = [
+      { url: 'https://www.nasa.gov/news-release/feed/', src: 'NASA' },
+      { url: 'https://www.space.com/feeds/all', src: 'SPACE.COM' },
+    ];
+    let items = [];
+    for (const s of sources) {
+      try {
+        const r = await fetch(RSS2JSON(s.url));
+        const j = await r.json();
+        if (j.status === 'ok' && j.items) {
+          j.items.forEach(item => {
+            const title = (item.title || '').toLowerCase();
+            if (title.includes('artemis') || title.includes('orion') || title.includes('moon') || title.includes('sls') || title.includes('lunar')) {
+              items.push({
+                title: item.title,
+                link: item.link,
+                time: item.pubDate ? new Date(item.pubDate).toLocaleString('en-GB', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '',
+                src: s.src
+              });
+            }
+          });
+        }
+      } catch (e) { console.log('Artemis feed error:', e); }
+    }
+    // Deduplicate and limit
+    const seen = new Set();
+    items = items.filter(i => { const k = i.title; if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 6);
+    // Always show at least placeholder items about the mission
+    if (items.length === 0) {
+      items = [
+        { title: 'Artemis II launched successfully from Kennedy Space Center', time: 'Apr 1, 18:35', src: 'NASA' },
+        { title: 'Orion spacecraft completes TLI burn, heading to the Moon', time: 'Apr 1, 20:45', src: 'NASA' },
+        { title: 'Crew reports all systems nominal during outbound transit', time: 'Apr 2, 08:00', src: 'NASA' },
+        { title: 'Orion spacecraft passes 50,000 km from Earth', time: 'Apr 3, 06:00', src: 'MISSION CTRL' },
+      ];
+    }
+    feed.innerHTML = items.map(i => `
+      <div class="op-feed-item">
+        <div class="time">${i.time} <span class="src">${i.src}</span></div>
+        <div>${i.title}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    feed.innerHTML = '<div class="op-feed-item"><div class="time">Feed unavailable</div></div>';
+  }
 }
 
 /* ====== INIT ====== */

@@ -200,6 +200,12 @@ top:2px;left:2px;transition:.2s}
 @keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
+/* ===== EXPERTISE TAGS ===== */
+.exp-tag{font-family:var(--f);font-size:8px;padding:4px 10px;background:transparent;border:1px solid var(--bdr);
+color:var(--t2);border-radius:10px;cursor:pointer;letter-spacing:.5px;transition:.15s}
+.exp-tag:hover{border-color:rgba(6,182,212,.3);color:var(--txt)}
+.exp-tag.on{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.1)}
+
 /* ===== PLACEHOLDER MODULES ===== */
 .placeholder-module{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;
 background:var(--bg);color:var(--t2)}
@@ -251,6 +257,10 @@ background:var(--bg);color:var(--t2)}
       <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="sb-tooltip">JARVIS CHAT</span>
       <div class="sb-notify" id="chatNotify" style="display:none"></div>
+    </button>
+    <button class="sb-btn" onclick="toggleTraining()" id="nav-training">
+      <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+      <span class="sb-tooltip">TRAIN JARVIS</span>
     </button>
     <button class="sb-btn" onclick="toggleSettings()" id="nav-settings">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -402,6 +412,126 @@ background:var(--bg);color:var(--t2)}
   </div>
 </div>
 
+<!-- ===== JARVIS TRAINING / TWEAKING PANEL ===== -->
+<div class="modal-overlay" id="trainingModal">
+  <div class="modal" style="width:520px;max-height:85vh">
+    <div class="modal-hd">
+      <svg width="16" height="16" viewBox="0 0 24 24" stroke="var(--cyan)" stroke-width="1.5" fill="none"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+      <span class="modal-title">JARVIS TRAINING CENTER</span>
+      <button class="modal-close" onclick="toggleTraining()">&times;</button>
+    </div>
+    <div class="modal-body" style="max-height:70vh;overflow-y:auto">
+      <!-- Personality -->
+      <div class="settings-group">
+        <div class="settings-label">PERSONALITY</div>
+        <div class="settings-desc">How JARVIS responds to you.</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">TONE</span>
+            <select id="jTone" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="professional">Professional & Direct</option>
+              <option value="casual">Casual & Friendly</option>
+              <option value="jarvis" selected>JARVIS — Stark Industries</option>
+              <option value="military">Military Briefing</option>
+              <option value="teacher">Patient Teacher</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">VERBOSITY</span>
+            <select id="jVerbosity" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="minimal">Minimal (bullet points)</option>
+              <option value="concise" selected>Concise (2-4 sentences)</option>
+              <option value="detailed">Detailed (full analysis)</option>
+              <option value="verbose">Verbose (deep dive)</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">LANGUAGE</span>
+            <select id="jLang" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="en" selected>English</option>
+              <option value="de">Deutsch</option>
+              <option value="auto">Auto-detect (match user)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- Expertise -->
+      <div class="settings-group">
+        <div class="settings-label">EXPERTISE FOCUS</div>
+        <div class="settings-desc">Select JARVIS's priority knowledge areas.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px" id="expertiseTags">
+          <button class="exp-tag on" data-exp="markets" onclick="toggleExpertise(this)">Markets & Trading</button>
+          <button class="exp-tag on" data-exp="geopolitics" onclick="toggleExpertise(this)">Geopolitics</button>
+          <button class="exp-tag on" data-exp="crypto" onclick="toggleExpertise(this)">Crypto</button>
+          <button class="exp-tag" data-exp="coding" onclick="toggleExpertise(this)">Coding</button>
+          <button class="exp-tag on" data-exp="school" onclick="toggleExpertise(this)">School (Abi)</button>
+          <button class="exp-tag" data-exp="fitness" onclick="toggleExpertise(this)">Fitness</button>
+          <button class="exp-tag" data-exp="writing" onclick="toggleExpertise(this)">Writing</button>
+          <button class="exp-tag" data-exp="science" onclick="toggleExpertise(this)">Science</button>
+          <button class="exp-tag" data-exp="history" onclick="toggleExpertise(this)">History</button>
+        </div>
+      </div>
+      <!-- Custom instructions -->
+      <div class="settings-group">
+        <div class="settings-label">CUSTOM INSTRUCTIONS</div>
+        <div class="settings-desc">Persistent context JARVIS always remembers.</div>
+        <textarea id="jCustomInstructions" style="width:100%;height:80px;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:8px;border-radius:4px;outline:none;resize:vertical;line-height:1.6" placeholder="E.g. I trade NAS100 and GER40 intraday using SMC/ICT. I'm in grade 12 in Germany. Always reference current prices..."></textarea>
+        <button onclick="saveTrainingPrefs()" style="font-family:var(--f);font-size:8px;padding:5px 14px;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.2);color:var(--cyan);border-radius:4px;cursor:pointer;letter-spacing:1px;font-weight:700;margin-top:4px">SAVE</button>
+      </div>
+      <!-- Computer Actions -->
+      <div class="settings-group">
+        <div class="settings-label">COMPUTER ACTIONS</div>
+        <div class="settings-desc">Let JARVIS perform tasks on your system.</div>
+        <div class="settings-toggle">
+          <span class="toggle-label">Enable computer commands (open apps, create files)</span>
+          <div class="toggle-switch" id="compActionsToggle" onclick="toggleComputerActions(this)"></div>
+        </div>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:8px;color:var(--t2);letter-spacing:.5px;font-weight:600">AVAILABLE COMMANDS:</div>
+          <div style="font-size:8px;color:var(--txt);line-height:1.8;padding:6px;background:var(--bg2);border:1px solid var(--bdr);border-radius:4px">
+            <span style="color:var(--cyan)">"Open YouTube"</span> — opens in new tab<br>
+            <span style="color:var(--cyan)">"Search for [topic]"</span> — web search<br>
+            <span style="color:var(--cyan)">"Create a presentation about [topic]"</span> — generates PPTX<br>
+            <span style="color:var(--cyan)">"Set a timer for 10 min"</span> — countdown alert<br>
+            <span style="color:var(--cyan)">"Take a note: [text]"</span> — saves to captures<br>
+            <span style="color:var(--cyan)">"Open [trading/journal/advisor]"</span> — switch module<br>
+            <span style="color:var(--cyan)">"Read my latest news"</span> — reads intel feed aloud
+          </div>
+        </div>
+      </div>
+      <!-- Trading Preferences -->
+      <div class="settings-group">
+        <div class="settings-label">TRADING PROFILE</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">STYLE</span>
+            <select id="jTradeStyle" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="smc" selected>SMC / ICT</option>
+              <option value="price-action">Price Action</option>
+              <option value="technical">Technical Analysis</option>
+              <option value="fundamental">Fundamental</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">INSTRUMENTS</span>
+            <input id="jInstruments" onchange="saveTrainingPrefs()" value="NAS100, GER40, BTC, ETH" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">TIMEFRAME</span>
+            <select id="jTimeframe" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="scalp">Scalp (1-5 min)</option>
+              <option value="intraday" selected>Intraday (15m-1H)</option>
+              <option value="swing">Swing (4H-Daily)</option>
+              <option value="position">Position (Weekly+)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script>
 /* ============================================================
@@ -443,7 +573,7 @@ setInterval(() => {
 
 // ===== MODULE LOADING =====
 const MODULE_CONFIG = {
-  globe:     { label: 'GLOBE INTEL',   src: 'modules/globe.html?v=5',  placeholder: false },
+  globe:     { label: 'GLOBE INTEL',   src: 'modules/globe.html?v=6',  placeholder: false },
   trading:   { label: 'TRADING',       src: 'modules/trading.html?v=2',              placeholder: false },
   assistant: { label: 'ASSISTANT',     src: null,                     placeholder: true, desc: 'Email summaries, calendar integration, task management, and productivity tools.' },
   advisor:   { label: 'ADVISOR',       src: null,                     placeholder: true, desc: 'AI financial advisor — macro analysis, trade setups, risk assessment, portfolio recommendations.' },
@@ -558,6 +688,9 @@ async function sendChat() {
 async function handleChat(msg) {
   addChatMsg('user', msg);
 
+  // Try computer action first
+  if (tryComputerAction(msg)) return;
+
   // Add loading indicator
   const body = document.getElementById('chatBody');
   const loader = document.createElement('div');
@@ -621,14 +754,30 @@ function buildContext(intent) {
 }
 
 function buildSystemPrompt(intent, ctx) {
-  const base = `You are JARVIS, an elite personal AI assistant. You speak to Lukas, a student/trader/builder based in Baden-Baden, Germany. Be concise, direct, and actionable. Never fabricate data — use only what's provided below.\n\n${ctx}\n\n`;
+  // Build personality from training prefs
+  const toneMap = {
+    professional: 'You speak in a professional, direct tone.',
+    casual: 'You speak casually and friendly, like a knowledgeable friend.',
+    jarvis: 'You speak like JARVIS from Stark Industries — witty, dry, efficient, slightly sardonic but always loyal.',
+    military: 'You speak in military briefing style — short, precise, situation-aware.',
+    teacher: 'You speak like a patient, encouraging teacher. Use examples and analogies.'
+  };
+  const verbMap = { minimal: 'Answer in 1-3 bullet points max.', concise: 'Keep answers to 2-4 sentences.', detailed: 'Provide thorough analysis in 2-3 paragraphs.', verbose: 'Give a comprehensive deep dive.' };
+  const langNote = jarvisPrefs.language === 'de' ? 'Respond in German.' : jarvisPrefs.language === 'auto' ? 'Match the language of the user\'s message.' : '';
+
+  let base = `You are JARVIS, an elite personal AI assistant. You speak to Lukas, a student/trader/builder based in Baden-Baden, Germany. ${toneMap[jarvisPrefs.tone] || ''} ${verbMap[jarvisPrefs.verbosity] || ''} ${langNote} Never fabricate data — use only what's provided below.\n`;
+  if (jarvisPrefs.customInstructions) base += `\nPERSONAL CONTEXT: ${jarvisPrefs.customInstructions}\n`;
+  base += `\n${ctx}\n\n`;
+
+  const tradingCtx = `Lukas trades ${jarvisPrefs.instruments} ${jarvisPrefs.timeframe} using ${jarvisPrefs.tradeStyle.toUpperCase()} methodology. Reference actual prices from the data. Identify setups, confluences, and risks.`;
+
   const intents = {
-    market: base + 'ROLE: Financial market analyst. Lukas trades NAS100 and GER40 intraday using SMC/ICT methodology (sweep → displacement → CHoCH/FVG entry → opposite liquidity target). Reference actual prices from the data. Identify setups, confluences, and risks. Max 200 words.',
-    geopolitical: base + 'ROLE: Geopolitical intelligence analyst. Analyze current events using the news headlines and market data provided. Be specific and actionable. Max 200 words.',
-    risk: base + 'ROLE: Risk assessment specialist. Assign probability (%) and impact (1-10) ratings. Base analysis on the actual data provided. Max 200 words.',
+    market: base + `ROLE: Financial market analyst. ${tradingCtx}`,
+    geopolitical: base + 'ROLE: Geopolitical intelligence analyst. Analyze current events using the news headlines and market data provided. Be specific and actionable.',
+    risk: base + 'ROLE: Risk assessment specialist. Assign probability (%) and impact (1-10) ratings. Base analysis on the actual data provided.',
     school: base + 'ROLE: Academic tutor. Lukas is in German Gymnasium (grade 12). Subjects: chemistry (reaction kinetics, Haber-Bosch, equilibrium), math (calculus, extrema, Steckbriefaufgaben), German literature (Romantik, Erpenbeck), IT/embedded (ATmega328P, C programming, UART, I2C). Explain clearly with examples. You can respond in German if the question is in German.',
     productivity: base + 'ROLE: Personal assistant. Help with task management, planning, and organization. Be brief and structured.',
-    general: base + 'ROLE: General assistant. Be helpful, concise, and direct. Max 200 words.',
+    general: base + 'ROLE: General assistant. Be helpful, concise, and direct.',
   };
   return intents[intent] || intents.general;
 }
@@ -960,6 +1109,174 @@ function updateAiStatus() {
   }
 }
 
+// ===== JARVIS TRAINING / PREFERENCES =====
+let jarvisPrefs = {
+  tone: 'jarvis', verbosity: 'concise', language: 'en',
+  expertise: ['markets','geopolitics','crypto','school'],
+  customInstructions: '',
+  computerActions: false,
+  tradeStyle: 'smc', instruments: 'NAS100, GER40, BTC, ETH', timeframe: 'intraday'
+};
+
+// Load saved prefs
+try {
+  const sp = localStorage.getItem('jarvis.training');
+  if (sp) Object.assign(jarvisPrefs, JSON.parse(sp));
+} catch(e) {}
+
+function toggleTraining() {
+  const modal = document.getElementById('trainingModal');
+  modal.classList.toggle('show');
+  if (modal.classList.contains('show')) restoreTrainingUI();
+}
+
+function restoreTrainingUI() {
+  document.getElementById('jTone').value = jarvisPrefs.tone;
+  document.getElementById('jVerbosity').value = jarvisPrefs.verbosity;
+  document.getElementById('jLang').value = jarvisPrefs.language;
+  document.getElementById('jCustomInstructions').value = jarvisPrefs.customInstructions;
+  document.getElementById('jTradeStyle').value = jarvisPrefs.tradeStyle;
+  document.getElementById('jInstruments').value = jarvisPrefs.instruments;
+  document.getElementById('jTimeframe').value = jarvisPrefs.timeframe;
+  if (jarvisPrefs.computerActions) document.getElementById('compActionsToggle').classList.add('on');
+  // Expertise tags
+  document.querySelectorAll('.exp-tag').forEach(t => {
+    t.classList.toggle('on', jarvisPrefs.expertise.includes(t.dataset.exp));
+  });
+}
+
+function toggleExpertise(el) {
+  el.classList.toggle('on');
+  saveTrainingPrefs();
+}
+
+function toggleComputerActions(el) {
+  jarvisPrefs.computerActions = el.classList.toggle('on');
+  saveTrainingPrefs();
+}
+
+function saveTrainingPrefs() {
+  jarvisPrefs.tone = document.getElementById('jTone').value;
+  jarvisPrefs.verbosity = document.getElementById('jVerbosity').value;
+  jarvisPrefs.language = document.getElementById('jLang').value;
+  jarvisPrefs.customInstructions = document.getElementById('jCustomInstructions').value;
+  jarvisPrefs.tradeStyle = document.getElementById('jTradeStyle').value;
+  jarvisPrefs.instruments = document.getElementById('jInstruments').value;
+  jarvisPrefs.timeframe = document.getElementById('jTimeframe').value;
+  jarvisPrefs.expertise = Array.from(document.querySelectorAll('.exp-tag.on')).map(t => t.dataset.exp);
+  try { localStorage.setItem('jarvis.training', JSON.stringify(jarvisPrefs)); } catch(e) {}
+}
+
+// ===== COMPUTER ACTIONS (Jarvis commands) =====
+function tryComputerAction(msg) {
+  if (!jarvisPrefs.computerActions) return false;
+  const lower = msg.toLowerCase().trim();
+
+  // Open website/app
+  const openMatch = lower.match(/^(?:open|go to|launch|navigate to)\s+(.+)/);
+  if (openMatch) {
+    const target = openMatch[1].trim();
+    const sites = {
+      'youtube': 'https://www.youtube.com',
+      'twitter': 'https://twitter.com', 'x': 'https://twitter.com',
+      'tradingview': 'https://www.tradingview.com',
+      'google': 'https://www.google.com',
+      'github': 'https://github.com',
+      'chatgpt': 'https://chat.openai.com',
+      'reddit': 'https://www.reddit.com',
+      'gmail': 'https://mail.google.com',
+      'calendar': 'https://calendar.google.com',
+      'notion': 'https://www.notion.so',
+      'netflix': 'https://www.netflix.com',
+      'spotify': 'https://open.spotify.com',
+    };
+    // Check module switching
+    const modules = {'trading':'trading','journal':'journal','trade journal':'journal','globe':'globe','advisor':'advisor','assistant':'assistant'};
+    for (const [k,v] of Object.entries(modules)) {
+      if (target.includes(k)) {
+        loadModule(v);
+        addChatMsg('bot', `Switched to <span style="color:var(--cyan)">${v.toUpperCase()}</span> module.`);
+        if (ttsEnabled) speak('Switching to ' + v + ' module.');
+        return true;
+      }
+    }
+    for (const [k,v] of Object.entries(sites)) {
+      if (target.includes(k)) {
+        window.open(v, '_blank');
+        addChatMsg('bot', `Opening <span style="color:var(--cyan)">${k.charAt(0).toUpperCase()+k.slice(1)}</span> in a new tab.`);
+        if (ttsEnabled) speak('Opening ' + k + '.');
+        return true;
+      }
+    }
+    // Generic URL
+    if (target.includes('.')) {
+      const url = target.startsWith('http') ? target : 'https://' + target;
+      window.open(url, '_blank');
+      addChatMsg('bot', `Opening <span style="color:var(--cyan)">${target}</span> in a new tab.`);
+      if (ttsEnabled) speak('Opening ' + target);
+      return true;
+    }
+  }
+
+  // Web search
+  const searchMatch = lower.match(/^(?:search|search for|google|look up)\s+(.+)/);
+  if (searchMatch) {
+    const query = searchMatch[1].trim();
+    window.open('https://www.google.com/search?q=' + encodeURIComponent(query), '_blank');
+    addChatMsg('bot', `Searching for <span style="color:var(--cyan)">"${query}"</span>.`);
+    if (ttsEnabled) speak('Searching for ' + query);
+    return true;
+  }
+
+  // Timer
+  const timerMatch = lower.match(/(?:set a timer|timer|remind me in)\s+(?:for\s+)?(\d+)\s*(min|minute|sec|second|hour|h|m|s)/);
+  if (timerMatch) {
+    let ms = parseInt(timerMatch[1]);
+    const unit = timerMatch[2];
+    if (unit.startsWith('h')) ms *= 3600000;
+    else if (unit.startsWith('m')) ms *= 60000;
+    else ms *= 1000;
+    const label = timerMatch[1] + ' ' + unit;
+    addChatMsg('bot', `Timer set for <span style="color:var(--cyan)">${label}</span>. I'll alert you when it's up.`);
+    if (ttsEnabled) speak('Timer set for ' + label);
+    setTimeout(() => {
+      addChatMsg('bot', `<span style="color:var(--amb)">⏰ Timer complete!</span> Your ${label} timer is up.`);
+      if (ttsEnabled) speak('Timer is up! Your ' + label + ' timer has finished.');
+      playActivationSound();
+      if (Notification.permission === 'granted') new Notification('JARVIS Timer', {body: label + ' timer complete!'});
+    }, ms);
+    return true;
+  }
+
+  // Take a note
+  const noteMatch = lower.match(/(?:take a note|save a note|capture|note|remember)\s*:?\s+(.+)/);
+  if (noteMatch) {
+    const text = noteMatch[1].trim();
+    const entry = { text, tag: 'idea', time: Date.now(), id: Date.now().toString(36) };
+    let captures = [];
+    try { captures = JSON.parse(localStorage.getItem('jarvis.captures') || '[]'); } catch(e) {}
+    captures.unshift(entry);
+    localStorage.setItem('jarvis.captures', JSON.stringify(captures.slice(0, 500)));
+    addChatMsg('bot', `Note saved: <span style="color:var(--cyan)">"${text}"</span>`);
+    if (ttsEnabled) speak('Note saved.');
+    return true;
+  }
+
+  // Read news aloud
+  if (lower.includes('read') && (lower.includes('news') || lower.includes('intel') || lower.includes('headlines'))) {
+    if (sharedNewsItems.length) {
+      const headlines = sharedNewsItems.slice(0, 5).map((n, i) => `${i+1}. ${n.title}`).join('\n');
+      addChatMsg('bot', `<span style="color:var(--blue)">Latest Headlines:</span><br>${headlines.replace(/\n/g,'<br>')}`);
+      if (ttsEnabled) speak('Here are the latest headlines. ' + sharedNewsItems.slice(0,5).map(n => n.title).join('. '));
+    } else {
+      addChatMsg('bot', 'Intel feed is still loading. Try again in a moment.');
+    }
+    return true;
+  }
+
+  return false;
+}
+
 // ===== KEYBOARD SHORTCUTS =====
 document.addEventListener('keydown', e => {
   // Ctrl+K / Cmd+K → Quick Capture
@@ -971,6 +1288,7 @@ document.addEventListener('keydown', e => {
     document.getElementById('chatDrawer').classList.remove('open');
     document.getElementById('quickCapture').classList.remove('show');
     document.getElementById('settingsModal').classList.remove('show');
+    document.getElementById('trainingModal').classList.remove('show');
     stopListening();
   }
 });
