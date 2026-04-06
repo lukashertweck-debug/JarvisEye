@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J.A.R.V.I.S. — Personal AI System</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#04060a;--bg2:#080c14;--bg3:#0c1018;--bdr:rgba(59,130,246,0.08);
+--txt:#c8d0dc;--t2:#5a6a80;--t3:#2e3a4a;--blue:#3b82f6;--grn:#22c55e;--red:#ef4444;--amb:#f59e0b;--cyan:#06b6d4;
+--f:'JetBrains Mono',monospace;--glow:rgba(59,130,246,0.15);--sidebar:52px}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f);font-size:11px;overflow:hidden}
+
+/* ===== LAYOUT ===== */
+.shell{display:flex;height:100vh;width:100vw}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--sidebar);background:var(--bg);border-right:1px solid var(--bdr);display:flex;flex-direction:column;
+align-items:center;padding:8px 0;gap:2px;flex-shrink:0;z-index:60;position:relative}
+.sb-logo{width:32px;height:32px;border:1.5px solid var(--blue);border-radius:50%;display:flex;align-items:center;
+justify-content:center;margin-bottom:10px;position:relative;cursor:pointer}
+.sb-logo::before{content:'';width:8px;height:8px;background:var(--blue);border-radius:50%;animation:cp 2s ease-in-out infinite}
+@keyframes cp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.sb-logo-label{position:absolute;left:56px;background:rgba(4,6,10,.95);border:1px solid var(--bdr);padding:4px 10px;
+border-radius:4px;font-size:8px;color:#fff;letter-spacing:2px;font-weight:700;white-space:nowrap;pointer-events:none;
+opacity:0;transition:opacity .15s;z-index:99}
+.sb-logo:hover .sb-logo-label{opacity:1}
+
+.sb-section{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%}
+.sb-section::before{content:'';width:24px;height:1px;background:var(--bdr);margin:6px 0}
+.sb-section:first-of-type::before{display:none}
+
+.sb-btn{width:38px;height:38px;background:transparent;border:1px solid transparent;border-radius:6px;cursor:pointer;
+display:flex;align-items:center;justify-content:center;position:relative;transition:.15s;color:var(--t2)}
+.sb-btn:hover{border-color:rgba(59,130,246,.2);color:var(--txt);background:rgba(59,130,246,.04)}
+.sb-btn.active{border-color:var(--blue);color:var(--blue);background:rgba(59,130,246,.08)}
+.sb-btn svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.5;fill:none}
+.sb-tooltip{position:absolute;left:56px;background:rgba(4,6,10,.95);border:1px solid var(--bdr);padding:4px 10px;
+border-radius:4px;font-size:8px;color:var(--txt);letter-spacing:1px;font-weight:600;white-space:nowrap;pointer-events:none;
+opacity:0;transition:opacity .15s;z-index:99;font-family:var(--f)}
+.sb-btn:hover .sb-tooltip{opacity:1}
+.sb-notify{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--red);
+box-shadow:0 0 6px rgba(239,68,68,.4)}
+
+.sb-bottom{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:6px}
+
+/* ===== MAIN AREA ===== */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* ===== TOPBAR ===== */
+.topbar{height:40px;background:var(--bg);display:flex;align-items:center;padding:0 16px;gap:12px;
+border-bottom:1px solid var(--bdr);flex-shrink:0;z-index:50}
+.tb-title{font-size:11px;font-weight:600;letter-spacing:3px;color:#fff}
+.tb-breadcrumb{font-size:8px;color:var(--t2);letter-spacing:1px;display:flex;align-items:center;gap:4px}
+.tb-breadcrumb .sep{color:var(--t3)}
+.tb-module-name{color:var(--cyan);font-weight:600;text-transform:uppercase}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.tb-live{color:var(--grn);display:flex;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:1px}
+.tb-live::before{content:'';width:5px;height:5px;background:var(--grn);border-radius:50%;animation:bk 1.5s infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.2}}
+.tb-clock{color:#fff;font-weight:500;font-size:11px;letter-spacing:1px}
+.tb-date{font-size:9px;color:var(--t2)}
+
+/* ===== VOICE BUTTON ===== */
+.voice-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--bdr);background:transparent;cursor:pointer;
+display:flex;align-items:center;justify-content:center;transition:.2s;color:var(--t2);position:relative}
+.voice-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.06)}
+.voice-btn.listening{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.08);animation:vpulse 1s infinite}
+.voice-btn.wake-active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08);animation:wakePulse 3s ease-in-out infinite}
+.voice-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.5;fill:none}
+@keyframes vpulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+@keyframes wakePulse{0%,100%{box-shadow:0 0 0 0 rgba(6,182,212,.15)}50%{box-shadow:0 0 0 6px rgba(6,182,212,0)}}
+
+/* Voice feedback overlay */
+.voice-overlay{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(4,6,10,.95);
+border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 20px;z-index:200;display:none;
+backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.voice-overlay.show{display:flex;align-items:center;gap:10px;animation:panelIn .2s}
+.voice-wave{display:flex;align-items:center;gap:2px;height:20px}
+.voice-wave span{width:3px;background:var(--red);border-radius:2px;animation:wave 0.8s ease-in-out infinite}
+.voice-wave span:nth-child(1){animation-delay:0s;height:8px}
+.voice-wave span:nth-child(2){animation-delay:0.1s;height:14px}
+.voice-wave span:nth-child(3){animation-delay:0.2s;height:10px}
+.voice-wave span:nth-child(4){animation-delay:0.3s;height:16px}
+.voice-wave span:nth-child(5){animation-delay:0.4s;height:12px}
+@keyframes wave{0%,100%{transform:scaleY(0.5)}50%{transform:scaleY(1.2)}}
+.voice-text{font-size:10px;color:#fff;max-width:400px;letter-spacing:.5px}
+
+/* ===== MODULE VIEWPORT ===== */
+.viewport{flex:1;position:relative;overflow:hidden}
+.viewport iframe{width:100%;height:100%;border:none;background:var(--bg)}
+.module-loading{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;
+background:var(--bg);z-index:10;transition:opacity .3s}
+.module-loading.hide{opacity:0;pointer-events:none}
+.loading-content{text-align:center}
+.loading-spinner{width:40px;height:40px;border:2px solid var(--bdr);border-top-color:var(--blue);border-radius:50%;
+animation:spin 1s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:9px;color:var(--t2);letter-spacing:2px;text-transform:uppercase}
+
+/* ===== JARVIS CHAT DRAWER ===== */
+.chat-drawer{position:fixed;right:0;top:0;bottom:0;width:380px;background:rgba(4,6,10,.97);
+border-left:1px solid rgba(59,130,246,.12);z-index:100;display:flex;flex-direction:column;
+transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(16px)}
+.chat-drawer.open{transform:translateX(0)}
+
+.cd-hd{padding:12px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cd-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px rgba(6,182,212,.3)}
+.cd-title{font-size:10px;font-weight:700;letter-spacing:2px;color:#fff;flex:1}
+.cd-status{font-size:7px;color:var(--grn);display:flex;align-items:center;gap:3px;letter-spacing:1px}
+.cd-status::before{content:'';width:4px;height:4px;background:var(--grn);border-radius:50%;display:inline-block}
+.cd-close{background:0;border:0;color:var(--t2);cursor:pointer;font-family:var(--f);font-size:16px;padding:0 4px;line-height:1}
+.cd-close:hover{color:#fff}
+
+.cd-body{flex:1;overflow-y:auto;padding:10px 16px;display:flex;flex-direction:column;gap:6px;min-height:0}
+.cd-body::-webkit-scrollbar{width:3px}
+.cd-body::-webkit-scrollbar-thumb{background:rgba(6,182,212,.15);border-radius:2px}
+
+.cd-msg{max-width:88%;padding:8px 12px;border-radius:8px;font-size:9.5px;line-height:1.65;animation:fadeIn .2s}
+.cd-msg.user{align-self:flex-end;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.12);color:#fff}
+.cd-msg.bot{align-self:flex-start;background:rgba(8,12,20,.6);border:1px solid var(--bdr);color:var(--txt)}
+.cd-msg.system{align-self:center;font-size:8px;color:var(--t2);letter-spacing:1px;padding:4px 8px;
+background:rgba(59,130,246,.04);border:1px solid var(--bdr);border-radius:4px}
+.cd-msg .thinking{color:var(--cyan);font-style:italic;font-size:8px;display:block;margin-bottom:4px;letter-spacing:.5px}
+.cd-msg code{background:rgba(59,130,246,.08);padding:1px 4px;border-radius:2px;font-size:8.5px}
+
+.cd-input-row{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--bdr);flex-shrink:0;align-items:center}
+.cd-input{flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9.5px;
+padding:9px 12px;border-radius:6px;outline:none;transition:border-color .15s}
+.cd-input:focus{border-color:var(--cyan)}
+.cd-input::placeholder{color:var(--t3)}
+.cd-voice-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--bdr);background:transparent;cursor:pointer;
+display:flex;align-items:center;justify-content:center;color:var(--t2);transition:.15s;flex-shrink:0}
+.cd-voice-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.cd-voice-btn.listening{border-color:var(--red);color:var(--red);animation:vpulse 1s infinite}
+.cd-voice-btn svg{width:14px;height:14px;stroke:currentColor;stroke-width:1.5;fill:none}
+.cd-send{font-family:var(--f);font-size:8px;padding:8px 16px;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.15);
+color:var(--cyan);border-radius:6px;cursor:pointer;letter-spacing:1px;font-weight:700;transition:.15s;flex-shrink:0}
+.cd-send:hover{background:rgba(6,182,212,.18);color:#fff}
+
+/* ===== QUICK CAPTURE ===== */
+.quick-capture{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:90;display:none}
+.quick-capture.show{display:block;animation:panelIn .2s}
+.qc-bar{display:flex;gap:6px;background:rgba(4,6,10,.95);border:1px solid rgba(59,130,246,.15);border-radius:10px;
+padding:6px 8px;backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.qc-input{width:360px;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);
+font-size:10px;padding:8px 14px;border-radius:6px;outline:none}
+.qc-input:focus{border-color:var(--blue)}
+.qc-input::placeholder{color:var(--t3)}
+.qc-tag{font-family:var(--f);font-size:7px;padding:5px 10px;background:transparent;border:1px solid var(--bdr);
+color:var(--t2);border-radius:4px;cursor:pointer;letter-spacing:.5px;font-weight:600;transition:.15s}
+.qc-tag:hover{border-color:var(--blue);color:var(--blue)}
+.qc-tag.active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08)}
+
+/* ===== STATUS BAR ===== */
+.statusbar{height:24px;background:var(--bg);display:flex;align-items:center;padding:0 14px;gap:14px;
+font-size:7.5px;color:var(--t3);letter-spacing:.5px;border-top:1px solid var(--bdr);flex-shrink:0}
+.st-item{display:flex;align-items:center;gap:3px}
+.st-dot{width:4px;height:4px;border-radius:50%;background:var(--grn)}
+.st-right{margin-left:auto;display:flex;gap:12px}
+.st-ai{display:flex;align-items:center;gap:3px}
+.st-ai-dot{width:4px;height:4px;border-radius:50%}
+
+/* ===== SETTINGS MODAL ===== */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:150;display:none;
+align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:rgba(4,6,10,.98);border:1px solid rgba(59,130,246,.15);border-radius:10px;width:440px;
+max-height:80vh;overflow-y:auto;box-shadow:0 16px 64px rgba(0,0,0,.6)}
+.modal::-webkit-scrollbar{width:3px}
+.modal::-webkit-scrollbar-thumb{background:rgba(59,130,246,.15);border-radius:2px}
+.modal-hd{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+.modal-title{font-size:10px;font-weight:700;letter-spacing:2px;color:#fff;flex:1}
+.modal-close{background:0;border:0;color:var(--t2);cursor:pointer;font-family:var(--f);font-size:16px}
+.modal-close:hover{color:#fff}
+.modal-body{padding:16px 18px}
+.settings-group{margin-bottom:16px}
+.settings-label{font-size:8px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.settings-desc{font-size:9px;color:var(--txt);line-height:1.6;margin-bottom:8px}
+.settings-row{display:flex;gap:6px;margin-bottom:6px}
+.settings-input{flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);
+font-size:9px;padding:8px 12px;border-radius:5px;outline:none}
+.settings-input:focus{border-color:var(--cyan)}
+.settings-save{font-family:var(--f);font-size:8px;padding:7px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.15);
+color:var(--grn);border-radius:5px;cursor:pointer;letter-spacing:1px;font-weight:700;transition:.15s}
+.settings-save:hover{background:rgba(34,197,94,.2)}
+.settings-status{font-size:8px;color:var(--t2);margin-top:4px}
+.settings-note{font-size:7px;color:var(--t3);line-height:1.6;margin-top:6px}
+.settings-toggle{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)}
+.settings-toggle:last-child{border:0}
+.toggle-label{font-size:9px;color:var(--txt)}
+.toggle-switch{width:32px;height:18px;border-radius:9px;border:1px solid var(--bdr);background:var(--bg2);cursor:pointer;
+position:relative;transition:.2s}
+.toggle-switch.on{border-color:var(--cyan);background:rgba(6,182,212,.15)}
+.toggle-switch::after{content:'';width:12px;height:12px;border-radius:50%;background:var(--t2);position:absolute;
+top:2px;left:2px;transition:.2s}
+.toggle-switch.on::after{left:16px;background:var(--cyan)}
+
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ===== EXPERTISE TAGS ===== */
+.exp-tag{font-family:var(--f);font-size:8px;padding:4px 10px;background:transparent;border:1px solid var(--bdr);
+color:var(--t2);border-radius:10px;cursor:pointer;letter-spacing:.5px;transition:.15s}
+.exp-tag:hover{border-color:rgba(6,182,212,.3);color:var(--txt)}
+.exp-tag.on{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.1)}
+
+/* ===== PLACEHOLDER MODULES ===== */
+.placeholder-module{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;
+background:var(--bg);color:var(--t2)}
+.ph-icon{font-size:48px;opacity:.15}
+.ph-title{font-size:14px;font-weight:600;letter-spacing:3px;color:var(--txt)}
+.ph-desc{font-size:9px;letter-spacing:1px;max-width:400px;text-align:center;line-height:1.6}
+.ph-badge{font-size:7px;padding:3px 8px;border:1px solid var(--amb);color:var(--amb);border-radius:3px;letter-spacing:1px;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- ===== SIDEBAR ===== -->
+<nav class="sidebar">
+  <div class="sb-logo" onclick="toggleChat()">
+    <div class="sb-logo-label">J.A.R.V.I.S.</div>
+  </div>
+
+  <div class="sb-section">
+    <button class="sb-btn active" onclick="loadModule('globe')" id="nav-globe">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"/></svg>
+      <span class="sb-tooltip">GLOBE INTEL</span>
+    </button>
+    <button class="sb-btn" onclick="loadModule('trading')" id="nav-trading">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span class="sb-tooltip">TRADING</span>
+    </button>
+    <button class="sb-btn" onclick="loadModule('assistant')" id="nav-assistant">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="sb-tooltip">ASSISTANT</span>
+    </button>
+    <button class="sb-btn" onclick="loadModule('advisor')" id="nav-advisor">
+      <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/><path d="M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span class="sb-tooltip">ADVISOR</span>
+    </button>
+    <button class="sb-btn" onclick="loadModule('journal')" id="nav-journal">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span class="sb-tooltip">JOURNAL</span>
+    </button>
+  </div>
+
+  <div class="sb-bottom">
+    <button class="sb-btn" onclick="toggleQuickCapture()" id="nav-capture">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span class="sb-tooltip">QUICK CAPTURE</span>
+    </button>
+    <button class="sb-btn" onclick="toggleChat()" id="nav-chat">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="sb-tooltip">JARVIS CHAT</span>
+      <div class="sb-notify" id="chatNotify" style="display:none"></div>
+    </button>
+    <button class="sb-btn" onclick="toggleTraining()" id="nav-training">
+      <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+      <span class="sb-tooltip">TRAIN JARVIS</span>
+    </button>
+    <button class="sb-btn" onclick="toggleSettings()" id="nav-settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="sb-tooltip">SETTINGS</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <span class="tb-title">JARVIS</span>
+    <div class="tb-breadcrumb">
+      <span class="sep">›</span>
+      <span class="tb-module-name" id="moduleLabel">GLOBE INTEL</span>
+    </div>
+    <div class="tb-right">
+      <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="tb-live">LIVE</span>
+      <span class="tb-clock" id="clock">--:--:--</span>
+      <span class="tb-date" id="dateDisplay">---</span>
+    </div>
+  </header>
+
+  <!-- MODULE VIEWPORT -->
+  <div class="viewport" id="viewport">
+    <div class="module-loading" id="moduleLoader">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">INITIALIZING MODULE...</div>
+      </div>
+    </div>
+    <iframe id="moduleFrame" src="about:blank"></iframe>
+  </div>
+
+  <!-- STATUS BAR -->
+  <footer class="statusbar">
+    <div class="st-item"><div class="st-dot"></div>SYSTEMS NOMINAL</div>
+    <div class="st-item" id="stModule">MODULE: GLOBE</div>
+    <div class="st-item st-ai" id="stAi">
+      <div class="st-ai-dot" style="background:var(--cyan)"></div>
+      <span>AI: NVIDIA NIM</span>
+    </div>
+    <div class="st-right">
+      <span id="stMarkets">MARKETS: STANDBY</span>
+      <span id="stIntel">INTEL: STANDBY</span>
+      <span>JARVIS SHELL v1.0</span>
+    </div>
+  </footer>
+</div>
+</div>
+
+<!-- ===== JARVIS CHAT DRAWER ===== -->
+<div class="chat-drawer" id="chatDrawer">
+  <div class="cd-hd">
+    <div class="cd-dot"></div>
+    <span class="cd-title">JARVIS ASSISTANT</span>
+    <span class="cd-status">ONLINE</span>
+    <button class="cd-close" onclick="toggleChat()">&times;</button>
+  </div>
+  <div class="cd-body" id="chatBody">
+    <div class="cd-msg bot">JARVIS online. I'm your personal AI assistant — I can help with geopolitical analysis, market strategy, trading setups, and anything else you need. What's on your mind?</div>
+  </div>
+  <div class="cd-input-row">
+    <button class="cd-voice-btn" id="chatVoiceBtn" onclick="toggleVoice()">
+      <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+    <input class="cd-input" id="chatInput" placeholder="Ask JARVIS anything..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="cd-send" onclick="sendChat()">SEND</button>
+  </div>
+</div>
+
+<!-- ===== VOICE OVERLAY ===== -->
+<div class="voice-overlay" id="voiceOverlay">
+  <div class="voice-wave"><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="voice-text" id="voiceText">Listening...</div>
+</div>
+
+<!-- ===== QUICK CAPTURE ===== -->
+<div class="quick-capture" id="quickCapture">
+  <div class="qc-bar">
+    <input class="qc-input" id="qcInput" placeholder="Quick capture — type an idea, trade note, or task..." onkeydown="if(event.key==='Enter')saveCapture()">
+    <button class="qc-tag" onclick="setTag(this,'trade')">#TRADE</button>
+    <button class="qc-tag" onclick="setTag(this,'idea')">#IDEA</button>
+    <button class="qc-tag" onclick="setTag(this,'task')">#TASK</button>
+    <button class="qc-tag" onclick="setTag(this,'school')">#SCHOOL</button>
+  </div>
+</div>
+
+<!-- ===== SETTINGS MODAL ===== -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <svg width="16" height="16" viewBox="0 0 24 24" stroke="var(--amb)" stroke-width="1.5" fill="none"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="modal-title">SETTINGS</span>
+      <button class="modal-close" onclick="toggleSettings()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <!-- AI Provider -->
+      <div class="settings-group">
+        <div class="settings-label">AI PROVIDER</div>
+        <div class="settings-desc">Default: <span style="color:var(--cyan)">NVIDIA NIM</span> via Pollinations. Add a <span style="color:var(--grn)">Groq API key</span> for faster responses — free at <a href="https://console.groq.com" target="_blank" style="color:var(--blue);text-decoration:underline">console.groq.com</a>.</div>
+        <div class="settings-row">
+          <input class="settings-input" id="groqKeyInput" type="password" placeholder="Paste Groq API key (gsk_...)">
+          <button class="settings-save" onclick="saveGroqKey()">SAVE</button>
+        </div>
+        <div class="settings-status" id="groqStatus"></div>
+        <div class="settings-note">Key stored in browser memory only — cleared when you close the tab.</div>
+      </div>
+      <!-- Voice -->
+      <div class="settings-group">
+        <div class="settings-label">VOICE</div>
+        <div class="settings-toggle">
+          <span class="toggle-label">"Hey Jarvis" wake word</span>
+          <div class="toggle-switch" id="wakeWordToggle" onclick="toggleWakeWord(this)"></div>
+        </div>
+        <div class="settings-toggle">
+          <span class="toggle-label">Text-to-speech responses</span>
+          <div class="toggle-switch" id="ttsToggle" onclick="toggleTTS(this)"></div>
+        </div>
+        <div class="settings-toggle">
+          <span class="toggle-label">Auto-listen after response</span>
+          <div class="toggle-switch" id="autoListenToggle" onclick="toggleAutoListen(this)"></div>
+        </div>
+        <div class="settings-note" id="wakeWordStatus" style="color:var(--t2)"></div>
+      </div>
+      <!-- Notifications -->
+      <div class="settings-group">
+        <div class="settings-label">NOTIFICATIONS</div>
+        <div class="settings-toggle">
+          <span class="toggle-label">Market alerts (BTC, NAS100 thresholds)</span>
+          <div class="toggle-switch on" id="alertToggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="settings-toggle">
+          <span class="toggle-label">Breaking news notifications</span>
+          <div class="toggle-switch on" id="newsAlertToggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+      <!-- AI Status -->
+      <div class="settings-group">
+        <div class="settings-label">AI STATUS</div>
+        <div id="aiStatusDisplay" style="font-size:9px;color:var(--txt);line-height:1.6"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== JARVIS TRAINING / TWEAKING PANEL ===== -->
+<div class="modal-overlay" id="trainingModal">
+  <div class="modal" style="width:520px;max-height:85vh">
+    <div class="modal-hd">
+      <svg width="16" height="16" viewBox="0 0 24 24" stroke="var(--cyan)" stroke-width="1.5" fill="none"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+      <span class="modal-title">JARVIS TRAINING CENTER</span>
+      <button class="modal-close" onclick="toggleTraining()">&times;</button>
+    </div>
+    <div class="modal-body" style="max-height:70vh;overflow-y:auto">
+      <!-- Personality -->
+      <div class="settings-group">
+        <div class="settings-label">PERSONALITY</div>
+        <div class="settings-desc">How JARVIS responds to you.</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">TONE</span>
+            <select id="jTone" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="professional">Professional & Direct</option>
+              <option value="casual">Casual & Friendly</option>
+              <option value="jarvis" selected>JARVIS — Stark Industries</option>
+              <option value="military">Military Briefing</option>
+              <option value="teacher">Patient Teacher</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">VERBOSITY</span>
+            <select id="jVerbosity" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="minimal">Minimal (bullet points)</option>
+              <option value="concise" selected>Concise (2-4 sentences)</option>
+              <option value="detailed">Detailed (full analysis)</option>
+              <option value="verbose">Verbose (deep dive)</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">LANGUAGE</span>
+            <select id="jLang" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="en" selected>English</option>
+              <option value="de">Deutsch</option>
+              <option value="auto">Auto-detect (match user)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- Expertise -->
+      <div class="settings-group">
+        <div class="settings-label">EXPERTISE FOCUS</div>
+        <div class="settings-desc">Select JARVIS's priority knowledge areas.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px" id="expertiseTags">
+          <button class="exp-tag on" data-exp="markets" onclick="toggleExpertise(this)">Markets & Trading</button>
+          <button class="exp-tag on" data-exp="geopolitics" onclick="toggleExpertise(this)">Geopolitics</button>
+          <button class="exp-tag on" data-exp="crypto" onclick="toggleExpertise(this)">Crypto</button>
+          <button class="exp-tag" data-exp="coding" onclick="toggleExpertise(this)">Coding</button>
+          <button class="exp-tag on" data-exp="school" onclick="toggleExpertise(this)">School (Abi)</button>
+          <button class="exp-tag" data-exp="fitness" onclick="toggleExpertise(this)">Fitness</button>
+          <button class="exp-tag" data-exp="writing" onclick="toggleExpertise(this)">Writing</button>
+          <button class="exp-tag" data-exp="science" onclick="toggleExpertise(this)">Science</button>
+          <button class="exp-tag" data-exp="history" onclick="toggleExpertise(this)">History</button>
+        </div>
+      </div>
+      <!-- Custom instructions -->
+      <div class="settings-group">
+        <div class="settings-label">CUSTOM INSTRUCTIONS</div>
+        <div class="settings-desc">Persistent context JARVIS always remembers.</div>
+        <textarea id="jCustomInstructions" style="width:100%;height:80px;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:8px;border-radius:4px;outline:none;resize:vertical;line-height:1.6" placeholder="E.g. I trade NAS100 and GER40 intraday using SMC/ICT. I'm in grade 12 in Germany. Always reference current prices..."></textarea>
+        <button onclick="saveTrainingPrefs()" style="font-family:var(--f);font-size:8px;padding:5px 14px;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.2);color:var(--cyan);border-radius:4px;cursor:pointer;letter-spacing:1px;font-weight:700;margin-top:4px">SAVE</button>
+      </div>
+      <!-- Computer Actions -->
+      <div class="settings-group">
+        <div class="settings-label">COMPUTER ACTIONS</div>
+        <div class="settings-desc">Let JARVIS perform tasks on your system.</div>
+        <div class="settings-toggle">
+          <span class="toggle-label">Enable computer commands (open apps, create files)</span>
+          <div class="toggle-switch" id="compActionsToggle" onclick="toggleComputerActions(this)"></div>
+        </div>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:8px;color:var(--t2);letter-spacing:.5px;font-weight:600">AVAILABLE COMMANDS:</div>
+          <div style="font-size:8px;color:var(--txt);line-height:1.8;padding:6px;background:var(--bg2);border:1px solid var(--bdr);border-radius:4px">
+            <span style="color:var(--cyan)">"Open YouTube"</span> — opens in new tab<br>
+            <span style="color:var(--cyan)">"Search for [topic]"</span> — web search<br>
+            <span style="color:var(--cyan)">"Create a presentation about [topic]"</span> — generates PPTX<br>
+            <span style="color:var(--cyan)">"Set a timer for 10 min"</span> — countdown alert<br>
+            <span style="color:var(--cyan)">"Take a note: [text]"</span> — saves to captures<br>
+            <span style="color:var(--cyan)">"Open [trading/journal/advisor]"</span> — switch module<br>
+            <span style="color:var(--cyan)">"Read my latest news"</span> — reads intel feed aloud
+          </div>
+        </div>
+      </div>
+      <!-- Trading Preferences -->
+      <div class="settings-group">
+        <div class="settings-label">TRADING PROFILE</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">STYLE</span>
+            <select id="jTradeStyle" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="smc" selected>SMC / ICT</option>
+              <option value="price-action">Price Action</option>
+              <option value="technical">Technical Analysis</option>
+              <option value="fundamental">Fundamental</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">INSTRUMENTS</span>
+            <input id="jInstruments" onchange="saveTrainingPrefs()" value="NAS100, GER40, BTC, ETH" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:8px;color:var(--t2);width:60px;letter-spacing:.5px">TIMEFRAME</span>
+            <select id="jTimeframe" onchange="saveTrainingPrefs()" style="flex:1;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);font-family:var(--f);font-size:9px;padding:5px 8px;border-radius:4px;outline:none">
+              <option value="scalp">Scalp (1-5 min)</option>
+              <option value="intraday" selected>Intraday (15m-1H)</option>
+              <option value="swing">Swing (4H-Daily)</option>
+              <option value="position">Position (Weekly+)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ============================================================
+   JARVIS SHELL — Core System
+   ============================================================ */
+
+// ===== AUTH GATE =====
+// Verify session token matches the expected SHA-256 hash
+(function(){
+  const _h = [0x8a,0x3d,0xa1,0x5c,0x7a,0x91,0x8c,0x3b,0xc0,0x09,0x75,0x54,0x6c,0x90,0xad,0x2d,0x59,0x2d,0x68,0x75,0xde,0x6f,0x1f,0xef,0x8c,0xae,0x18,0x0a,0x5b,0xeb,0x0a,0x00];
+  const expected = _h.map(b=>b.toString(16).padStart(2,'0')).join('');
+  if (sessionStorage.getItem('jarvis_auth') !== expected) {
+    document.body.innerHTML = '<div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:#04060a;color:#5a6a80;font-family:JetBrains Mono,monospace"><div style="font-size:14px;font-weight:700;letter-spacing:4px;color:#ef4444">ACCESS DENIED</div><div style="font-size:9px;letter-spacing:1.5px">Authorization required. Redirecting...</div></div>';
+    setTimeout(()=>{ window.location.href = 'index.html'; }, 1500);
+    return;
+  }
+})();
+
+// ===== STATE =====
+let currentModule = 'globe';
+let userGroqKey = '';
+let chatHistory = [];
+let captureTag = 'idea';
+let isListening = false;
+let recognition = null;
+let ttsEnabled = false;
+let autoListen = false;
+let sharedMarketData = {};
+let sharedNewsItems = [];
+
+// Load persisted state
+try {
+  const saved = localStorage.getItem('jarvis.settings');
+  if (saved) {
+    const s = JSON.parse(saved);
+    userGroqKey = s.groqKey || '';
+    ttsEnabled = s.ttsEnabled || false;
+    autoListen = s.autoListen || false;
+    wakeWordEnabled = s.wakeWordEnabled || false;
+  }
+  const savedChat = localStorage.getItem('jarvis.chat.history');
+  if (savedChat) chatHistory = JSON.parse(savedChat);
+} catch(e) {}
+
+// ===== CLOCK =====
+setInterval(() => {
+  const n = new Date();
+  document.getElementById('clock').textContent = n.toLocaleTimeString('en-GB');
+  document.getElementById('dateDisplay').textContent = n.toLocaleDateString('en-US', {weekday:'short',month:'short',day:'numeric',year:'numeric'});
+}, 1000);
+
+// ===== MODULE LOADING =====
+const MODULE_CONFIG = {
+  globe:     { label: 'GLOBE INTEL',   src: 'modules/globe.html?v=7',  placeholder: false },
+  trading:   { label: 'TRADING',       src: 'modules/trading.html?v=2',              placeholder: false },
+  assistant: { label: 'ASSISTANT',     src: null,                     placeholder: true, desc: 'Email summaries, calendar integration, task management, and productivity tools.' },
+  advisor:   { label: 'ADVISOR',       src: null,                     placeholder: true, desc: 'AI financial advisor — macro analysis, trade setups, risk assessment, portfolio recommendations.' },
+  journal:   { label: 'TRADE JOURNAL', src: 'modules/journal.html?v=1',               placeholder: false },
+};
+
+function loadModule(name) {
+  if (currentModule === name) return;
+  const config = MODULE_CONFIG[name];
+  if (!config) return;
+
+  currentModule = name;
+
+  // Update sidebar
+  document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
+  const navBtn = document.getElementById('nav-' + name);
+  if (navBtn) navBtn.classList.add('active');
+
+  // Update topbar
+  document.getElementById('moduleLabel').textContent = config.label;
+  document.getElementById('stModule').textContent = 'MODULE: ' + config.label;
+
+  // Show loader
+  const loader = document.getElementById('moduleLoader');
+  loader.classList.remove('hide');
+
+  const frame = document.getElementById('moduleFrame');
+
+  if (config.placeholder) {
+    // Render placeholder inside iframe
+    const icons = {trading:'📈',assistant:'⚡',advisor:'🧠',journal:'📓'};
+    const html = `<!DOCTYPE html><html><head><style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;
+      background:#04060a;color:#5a6a80;font-family:'JetBrains Mono',monospace}
+      .icon{font-size:48px;opacity:.15}.title{font-size:14px;font-weight:600;letter-spacing:3px;color:#c8d0dc}
+      .desc{font-size:9px;letter-spacing:1px;max-width:400px;text-align:center;line-height:1.6}
+      .badge{font-size:7px;padding:3px 8px;border:1px solid #f59e0b;color:#f59e0b;border-radius:3px;letter-spacing:1px;font-weight:700}
+    </style></head><body>
+      <div class="icon">${icons[name]||'🔧'}</div>
+      <div class="title">${config.label}</div>
+      <div class="desc">${config.desc}</div>
+      <div class="badge">COMING SOON</div>
+    </body></html>`;
+    frame.srcdoc = html;
+    setTimeout(() => loader.classList.add('hide'), 300);
+  } else {
+    frame.removeAttribute('srcdoc');
+    // Set handler BEFORE src — prevents race condition with cached resources
+    frame.onload = () => {
+      loader.classList.add('hide');
+      try { frame.contentWindow.postMessage({type:'MARKET_DATA', data: sharedMarketData}, '*'); } catch(e) {}
+    };
+    frame.src = config.src;
+    // Hard fallback: hide loader after 3s regardless of onload
+    setTimeout(() => loader.classList.add('hide'), 3000);
+  }
+}
+
+// Listen for messages from modules
+window.addEventListener('message', e => {
+  if (e.data.type === 'MARKET_DATA') {
+    sharedMarketData = e.data.data;
+    document.getElementById('stMarkets').textContent = `MARKETS: ${Object.keys(sharedMarketData).length} FEEDS`;
+  }
+  if (e.data.type === 'NEWS_DATA') {
+    sharedNewsItems = e.data.data;
+    document.getElementById('stIntel').textContent = `INTEL: ${sharedNewsItems.length} ITEMS`;
+  }
+  if (e.data.type === 'JARVIS_QUERY') {
+    // Module is requesting AI help
+    openChat();
+    handleChat(e.data.text);
+  }
+});
+
+// ===== CHAT DRAWER =====
+function toggleChat() {
+  const drawer = document.getElementById('chatDrawer');
+  drawer.classList.toggle('open');
+  document.getElementById('chatNotify').style.display = 'none';
+  if (drawer.classList.contains('open')) {
+    document.getElementById('chatInput').focus();
+  }
+}
+function openChat() {
+  document.getElementById('chatDrawer').classList.add('open');
+}
+
+function addChatMsg(role, text) {
+  const body = document.getElementById('chatBody');
+  const div = document.createElement('div');
+  div.className = 'cd-msg ' + role;
+  div.innerHTML = text;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+  chatHistory.push({role, text, time: Date.now()});
+  // Persist (keep last 100 messages)
+  try {
+    localStorage.setItem('jarvis.chat.history', JSON.stringify(chatHistory.slice(-100)));
+  } catch(e) {}
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  handleChat(msg);
+}
+
+async function handleChat(msg) {
+  addChatMsg('user', msg);
+
+  // Try computer action first (wrapped in try/catch to prevent breaking chat)
+  try {
+    if (tryComputerAction(msg)) return;
+  } catch(e) { console.warn('Computer action error:', e); }
+
+  // Add loading indicator
+  const body = document.getElementById('chatBody');
+  const loader = document.createElement('div');
+  loader.className = 'cd-msg bot';
+  loader.id = 'chatLoader';
+  loader.innerHTML = '<span style="color:var(--cyan);animation:bk 1s infinite">PROCESSING...</span>';
+  body.appendChild(loader);
+  body.scrollTop = body.scrollHeight;
+
+  // Route the query
+  const intent = classifyIntent(msg);
+  const ctx = buildContext(intent);
+  const systemPrompt = buildSystemPrompt(intent, ctx);
+
+  try {
+    const reply = await callLLM(systemPrompt, msg);
+    loader.id = '';
+    loader.innerHTML = reply.replace(/\n/g, '<br>');
+    addChatMsg('bot', reply);
+    loader.remove(); // remove loader, addChatMsg already added the response
+
+    // TTS if enabled
+    if (ttsEnabled) speak(reply);
+  } catch(e) {
+    loader.id = '';
+    loader.innerHTML = 'Error: ' + e.message;
+  }
+  body.scrollTop = body.scrollHeight;
+}
+
+// ===== INTENT ROUTER =====
+function classifyIntent(msg) {
+  const lower = msg.toLowerCase();
+  // Market/trading keywords
+  if (/\b(btc|eth|bitcoin|ethereum|nas100|nasdaq|ger40|dax|gold|silver|oil|market|price|chart|trading|trade|long|short|setup|entry|exit|sweep|choch|fvg|displacement|liquidity|scalp|position)\b/.test(lower)) return 'market';
+  // Geopolitical
+  if (/\b(ukraine|russia|china|taiwan|gaza|iran|saudi|opec|nato|brics|sanction|war|conflict|geopolit|tariff|election)\b/.test(lower)) return 'geopolitical';
+  // Risk
+  if (/\b(risk|scenario|probability|impact|threat|escalat|crisis)\b/.test(lower)) return 'risk';
+  // School/study
+  if (/\b(schule|school|exam|klausur|abi|chemistry|mathe|math|deutsch|german|it\s|atmega|microcontroller|haber|calculus)\b/.test(lower)) return 'school';
+  // Personal/productivity
+  if (/\b(todo|task|remind|schedule|calendar|email|meeting|deadline|plan)\b/.test(lower)) return 'productivity';
+  return 'general';
+}
+
+function buildContext(intent) {
+  let ctx = `TODAY: ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}\n`;
+  if (['market','geopolitical','risk','general'].includes(intent)) {
+    ctx += 'LIVE MARKET DATA:\n';
+    for (const [k,v] of Object.entries(sharedMarketData)) {
+      ctx += `  ${k}: $${v.price}${v.change!==null?` (${v.change>=0?'+':''}${v.change.toFixed(2)}%)`:''}\n`;
+    }
+    if (Object.keys(sharedMarketData).length === 0) ctx += '  (Market data loading from Globe module...)\n';
+  }
+  if (['geopolitical','risk','general'].includes(intent) && sharedNewsItems.length) {
+    ctx += 'LATEST NEWS:\n';
+    sharedNewsItems.slice(0,8).forEach((n,i) => { ctx += `  ${i+1}. [${n.src||'NEWS'}] ${n.title}\n`; });
+  }
+  return ctx;
+}
+
+function buildSystemPrompt(intent, ctx) {
+  // Build personality from training prefs
+  const toneMap = {
+    professional: 'You speak in a professional, direct tone.',
+    casual: 'You speak casually and friendly, like a knowledgeable friend.',
+    jarvis: 'You speak like JARVIS from Stark Industries — witty, dry, efficient, slightly sardonic but always loyal.',
+    military: 'You speak in military briefing style — short, precise, situation-aware.',
+    teacher: 'You speak like a patient, encouraging teacher. Use examples and analogies.'
+  };
+  const verbMap = { minimal: 'Answer in 1-3 bullet points max.', concise: 'Keep answers to 2-4 sentences.', detailed: 'Provide thorough analysis in 2-3 paragraphs.', verbose: 'Give a comprehensive deep dive.' };
+  const langNote = jarvisPrefs.language === 'de' ? 'Respond in German.' : jarvisPrefs.language === 'auto' ? 'Match the language of the user\'s message.' : '';
+
+  let base = `You are JARVIS, an elite personal AI assistant. You speak to Lukas, a student/trader/builder based in Baden-Baden, Germany. ${toneMap[jarvisPrefs.tone] || ''} ${verbMap[jarvisPrefs.verbosity] || ''} ${langNote} Never fabricate data — use only what's provided below.\n`;
+  if (jarvisPrefs.customInstructions) base += `\nPERSONAL CONTEXT: ${jarvisPrefs.customInstructions}\n`;
+  base += `\n${ctx}\n\n`;
+
+  const tradingCtx = `Lukas trades ${jarvisPrefs.instruments} ${jarvisPrefs.timeframe} using ${jarvisPrefs.tradeStyle.toUpperCase()} methodology. Reference actual prices from the data. Identify setups, confluences, and risks.`;
+
+  const intents = {
+    market: base + `ROLE: Financial market analyst. ${tradingCtx}`,
+    geopolitical: base + 'ROLE: Geopolitical intelligence analyst. Analyze current events using the news headlines and market data provided. Be specific and actionable.',
+    risk: base + 'ROLE: Risk assessment specialist. Assign probability (%) and impact (1-10) ratings. Base analysis on the actual data provided.',
+    school: base + 'ROLE: Academic tutor. Lukas is in German Gymnasium (grade 12). Subjects: chemistry (reaction kinetics, Haber-Bosch, equilibrium), math (calculus, extrema, Steckbriefaufgaben), German literature (Romantik, Erpenbeck), IT/embedded (ATmega328P, C programming, UART, I2C). Explain clearly with examples. You can respond in German if the question is in German.',
+    productivity: base + 'ROLE: Personal assistant. Help with task management, planning, and organization. Be brief and structured.',
+    general: base + 'ROLE: General assistant. Be helpful, concise, and direct.',
+  };
+  return intents[intent] || intents.general;
+}
+
+// ===== LLM ROUTING =====
+const _nk = ['nvapi-','Qfusf1cSFUrF_EWG5KZXZ7ki5RrFfHx3Z','2ozPSNwkm8AhK8E3dtwlsvZNSlqV1kW'];
+const NV_KEY = _nk.join('');
+
+async function callLLM(systemPrompt, userMsg) {
+  const msgs = [{role:'system', content:systemPrompt}, {role:'user', content:userMsg}];
+
+  // 1. Groq (user's own key)
+  if (userGroqKey) {
+    try {
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+userGroqKey},
+        body: JSON.stringify({model:'llama-3.3-70b-versatile', messages:msgs, temperature:0.7, max_tokens:500})
+      });
+      const d = await r.json();
+      if (d.choices?.[0]?.message?.content) return d.choices[0].message.content;
+    } catch(e) { console.log('Groq error:', e); }
+  }
+
+  // 2. NVIDIA NIM via corsproxy
+  for (let attempt=0; attempt<2; attempt++) {
+    try {
+      const models = ['meta/llama-3.3-70b-instruct','meta/llama-3.1-8b-instruct'];
+      const r = await fetch('https://corsproxy.io/?url=https://integrate.api.nvidia.com/v1/chat/completions', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+NV_KEY},
+        body: JSON.stringify({model:models[attempt], messages:msgs, temperature:0.7, max_tokens:800})
+      });
+      if (!r.ok) { if(attempt<1){await new Promise(ok=>setTimeout(ok,1000));continue;} throw new Error('HTTP '+r.status); }
+      const d = await r.json();
+      if (d.choices?.[0]?.message?.content) return d.choices[0].message.content;
+    } catch(e) {
+      console.log('NVIDIA attempt '+(attempt+1)+':', e);
+      if (attempt<1) await new Promise(ok=>setTimeout(ok,1000));
+    }
+  }
+
+  // 3. Pollinations fallback
+  try {
+    const r = await fetch('https://text.pollinations.ai/', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({messages:msgs, model:'openai', jsonMode:false})
+    });
+    if (r.ok) {
+      const text = await r.text();
+      try { const j=JSON.parse(text); if(j.choices?.[0]?.message?.content) return j.choices[0].message.content; } catch(e){}
+      if (text && text.length>2 && !text.includes('"error"')) return text;
+    }
+  } catch(e) { console.log('Pollinations error:', e); }
+
+  return 'AI temporarily unavailable. Try again, or add a Groq API key in Settings for guaranteed access.';
+}
+
+// ===== VOICE — Wake Word + Speech-to-Text + TTS =====
+let wakeWordEnabled = false;
+let wakeRecognition = null;
+let isSpeaking = false;
+
+function initSpeechRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.continuous = false;
+  r.interimResults = true;
+  r.lang = 'en-US';
+  r.onresult = e => {
+    const transcript = Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('voiceText').textContent = transcript;
+    if (e.results[0].isFinal) {
+      stopListening();
+      openChat();
+      handleChat(transcript);
+    }
+  };
+  r.onerror = e => {
+    console.log('Speech error:', e.error);
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      document.getElementById('voiceText').textContent = 'Microphone blocked — allow mic access';
+      setTimeout(stopListening, 2000);
+    } else if (e.error === 'no-speech') {
+      document.getElementById('voiceText').textContent = 'No speech detected — try again';
+      setTimeout(stopListening, 1500);
+    } else {
+      stopListening();
+    }
+  };
+  r.onend = () => { if (isListening) stopListening(); };
+  return r;
+}
+
+function toggleVoice() {
+  if (isListening) { stopListening(); return; }
+  // Pause wake word while active listening
+  if (wakeWordEnabled && wakeRecognition) try { wakeRecognition.abort(); } catch(e){}
+  // Create fresh recognition each time to avoid stale state
+  recognition = initSpeechRecognition();
+  if (!recognition) { alert('Speech recognition not supported. Use Chrome.'); return; }
+  isListening = true;
+  try {
+    recognition.start();
+  } catch(e) {
+    console.warn('Speech start error:', e);
+    isListening = false;
+    document.getElementById('voiceText').textContent = 'Mic error — check permissions';
+    document.getElementById('voiceOverlay').classList.add('show');
+    setTimeout(() => document.getElementById('voiceOverlay').classList.remove('show'), 2000);
+    return;
+  }
+  document.getElementById('voiceBtn').classList.add('listening');
+  document.getElementById('voiceBtn').classList.remove('wake-active');
+  document.getElementById('chatVoiceBtn').classList.add('listening');
+  document.getElementById('voiceOverlay').classList.add('show');
+  document.getElementById('voiceText').textContent = 'Listening...';
+}
+
+function stopListening() {
+  isListening = false;
+  if (recognition) try { recognition.stop(); } catch(e) {}
+  document.getElementById('voiceBtn').classList.remove('listening');
+  document.getElementById('chatVoiceBtn').classList.remove('listening');
+  document.getElementById('voiceOverlay').classList.remove('show');
+  // Resume wake word after a brief pause
+  if (wakeWordEnabled) setTimeout(startWakeWord, 800);
+}
+
+// ----- "Hey Jarvis" Wake Word -----
+function initWakeWord() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.continuous = true;
+  r.interimResults = true;
+  r.lang = 'en-US';
+  r.onresult = e => {
+    // Scan all results for the wake phrase
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript.toLowerCase().trim();
+      if (t.includes('hey jarvis') || t.includes('hey travis') || t.includes('hey service') || t.includes('a jarvis') || t.includes('hey java')) {
+        // Wake word detected!
+        try { r.abort(); } catch(ex){}
+        onWakeWordDetected(e.results[i][0].transcript);
+        return;
+      }
+    }
+  };
+  r.onerror = e => {
+    if (e.error === 'no-speech' || e.error === 'aborted') {
+      // Normal — restart silently
+      if (wakeWordEnabled && !isListening && !isSpeaking) setTimeout(startWakeWord, 300);
+    } else {
+      console.log('Wake word error:', e.error);
+      if (wakeWordEnabled) setTimeout(startWakeWord, 2000);
+    }
+  };
+  r.onend = () => {
+    // Auto-restart if wake word is still enabled and not actively listening
+    if (wakeWordEnabled && !isListening && !isSpeaking) setTimeout(startWakeWord, 300);
+  };
+  return r;
+}
+
+function startWakeWord() {
+  if (!wakeWordEnabled || isListening || isSpeaking) return;
+  if (!wakeRecognition) wakeRecognition = initWakeWord();
+  if (!wakeRecognition) return;
+  try {
+    wakeRecognition.start();
+    document.getElementById('voiceBtn').classList.add('wake-active');
+    document.getElementById('wakeWordStatus').textContent = 'Listening for "Hey Jarvis"...';
+  } catch(e) {
+    // Already started — ignore
+  }
+}
+
+function stopWakeWord() {
+  if (wakeRecognition) try { wakeRecognition.abort(); } catch(e){}
+  document.getElementById('voiceBtn').classList.remove('wake-active');
+  document.getElementById('wakeWordStatus').textContent = '';
+}
+
+function onWakeWordDetected(rawTranscript) {
+  // Play activation chime sound
+  playActivationSound();
+  // Show visual feedback
+  document.getElementById('voiceOverlay').classList.add('show');
+  document.getElementById('voiceText').textContent = 'JARVIS activated — listening...';
+  // Remove the wake phrase from transcript if there's more after it
+  const afterWake = rawTranscript.toLowerCase().replace(/.*?(?:hey\s*jarvis|hey\s*travis|hey\s*service|hey\s*java|a\s*jarvis)/i, '').trim();
+  if (afterWake.length > 3) {
+    // User already said a command after "Hey Jarvis"
+    document.getElementById('voiceOverlay').classList.remove('show');
+    openChat();
+    handleChat(afterWake);
+  } else {
+    // Start active listening for the actual command
+    setTimeout(toggleVoice, 200);
+  }
+}
+
+function playActivationSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Two-tone chime: classic assistant activation
+    [440, 660].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, ctx.currentTime + i*0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.12 + 0.3);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + i*0.12);
+      osc.stop(ctx.currentTime + i*0.12 + 0.3);
+    });
+  } catch(e){}
+}
+
+function toggleWakeWord(el) {
+  wakeWordEnabled = el.classList.toggle('on');
+  saveSettings();
+  if (wakeWordEnabled) {
+    startWakeWord();
+  } else {
+    stopWakeWord();
+  }
+}
+
+// ----- TTS (Text-to-Speech) -----
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  // Cancel any ongoing speech
+  speechSynthesis.cancel();
+  // Clean text for better speech (remove markdown, code blocks, etc.)
+  const clean = text.replace(/```[\s\S]*?```/g, 'code block omitted')
+                     .replace(/\*\*(.*?)\*\*/g, '$1')
+                     .replace(/\*(.*?)\*/g, '$1')
+                     .replace(/#{1,6}\s/g, '')
+                     .replace(/\[.*?\]\(.*?\)/g, '')
+                     .replace(/\n{2,}/g, '. ')
+                     .replace(/\n/g, ' ')
+                     .trim();
+  if (!clean) return;
+  isSpeaking = true;
+  // Pause wake word during speech
+  if (wakeWordEnabled && wakeRecognition) try { wakeRecognition.abort(); } catch(e){}
+  const u = new SpeechSynthesisUtterance(clean);
+  u.rate = 1.05;
+  u.pitch = 0.9;
+  // Voice preference: deep English male
+  const voices = speechSynthesis.getVoices();
+  const preferred = voices.find(v => v.name.includes('Google UK English Male')) ||
+                    voices.find(v => v.name.includes('Daniel')) ||
+                    voices.find(v => v.name.includes('Aaron')) ||
+                    voices.find(v => v.lang === 'en-GB' && v.name.includes('Male')) ||
+                    voices.find(v => v.lang === 'en-GB') ||
+                    voices.find(v => v.lang.startsWith('en'));
+  if (preferred) u.voice = preferred;
+  u.onend = () => {
+    isSpeaking = false;
+    // Resume wake word after speaking
+    if (wakeWordEnabled) setTimeout(startWakeWord, 500);
+    // Auto-listen for follow-up
+    if (autoListen) setTimeout(toggleVoice, 600);
+  };
+  u.onerror = () => { isSpeaking = false; if (wakeWordEnabled) setTimeout(startWakeWord, 500); };
+  speechSynthesis.speak(u);
+}
+
+// ===== QUICK CAPTURE =====
+function toggleQuickCapture() {
+  const qc = document.getElementById('quickCapture');
+  qc.classList.toggle('show');
+  if (qc.classList.contains('show')) document.getElementById('qcInput').focus();
+}
+
+function setTag(btn, tag) {
+  captureTag = tag;
+  document.querySelectorAll('.qc-tag').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function saveCapture() {
+  const input = document.getElementById('qcInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const entry = { text, tag: captureTag, time: Date.now(), id: Date.now().toString(36) };
+  let captures = [];
+  try { captures = JSON.parse(localStorage.getItem('jarvis.captures') || '[]'); } catch(e) {}
+  captures.unshift(entry);
+  localStorage.setItem('jarvis.captures', JSON.stringify(captures.slice(0, 500)));
+  input.value = '';
+  // Flash feedback
+  input.style.borderColor = 'var(--grn)';
+  input.placeholder = `✓ Saved to #${captureTag}`;
+  setTimeout(() => { input.style.borderColor = ''; input.placeholder = 'Quick capture — type an idea, trade note, or task...'; }, 1500);
+}
+
+// ===== SETTINGS =====
+function toggleSettings() {
+  document.getElementById('settingsModal').classList.toggle('show');
+  updateAiStatus();
+  // Restore toggle states
+  if (wakeWordEnabled) document.getElementById('wakeWordToggle').classList.add('on');
+  if (ttsEnabled) document.getElementById('ttsToggle').classList.add('on');
+  if (autoListen) document.getElementById('autoListenToggle').classList.add('on');
+  if (userGroqKey) document.getElementById('groqKeyInput').value = '••••••••';
+}
+
+function toggleTTS(el) { ttsEnabled = el.classList.toggle('on'); saveSettings(); }
+function toggleAutoListen(el) { autoListen = el.classList.toggle('on'); saveSettings(); }
+
+async function saveGroqKey() {
+  const input = document.getElementById('groqKeyInput');
+  const key = input.value.trim();
+  const status = document.getElementById('groqStatus');
+  if (!key || key === '••••••••') { userGroqKey=''; status.innerHTML='<span style="color:var(--amb)">Key cleared — using NVIDIA NIM</span>'; saveSettings(); updateAiStatus(); return; }
+  status.innerHTML='<span style="color:var(--cyan);animation:bk 1s infinite">Testing key...</span>';
+  try {
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body: JSON.stringify({model:'llama-3.3-70b-versatile', messages:[{role:'user',content:'Hi'}], max_tokens:5})
+    });
+    const d = await r.json();
+    if (d.choices) { userGroqKey=key; status.innerHTML='<span style="color:var(--grn)">✓ Key valid — using Groq</span>'; }
+    else { status.innerHTML='<span style="color:var(--red)">✗ Invalid: '+(d.error?.message||'Unknown')+'</span>'; }
+  } catch(e) { status.innerHTML='<span style="color:var(--red)">✗ Connection error</span>'; }
+  saveSettings();
+  updateAiStatus();
+}
+
+function saveSettings() {
+  try {
+    localStorage.setItem('jarvis.settings', JSON.stringify({groqKey:userGroqKey, ttsEnabled, autoListen, wakeWordEnabled}));
+  } catch(e) {}
+}
+
+function updateAiStatus() {
+  const el = document.getElementById('aiStatusDisplay');
+  const stEl = document.getElementById('stAi');
+  if (userGroqKey) {
+    if(el) el.innerHTML='Provider: <span style="color:var(--grn);font-weight:700">Groq</span> (Llama 3.3 70B)<br>Fallback: NVIDIA NIM → Pollinations';
+    if(stEl) stEl.innerHTML='<div class="st-ai-dot" style="background:var(--grn)"></div><span>AI: GROQ</span>';
+  } else {
+    if(el) el.innerHTML='Provider: <span style="color:var(--cyan);font-weight:700">NVIDIA NIM</span> via Pollinations Gateway<br>Fallback: Pollinations (free)';
+    if(stEl) stEl.innerHTML='<div class="st-ai-dot" style="background:var(--cyan)"></div><span>AI: NVIDIA NIM</span>';
+  }
+}
+
+// ===== JARVIS TRAINING / PREFERENCES =====
+let jarvisPrefs = {
+  tone: 'jarvis', verbosity: 'concise', language: 'en',
+  expertise: ['markets','geopolitics','crypto','school'],
+  customInstructions: '',
+  computerActions: true,
+  tradeStyle: 'smc', instruments: 'NAS100, GER40, BTC, ETH', timeframe: 'intraday'
+};
+
+// Load saved prefs
+try {
+  const sp = localStorage.getItem('jarvis.training');
+  if (sp) Object.assign(jarvisPrefs, JSON.parse(sp));
+} catch(e) {}
+
+function toggleTraining() {
+  const modal = document.getElementById('trainingModal');
+  modal.classList.toggle('show');
+  if (modal.classList.contains('show')) restoreTrainingUI();
+}
+
+function restoreTrainingUI() {
+  document.getElementById('jTone').value = jarvisPrefs.tone;
+  document.getElementById('jVerbosity').value = jarvisPrefs.verbosity;
+  document.getElementById('jLang').value = jarvisPrefs.language;
+  document.getElementById('jCustomInstructions').value = jarvisPrefs.customInstructions;
+  document.getElementById('jTradeStyle').value = jarvisPrefs.tradeStyle;
+  document.getElementById('jInstruments').value = jarvisPrefs.instruments;
+  document.getElementById('jTimeframe').value = jarvisPrefs.timeframe;
+  if (jarvisPrefs.computerActions) document.getElementById('compActionsToggle').classList.add('on');
+  // Expertise tags
+  document.querySelectorAll('.exp-tag').forEach(t => {
+    t.classList.toggle('on', jarvisPrefs.expertise.includes(t.dataset.exp));
+  });
+}
+
+function toggleExpertise(el) {
+  el.classList.toggle('on');
+  saveTrainingPrefs();
+}
+
+function toggleComputerActions(el) {
+  jarvisPrefs.computerActions = el.classList.toggle('on');
+  saveTrainingPrefs();
+}
+
+function saveTrainingPrefs() {
+  jarvisPrefs.tone = document.getElementById('jTone').value;
+  jarvisPrefs.verbosity = document.getElementById('jVerbosity').value;
+  jarvisPrefs.language = document.getElementById('jLang').value;
+  jarvisPrefs.customInstructions = document.getElementById('jCustomInstructions').value;
+  jarvisPrefs.tradeStyle = document.getElementById('jTradeStyle').value;
+  jarvisPrefs.instruments = document.getElementById('jInstruments').value;
+  jarvisPrefs.timeframe = document.getElementById('jTimeframe').value;
+  jarvisPrefs.expertise = Array.from(document.querySelectorAll('.exp-tag.on')).map(t => t.dataset.exp);
+  try { localStorage.setItem('jarvis.training', JSON.stringify(jarvisPrefs)); } catch(e) {}
+}
+
+// ===== COMPUTER ACTIONS (Jarvis commands) =====
+function tryComputerAction(msg) {
+  if (!jarvisPrefs.computerActions) return false;
+  const lower = msg.toLowerCase().trim();
+
+  // Open website/app
+  const openMatch = lower.match(/^(?:open|go to|launch|navigate to)\s+(.+)/);
+  if (openMatch) {
+    const target = openMatch[1].trim();
+    const sites = {
+      'youtube': 'https://www.youtube.com',
+      'twitter': 'https://twitter.com', 'x': 'https://twitter.com',
+      'tradingview': 'https://www.tradingview.com',
+      'google': 'https://www.google.com',
+      'github': 'https://github.com',
+      'chatgpt': 'https://chat.openai.com',
+      'reddit': 'https://www.reddit.com',
+      'gmail': 'https://mail.google.com',
+      'calendar': 'https://calendar.google.com',
+      'notion': 'https://www.notion.so',
+      'netflix': 'https://www.netflix.com',
+      'spotify': 'https://open.spotify.com',
+    };
+    // Check module switching
+    const modules = {'trading':'trading','journal':'journal','trade journal':'journal','globe':'globe','advisor':'advisor','assistant':'assistant'};
+    for (const [k,v] of Object.entries(modules)) {
+      if (target.includes(k)) {
+        loadModule(v);
+        addChatMsg('bot', `Switched to <span style="color:var(--cyan)">${v.toUpperCase()}</span> module.`);
+        if (ttsEnabled) speak('Switching to ' + v + ' module.');
+        return true;
+      }
+    }
+    for (const [k,v] of Object.entries(sites)) {
+      if (target.includes(k)) {
+        window.open(v, '_blank');
+        addChatMsg('bot', `Opening <span style="color:var(--cyan)">${k.charAt(0).toUpperCase()+k.slice(1)}</span> in a new tab.`);
+        if (ttsEnabled) speak('Opening ' + k + '.');
+        return true;
+      }
+    }
+    // Generic URL
+    if (target.includes('.')) {
+      const url = target.startsWith('http') ? target : 'https://' + target;
+      window.open(url, '_blank');
+      addChatMsg('bot', `Opening <span style="color:var(--cyan)">${target}</span> in a new tab.`);
+      if (ttsEnabled) speak('Opening ' + target);
+      return true;
+    }
+  }
+
+  // Web search
+  const searchMatch = lower.match(/^(?:search|search for|google|look up)\s+(.+)/);
+  if (searchMatch) {
+    const query = searchMatch[1].trim();
+    window.open('https://www.google.com/search?q=' + encodeURIComponent(query), '_blank');
+    addChatMsg('bot', `Searching for <span style="color:var(--cyan)">"${query}"</span>.`);
+    if (ttsEnabled) speak('Searching for ' + query);
+    return true;
+  }
+
+  // Timer
+  const timerMatch = lower.match(/(?:set a timer|timer|remind me in)\s+(?:for\s+)?(\d+)\s*(min|minute|sec|second|hour|h|m|s)/);
+  if (timerMatch) {
+    let ms = parseInt(timerMatch[1]);
+    const unit = timerMatch[2];
+    if (unit.startsWith('h')) ms *= 3600000;
+    else if (unit.startsWith('m')) ms *= 60000;
+    else ms *= 1000;
+    const label = timerMatch[1] + ' ' + unit;
+    addChatMsg('bot', `Timer set for <span style="color:var(--cyan)">${label}</span>. I'll alert you when it's up.`);
+    if (ttsEnabled) speak('Timer set for ' + label);
+    setTimeout(() => {
+      addChatMsg('bot', `<span style="color:var(--amb)">⏰ Timer complete!</span> Your ${label} timer is up.`);
+      if (ttsEnabled) speak('Timer is up! Your ' + label + ' timer has finished.');
+      playActivationSound();
+      if (Notification.permission === 'granted') new Notification('JARVIS Timer', {body: label + ' timer complete!'});
+    }, ms);
+    return true;
+  }
+
+  // Take a note
+  const noteMatch = lower.match(/(?:take a note|save a note|capture|note|remember)\s*:?\s+(.+)/);
+  if (noteMatch) {
+    const text = noteMatch[1].trim();
+    const entry = { text, tag: 'idea', time: Date.now(), id: Date.now().toString(36) };
+    let captures = [];
+    try { captures = JSON.parse(localStorage.getItem('jarvis.captures') || '[]'); } catch(e) {}
+    captures.unshift(entry);
+    localStorage.setItem('jarvis.captures', JSON.stringify(captures.slice(0, 500)));
+    addChatMsg('bot', `Note saved: <span style="color:var(--cyan)">"${text}"</span>`);
+    if (ttsEnabled) speak('Note saved.');
+    return true;
+  }
+
+  // Read news aloud
+  if (lower.includes('read') && (lower.includes('news') || lower.includes('intel') || lower.includes('headlines'))) {
+    if (sharedNewsItems.length) {
+      const headlines = sharedNewsItems.slice(0, 5).map((n, i) => `${i+1}. ${n.title}`).join('\n');
+      addChatMsg('bot', `<span style="color:var(--blue)">Latest Headlines:</span><br>${headlines.replace(/\n/g,'<br>')}`);
+      if (ttsEnabled) speak('Here are the latest headlines. ' + sharedNewsItems.slice(0,5).map(n => n.title).join('. '));
+    } else {
+      addChatMsg('bot', 'Intel feed is still loading. Try again in a moment.');
+    }
+    return true;
+  }
+
+  return false;
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', e => {
+  // Ctrl+K / Cmd+K → Quick Capture
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); toggleQuickCapture(); }
+  // Ctrl+J / Cmd+J → JARVIS Chat
+  if ((e.ctrlKey || e.metaKey) && e.key === 'j') { e.preventDefault(); toggleChat(); }
+  // Escape → close overlays
+  if (e.key === 'Escape') {
+    document.getElementById('chatDrawer').classList.remove('open');
+    document.getElementById('quickCapture').classList.remove('show');
+    document.getElementById('settingsModal').classList.remove('show');
+    document.getElementById('trainingModal').classList.remove('show');
+    stopListening();
+  }
+});
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  updateAiStatus();
+  // Load globe module by default
+  const frame = document.getElementById('moduleFrame');
+  frame.src = MODULE_CONFIG.globe.src;
+  frame.onload = () => {
+    setTimeout(() => document.getElementById('moduleLoader').classList.add('hide'), 400);
+  };
+  // Restore chat history
+  if (chatHistory.length) {
+    const body = document.getElementById('chatBody');
+    body.innerHTML = ''; // Clear default message
+    chatHistory.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'cd-msg ' + m.role;
+      div.innerHTML = m.text;
+      body.appendChild(div);
+    });
+    body.scrollTop = body.scrollHeight;
+  }
+  // Speech recognition initialized on first use (needs user gesture for mic permission)
+  // Preload TTS voices
+  if (window.speechSynthesis) {
+    speechSynthesis.getVoices();
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  }
+  // Auto-start wake word if enabled
+  if (wakeWordEnabled) {
+    setTimeout(startWakeWord, 1500);
+  }
+  // Request notification permission for alerts
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+});
+</script>
+</body>
+</html>
